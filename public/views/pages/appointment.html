@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Appointment — Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Schedule a consultation with Elite Travel & Tour: visa, Work & Pay, and flight booking services."/>
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Standard ICO -->
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+<!-- Or PNG -->
+<link rel="icon" href="/favicon.png" type="image/png">
+
+<!-- Optional: SVG -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+   
+    /* Nav */
+    /* nav {
+      position:sticky; top:0; background:#fff; z-index:1000;
+      padding:.5rem 1rem; box-shadow:0 2px 4px rgba(0,0,0,0.08);
+    }
+    nav .wrap { display:flex; align-items:center; justify-content:space-between; gap:.75rem; }
+    nav .logo { display:flex; align-items:center; gap:.5rem; font-weight:800; color:#222; text-decoration:none; white-space:nowrap; }
+    nav .logo i { color:var(--brand); }
+    nav ul.primary { display:flex; gap:1rem; list-style:none; margin:0; padding:0; }
+    nav a { text-decoration:none; color:#333; font-weight:600; padding:.4rem .6rem; border-radius:6px; display:inline-flex; align-items:center; gap:.4rem; }
+    nav a:hover, nav a.active { color:var(--brand); background:rgba(0,119,204,.08); }
+
+    .btn { display:inline-flex; align-items:center; gap:.5rem; background:#222; color:#fff; padding:.55rem .85rem; border-radius:8px; text-decoration:none; border:none; cursor:pointer; font-weight:700; }
+    .btn.brand { background:var(--brand); }
+    .btn.brand:hover { background:var(--brand-600); }
+    .btn.outline { background:transparent; color:#222; border:1px solid var(--gray-300); }
+    .btn.outline:hover { border-color:var(--brand); color:var(--brand); }
+    .btn[disabled]{ opacity:.55; cursor:not-allowed; }
+
+    .auth-pill { display:inline-flex; align-items:center; gap:.5rem; padding:.35rem .6rem; border-radius:999px; background:#f0f7ff; color:#0b4d78; font-weight:600; border:1px solid #d6e9ff; max-width:50vw; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .auth-pill i { color:var(--brand); }
+
+    .menu-toggle { display:none; border:none; background:#f7fbff; color:#09486f; padding:.5rem .6rem; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,.06) inset; }
+    .menu-toggle i { font-size:1.1rem; }
+    .mobile-panel { display:none; background:#fff; border:1px solid var(--gray-200); border-radius:10px; margin-top:.5rem; box-shadow:var(--shadow); overflow:hidden; }
+    .mobile-panel.open { display:block; }
+    .mobile-panel .block { display:flex; flex-direction:column; padding:.75rem; gap:.25rem; }
+    .mobile-panel a { padding:.6rem .75rem; border-radius:8px; color:#222; font-weight:600; }
+    .mobile-panel a:hover { background:#f7f9fc; color:var(--brand); }
+    @media (max-width:880px){
+      nav ul.primary{ display:none; }
+      .menu-toggle{ display:inline-flex; }
+      .auth-pill{ display:none; }
+    }
+    .actions { display:flex; gap:.5rem; align-items:center; }
+    .bell { position:relative; }
+    .count { position:absolute; top:-6px; right:-6px; background:#e00; color:#fff; font-size:.7rem; border-radius:50%; padding:0 5px; }
+    .hidden { display:none !important; } */
+    /* Card and inputs */
+    /*.card { background:#fff; border:1px solid var(--gray-200); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; }
+    .card .body { padding:1rem; }
+    .page-title { font-size:1.8rem; margin-bottom:.75rem; }
+    .muted { color:var(--muted); }
+    .list { display:block; } */
+
+    /* Form */
+    .form-grid { display:grid; gap:1rem; grid-template-columns:1fr 1fr; }
+    .form-grid .input,
+    .form-grid .select,
+    .form-grid .textarea {
+      width:100%; color: var(--brand); padding:.7rem .8rem; border:1px solid var(--gray-300); border-radius:10px; font-size:1rem; background: #073a876d;
+    }
+    .form-grid .textarea { min-height:120px; grid-column:1 / -1; }
+    .form-grid .full { grid-column:1 / -1; }
+    .form-grid .actions { grid-column:1 / -1; display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; }
+    .hint { font-size:.9rem; color:var(--warning); }
+    /* .success { color:var(--success); }
+    .error { color:var(--danger); }
+
+    /* Modal */
+    /* .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000; }
+    .modal .card { max-width:480px; width:92%; } */
+
+    /* Toast */
+    /* .toast {
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#1b2a3a; color:#eaf4ff; padding:.75rem 1rem; border-radius:8px;
+      box-shadow:var(--shadow); z-index:2000; display:none; max-width:90vw;
+    }
+    .toast.show { display:flex; align-items:center; gap:.6rem; }
+    .toast i { color:#4fc3f7; } */ */
+
+    /* Responsive */
+    @media (max-width:700px){
+      .form-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  
+  <nav aria-label="Primary">
+  <div class="wrap">
+    <a class="logo" href="/"><img src="/assets/logo/logo.png" alt="Elite Travel & Tour"></a>
+    <ul class="primary">
+      <li><a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a></li>
+      <li><a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+      <li><a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a></li>
+      <li><a href="/views/pages/appointment.html" class="active"><i class="fa fa-calendar"></i> Book</a></li>
+      <li><a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a></li>
+      <li><a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a></li>
+    </ul>
+    <div class="nav-right">
+      <button id="bellBtn" class="btn outline bell" aria-label="Notifications">
+        <i class="fa-regular fa-bell"></i>
+        <span id="bellCount" class="count hidden">0</span>
+      </button>
+      <span id="authStatus" class="auth-pill" style="display:none;">
+        <i class="fa fa-user-check"></i><span class="auth-text">Guest</span>
+      </span>
+      <button id="loginBtn" class="btn outline"><i class="fa fa-right-to-bracket"></i> Login</button>
+      <button id="profileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> </button>
+      <button id="logoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> </button>
+      <button id="menuToggle" class="menu-toggle" aria-expanded="false"><i class="fa fa-bars"></i></button>
+    </div>
+  </div>
+
+  <!-- Mobile panel -->
+  <div id="mobilePanel" class="mobile-panel">
+    <div class="block">
+      <a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a>
+      <a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a>
+      <a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a>
+      <a href="/views/pages/appointment.html" class="active"><i class="fa fa-calendar"></i> Book</a>
+      <a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a>
+      <a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a>
+    </div>
+    <div class="block">
+      <span class="auth-pill"><i class="fa fa-user"></i><span id="mobileAuthText">Guest</span></span>
+      <div class="toolbar">
+        <button id="mobileLoginBtn" class="btn brand"><i class="fa fa-right-to-bracket"></i> Login</button>
+        <button id="mobileProfileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> Profile</button>
+        <button id="mobileLogoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+ <div id="notifFeed" class="feed hidden">
+  <div class="feed-toolbar">
+    <span class="muted small-text">Notifications</span>
+    <div style="display:flex;gap:.25rem;">
+      <button id="markAllReadBtn"><i class="fa fa-check-double"></i> Read</button>
+      <button id="clearAllNotifBtn"><i class="fa fa-trash"></i> Clear</button>
+    </div>
+  </div>
+  <div id="notifList" class="list"></div>
+</div>
+<script type="module" src="/src/js/notifications.js"></script>
+
+  <main class="container grid">
+    <section class="card"><div class="body list">
+      <h2 class="page-title">Book Appointment</h2>
+      <p class="muted">Consultations for visa assistance, Work & Pay, and flight bookings. Logged-in users can schedule directly.</p>
+
+      <!-- Appointment Form -->
+      <form id="appointmentForm" class="form-grid" action="https://formsubmit.co/api" method="POST" novalidate>
+        <input class="input" type="text" name="name" placeholder="Full name" autocomplete="name" required>
+        <input class="input" type="email" name="email" placeholder="Email" autocomplete="email" required>
+
+        <input class="input" type="date" name="date" required>
+        <input class="input" type="time" name="time" required>
+
+        <select class="select" name="service" required>
+          <option value="">Select service</option>
+          <option value="visa">Visa consultation</option>
+          <option value="work">Work & Pay consultation</option>
+          <option value="flight">Flight booking consultation</option>
+          <option value="express">Express travel service</option>
+        </select>
+
+        <input class="input" type="text" name="job" id="jobParam" placeholder="Job reference (auto-filled if you came from Jobs)" class="full">
+
+        <textarea class="textarea" name="notes" placeholder="Additional notes (optional)"></textarea>
+
+        <!-- Hidden fields for tracking -->
+        <input type="hidden" name="source" id="sourceField" value="appointment-page">
+        <input type="hidden" name="ts" id="tsField" value="">
+
+        <div class="actions">
+          <button id="scheduleBtn" type="submit" class="btn brand"><i class="fa fa-calendar"></i> Schedule</button>
+          <span id="gateHint" class="hint"></span>
+        </div>
+      </form>
+
+      <div id="statusMsg" class="muted" style="margin-top:.5rem"></div>
+    </div></section>
+  </main>
+ <!-- Footer -->
+  <footer id="footer">
+    <div class="grid">
+      <div>
+        <h4>Elite Travel & Tour</h4>
+        <p>Trusted partner for seamless journeys worldwide.</p>
+        <p class="muted">Visa assistance, Work & Pay programs, and flight bookings with premium support.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/views/pages/services.html">Services</a></li>
+          <li><a href="/views/pages/work-and-pay.html">Work & Pay</a></li>
+          <li><a href="/views/pages/appointment.html">Book Appointment</a></li>
+          <li><a href="/views/pages/contact.html">Contact</a></li>
+          <li><a href="/views/pages/about.html">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><i class="fa fa-phone"></i> +233 59 911 7007</p>
+        <p><i class="fa fa-envelope"></i> info@elitetravel.com</p>
+        <p><i class="fa fa-map-marker-alt"></i> Adabraka Akasanoma rd, Greater Accra, Ghana</p>
+        <!-- Newsletter -->
+      <div class="newsletter">
+        <label for="newsletterEmail" class="muted">Subscribe to our newsletter:</label><br>
+        <input id="newsletterEmail" type="email" placeholder="Your email">
+        <button id="subscribeBtn"><i class="fa fa-paper-plane"></i> Subscribe</button>
+      </div>
+      <div id="subscribeMsg" class="muted" style="margin-top:.5rem;"></div>
+      </div>
+      <div>
+      <h4>Resources</h4>
+      <ul class="list">
+        <li><a href="/views/pages/profile.html">Profile</a></li>
+        <li><a href="/views/pages/tracking.html">Tracking</a></li>
+        <li><a href="/views/pages/privacy.html">Privacy Policy</a></li>
+        <li><a href="/views/pages/terms.html">Terms of Service</a></li>
+      </ul>
+    </div>
+      <div class="social">
+        <h4>Follow Us</h4>
+        <div class="toolbar">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+    
+  <!-- Footer bottom -->
+  <div class="footer-bottom">© <span id="year"></span> Elite Travel & Tour. All rights reserved.</div>
+  </footer>
+  <script>
+    // Dynamic year
+    document.getElementById('year').textContent=new Date().getFullYear();
+
+    // Newsletter subscription demo
+    const subscribeBtn=document.getElementById('subscribeBtn');
+    const eemailInput=document.getElementById('newsletterEmail');
+    const subscribeMsg=document.getElementById('subscribeMsg');
+    subscribeBtn.addEventListener('click',()=>{
+      const eemail=eemailInput.value.trim();
+      if(!eemail){ subscribeMsg.textContent="Please enter your email."; subscribeMsg.style.color="red"; return; }
+      subscribeMsg.textContent=`Thank you for subscribing, ${eemail}!`;
+      subscribeMsg.style.color="lightgreen";
+      eemailInput.value="";
+    });
+  </script>
+
+  <!-- Confirmation Modal -->
+  <div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <section class="card"><div class="body">
+      <h3 id="confirmTitle">Appointment Scheduled</h3>
+      <p id="confirmText"></p>
+      <div class="toolbar">
+        <button class="btn brand" id="confirmOk"><i class="fa fa-check"></i> OK</button>
+      </div>
+    </div></section>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"><i class="fa fa-info-circle"></i><span id="toastText">Notice</span></div>
+
+ <script type="module">
+  import { sb } from '/src/js/supabase.js';
+
+// --- Notification feed toggle
+  document.addEventListener('click',(e)=>{
+    const feed=document.getElementById('notifFeed');
+    if(!feed) return;
+    if(e.target.closest('#bellBtn')){ feed.classList.toggle('hidden'); }
+    else if(!e.target.closest('#notifFeed')){ feed.classList.add('hidden'); }
+  });
+
+  
+  // --- Supabase notifications subscription
+  function renderNotification(n){
+    const list=document.getElementById('notifList');
+    const bellCount=document.getElementById('bellCount');
+    if(list){
+      const el=document.createElement('div');
+      el.className='item';
+      el.textContent=n.message || n.text;
+      list.prepend(el);
+    }
+    if(bellCount){
+      const count=parseInt(bellCount.textContent||'0',10)+1;
+      bellCount.textContent=String(count);
+      bellCount.classList.remove('hidden');
+    }
+  }
+
+  let channel;
+  async function subscribeNotifications(userId){
+    if(channel){ await sb.removeChannel(channel); channel=null; }
+    channel=sb.channel(`header-notifs-${userId}`)
+      .on('postgres_changes',{
+        event:'INSERT',
+        schema:'public',
+        table:'notifications',
+        filter:`user_id=eq.${userId}`
+      },payload=>{
+        renderNotification(payload.new);
+      })
+      .subscribe();
+  }
+
+  /* =========================================
+     Auth buttons
+  ========================================== */
+  const loginBtn=document.getElementById('loginBtn');
+  const logoutBtn=document.getElementById('logoutBtn');
+  const profileBtn=document.getElementById('profileBtn');
+  const mobileLoginBtn=document.getElementById('mobileLoginBtn');
+  const mobileLogoutBtn=document.getElementById('mobileLogoutBtn');
+  const mobileProfileBtn=document.getElementById('mobileProfileBtn');
+  const authText=document.querySelector('#authStatus .auth-text');
+  const mobileAuthText=document.getElementById('mobileAuthText');
+
+  function updateAuthUI(session){
+    const user=session?.user;
+    if(user){
+      if(authText) authText.textContent=user.email;
+      if(mobileAuthText) mobileAuthText.textContent=user.email;
+
+      loginBtn?.style.setProperty('display','none');
+      logoutBtn?.style.setProperty('display','inline-flex');
+      profileBtn?.style.setProperty('display','inline-flex');
+
+      mobileLoginBtn?.style.setProperty('display','none');
+      mobileLogoutBtn?.style.setProperty('display','inline-flex');
+      mobileProfileBtn?.style.setProperty('display','inline-flex');
+
+      profileBtn?.addEventListener('click',()=>window.location.href=`/views/pages/user/profile.html?id=${user.id}`);
+      mobileProfileBtn?.addEventListener('click',()=>window.location.href=`/views/pages/user/profile.html?id=${user.id}`);
+    } else {
+      if(authText) authText.textContent='Guest';
+      if(mobileAuthText) mobileAuthText.textContent='Guest';
+
+      loginBtn?.style.setProperty('display','inline-flex');
+      logoutBtn?.style.setProperty('display','none');
+      profileBtn?.style.setProperty('display','none');
+
+      mobileLoginBtn?.style.setProperty('display','inline-flex');
+      mobileLogoutBtn?.style.setProperty('display','none');
+      mobileProfileBtn?.style.setProperty('display','none');
+    }
+  }
+
+  // Initial session check
+  const { data } = await sb.auth.getSession();
+  updateAuthUI(data.session);
+
+  // Listen for auth changes
+  sb.auth.onAuthStateChange((_event, session)=>{
+    updateAuthUI(session);
+  });
+
+  // Login buttons redirect to login page
+  loginBtn?.addEventListener('click', ()=> window.location.href='/views/pages/login.html');
+  mobileLoginBtn?.addEventListener('click', ()=> window.location.href='/views/pages/login.html');
+
+  // Logout buttons sign out via Supabase
+  logoutBtn?.addEventListener('click', async ()=>{
+    await sb.auth.signOut();
+    updateAuthUI(null);
+    window.location.href='/views/pages/login.html';
+  });
+  mobileLogoutBtn?.addEventListener('click', async ()=>{
+    await sb.auth.signOut();
+    updateAuthUI(null);
+    window.location.href='/views/pages/login.html';
+  });
+
+  /* =========================================
+     Toast notifications
+  ========================================== */
+  const toast = document.getElementById('toast');
+  const toastText = document.getElementById('toastText');
+  function showToast(message, ms=2500){
+    toastText.textContent = message;
+    toast.classList.add('show');
+    setTimeout(()=> toast.classList.remove('show'), ms);
+  }
+
+  /* =========================================
+     Mobile menu toggle
+  ========================================== */
+  const menuToggle = document.getElementById('menuToggle');
+  const mobilePanel = document.getElementById('mobilePanel');
+  menuToggle?.addEventListener('click', ()=>{
+    const isOpen = mobilePanel.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  mobilePanel?.addEventListener('click', (e)=>{
+    if(e.target.matches('a')) {
+      mobilePanel.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded','false');
+    }
+  });
+
+  /* =========================================
+     Appointment form behavior
+  ========================================== */
+  const form = document.getElementById('appointmentForm');
+  const confirmModal = document.getElementById('confirmModal');
+  const confirmText = document.getElementById('confirmText');
+  const confirmOk = document.getElementById('confirmOk');
+  const statusMsg = document.getElementById('statusMsg');
+  const jobParamField = document.getElementById('jobParam');
+  const sourceField = document.getElementById('sourceField');
+  const tsField = document.getElementById('tsField');
+
+  const params = new URLSearchParams(location.search);
+  const jobParam = params.get('job');
+  const serviceParam = params.get('service');
+  const dateParam = params.get('date');
+  if (jobParam) { jobParamField.value = jobParam; }
+  if (serviceParam) {
+    const sel = form.querySelector('select[name="service"]');
+    const opt = [...sel.options].find(o => o.value === serviceParam);
+    if (opt) sel.value = serviceParam;
+  }
+  if (dateParam) {
+    const dateInput = form.querySelector('input[name="date"]');
+    dateInput.value = dateParam;
+  }
+
+  tsField.value = String(Date.now());
+  sourceField.value = document.referrer ? 'ref:'+new URL(document.referrer).pathname : 'appointment-page';
+
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const { data: sessionData } = await sb.auth.getSession();
+    const user = sessionData?.session?.user;
+    if (!user){
+      showToast('Please log in to schedule an appointment');
+      statusMsg.textContent = '';
+      return;
+    }
+
+    const name = form.elements['name'].value.trim();
+    const email = form.elements['email'].value.trim();
+    const date = form.elements['date'].value;
+    const time = form.elements['time'].value;
+    const service = form.elements['service'].value;
+
+    if (!name || !email || !date || !time || !service) {
+      showToast('Please complete all required fields');
+      return;
+    }
+
+    statusMsg.textContent = 'Submitting...';
+
+    try {
+      const { error } = await sb
+        .from('appointments')
+        .insert({
+          user_id: user.id,
+          name,
+          email,
+          service,
+          date,
+          time,
+          job: jobParam || null,
+          source: sourceField.value,
+          ts: tsField.value
+        });
+
+      if(error) throw error;
+
+      confirmText.textContent = `Thank you ${name}, your ${service} appointment is scheduled for ${date} at ${time}. A confirmation will be sent to ${email}.`;
+      confirmModal.style.display = 'flex';
+      statusMsg.textContent = '';
+      form.reset();
+      if (jobParam) jobParamField.value = jobParam;
+    } catch (err) {
+      statusMsg.textContent = '';
+      showToast('Submission failed. Please try again.');
+      console.error(err);
+    }
+  });
+
+  confirmOk.addEventListener('click', ()=> {
+    confirmModal.style.display = 'none';
+  });
+  confirmModal.addEventListener('click', (e)=>{
+    if (e.target === confirmModal) confirmModal.style.display = 'none';
+  });
+</script>
+
+</body>
+</html>

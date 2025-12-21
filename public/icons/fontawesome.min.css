@@ -1,0 +1,13 @@
+/* Helpers to keep icons consistent across the app */
+.icon { display:inline-block; line-height:1; vertical-align:middle; }
+.icon-sm { font-size: 0.9rem; }
+.icon-md { font-size: 1.1rem; }
+.icon-lg { font-size: 1.25rem; }
+.icon-xl { font-size: 1.6rem; }
+
+/* Example spacing when used inside buttons/links */
+.btn .icon { margin-right: 8px; }
+
+/* Optional: align brand colors if needed */
+.icon-brand { color: #0ea5e9; }
+.icon-muted { color: #6b7280; }

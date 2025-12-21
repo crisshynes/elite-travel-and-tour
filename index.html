@@ -1,0 +1,1211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Elite Travel & Tour — Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Elite Travel & Tour: Visa assistance, Work & Pay programs, flight bookings, and premium travel services."/>
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- <style>
+    :root{
+      --brand:#0b5ea8;
+      --brand-deep:#022947;
+      --muted:#6b7280;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --shadow-soft:0 14px 32px rgba(15,23,42,.22);
+    }
+
+    main.container.grid{
+      padding-top:1.5rem;
+      padding-bottom:2.5rem;
+      max-width:1120px;
+    }
+
+    .hero.card{
+      position:relative;
+      overflow:hidden;
+      border-radius:16px;
+    }
+
+    .hero .slides{
+      position:relative;
+      height:260px;
+    }
+
+    .hero .slide{
+      position:absolute;
+      inset:0;
+      opacity:0;
+      transition:opacity .6s ease;
+    }
+
+    .hero .slide.active{
+      opacity:1;
+      z-index:1;
+    }
+
+    .hero .slide img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .hero .overlay{
+      position:absolute;
+      inset:auto 0 0 0;
+      background:linear-gradient(to top,rgba(15,23,42,.85),transparent 65%);
+      color:#e5e7eb;
+      padding:1.1rem 1.2rem 1rem;
+      display:flex;
+      flex-direction:column;
+      gap:.35rem;
+    }
+
+    .hero .overlay h2{
+      margin:0;
+      font-size:1.4rem;
+    }
+
+    .hero .overlay p{
+      margin:0;
+      font-size:.9rem;
+      color:#e5e7eb;
+    }
+
+    .hero .overlay .toolbar{
+      margin-top:.4rem;
+    }
+
+    .hero .arrow{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      background:rgba(15,23,42,.75);
+      color:#e5e7eb;
+      border:none;
+      border-radius:999px;
+      width:34px;
+      height:34px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      z-index:3;
+    }
+
+    .hero .arrow.left{ left:10px; }
+    .hero .arrow.right{ right:10px; }
+
+    .slider-controls{
+      position:absolute;
+      bottom:10px;
+      left:50%;
+      transform:translateX(-50%);
+      display:flex;
+      gap:.3rem;
+      z-index:3;
+    }
+
+    .slider-controls button{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      border:none;
+      background:rgba(243,244,246,.7);
+      cursor:pointer;
+    }
+
+    .slider-controls button.active{
+      width:14px;
+      background:#f97316;
+    }
+
+    .index-cta{
+      padding:.75rem .9rem 1rem;
+      border-top:1px solid rgba(15,23,42,.08);
+      background:linear-gradient(to right,#0b5ea8,#0369a1);
+      color:#e5e7eb;
+    }
+
+    .index-cta .toolbar .btn{
+      background:#f9fafb;
+      color:#0f172a;
+      border:none;
+    }
+
+    .index-cta .toolbar .btn.outline{
+      background:transparent;
+      border:1px solid #e5e7eb;
+      color:#e5e7eb;
+    }
+
+    .express-banner{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:.75rem;
+      padding:.65rem .8rem;
+      border-radius:12px;
+      background:#0b1120;
+      color:#e5e7eb;
+      margin-bottom:.8rem;
+      box-shadow:0 18px 40px rgba(15,23,42,.9);
+    }
+
+    .express-banner .left{
+      display:flex;
+      gap:.6rem;
+      align-items:flex-start;
+    }
+
+    .express-banner i.fa-bolt{
+      color:#fde047;
+      margin-top:.1rem;
+    }
+
+    .express-banner .muted{
+      color:#cbd5f5;
+      font-size:.85rem;
+    }
+
+    .services-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+      gap:.75rem;
+    }
+
+    .service-card img{
+      width:100%;
+      height:150px;
+      object-fit:cover;
+      border-radius:10px 10px 0 0;
+    }
+
+    .service-card .body{
+      padding:.6rem .7rem .75rem;
+    }
+
+    .service-card strong{
+      display:block;
+      font-size:.96rem;
+      margin-bottom:.1rem;
+    }
+
+    .service-card .service-meta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:.4rem;
+      margin-top:.25rem;
+      font-size:.82rem;
+    }
+
+    .service-card .price{
+      font-weight:600;
+      color:#0b5ea8;
+    }
+
+    .service-card .tag{
+      font-size:.78rem;
+      color:#4b5563;
+    }
+
+    .job-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:.8rem;
+    }
+
+    .job-card{
+      border-radius:12px;
+      overflow:hidden;
+      border:1px solid var(--gray-200);
+      background:#fff;
+      box-shadow:var(--shadow-soft);
+      display:flex;
+      flex-direction:column;
+    }
+
+    .job-card img{
+      width:100%;
+      height:130px;
+      object-fit:cover;
+    }
+
+    .job-card .body{
+      padding:.75rem .8rem .85rem;
+      flex:1;
+    }
+
+    .job-card .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:.25rem;
+      margin:.3rem 0 .35rem;
+    }
+
+    .job-card .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:.25rem;
+      padding:.12rem .5rem;
+      border-radius:999px;
+      border:1px solid var(--gray-200);
+      background:#f9fafb;
+      font-size:.78rem;
+      color:#4b5563;
+    }
+
+    .job-card .actions .btn{
+      font-size:.8rem;
+    }
+
+    #testimonySlider{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:.8rem;
+    }
+
+    .quote{
+      border-radius:12px;
+      padding:.7rem .8rem;
+      background:#020617;
+      color:#e5e7eb;
+      box-shadow:0 20px 45px rgba(15,23,42,.9);
+      border:1px solid #1f2937;
+    }
+
+    .quote .user{
+      display:flex;
+      gap:.7rem;
+      align-items:flex-start;
+    }
+
+    .quote img{
+      width:48px;
+      height:48px;
+      border-radius:999px;
+      object-fit:cover;
+      border:2px solid #38bdf8;
+    }
+
+    .quote p{
+      margin:.25rem 0 .2rem;
+      font-size:.86rem;
+      color:#e5e7eb;
+    }
+
+    .quote .badge{
+      font-size:.7rem;
+      border-radius:999px;
+      background:#064e3b;
+      color:#bbf7d0;
+      padding:.05rem .35rem;
+      margin-left:.3rem;
+    }
+
+    .quote .stars{
+      font-size:.8rem;
+      color:#facc15;
+    }
+
+    .testimonial-controls{
+      display:flex;
+      justify-content:flex-end;
+      gap:.5rem;
+      margin-top:.6rem;
+    }
+
+    #faqList details summary{
+      cursor:pointer;
+      padding:.35rem 0;
+      font-size:.9rem;
+    }
+
+    #faqList p{
+      font-size:.86rem;
+      color:#374151;
+      margin:.2rem 0 .35rem;
+    }
+
+    #newsList .news-card{
+      border-radius:10px;
+      border:1px solid var(--gray-200);
+      padding:.55rem .6rem;
+      margin-bottom:.4rem;
+      background:#fff;
+    }
+
+    #newsList .news-card h4{
+      margin:.1rem 0;
+      font-size:.9rem;
+    }
+
+    #newsList .news-card p{
+      margin:.1rem 0;
+      font-size:.86rem;
+      color:#374151;
+    }
+
+    #newsList .news-card .muted{
+      font-size:.78rem;
+    }
+
+    .cta-banner{
+      margin-top:1rem;
+      border-radius:14px;
+      padding:1rem .9rem .9rem;
+      background:linear-gradient(to right,#0b5ea8,#0369a1);
+      color:#e5e7eb;
+      box-shadow:0 18px 40px rgba(15,23,42,.75);
+    }
+
+    .cta-banner h3{
+      margin:0 0 .35rem;
+    }
+
+    .toast{
+      position:fixed;
+      bottom:20px;
+      left:50%;
+      transform:translateX(-50%);
+      background:#0b1120;
+      color:#e5e7eb;
+      padding:.75rem 1rem;
+      border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85);
+      z-index:2000;
+      display:none;
+      max-width:90vw;
+      font-size:.85rem;
+    }
+
+    .toast.show{
+      display:flex;
+      align-items:center;
+      gap:.6rem;
+    }
+
+    .toast i{
+      color:#38bdf8;
+    }
+  </style> -->
+</head>
+<body>
+  <nav aria-label="Primary">
+    <div class="wrap">
+      <a class="logo" href="/"><img src="/assets/logo/logo.png" alt="Elite Travel & Tour"></a>
+      <ul class="primary">
+        <li><a href="/views/pages/index.html" class="active"><i class="fa fa-house"></i> Home</a></li>
+        <li><a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+        <li><a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a></li>
+        <li><a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a></li>
+        <li><a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a></li>
+        <li><a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a></li>
+      </ul>
+      <div class="nav-right">
+        <!-- <button id="bellBtn" class="btn outline bell" aria-label="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span id="bellCount" class="count hidden">0</span>
+        </button> -->
+        <button id="bellBtn" class="btn outline bell">
+          <i class="fa-regular fa-bell"></i>
+          <span id="bellCount" class="count hidden">0</span>
+        </button>
+        <span id="authStatus" class="auth-pill" style="display:none;">
+          <i class="fa fa-user-check"></i><span class="auth-text">Guest</span>
+        </span>
+        <button id="loginBtn" class="btn outline"><i class="fa fa-right-to-bracket"></i> Login</button>
+        <button id="profileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i></button>
+        <button id="logoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> </button>
+        <button id="menuToggle" class="menu-toggle" aria-expanded="false"><i class="fa fa-bars"></i></button>
+      </div>
+    </div>
+
+    <!-- Mobile panel -->
+    <div id="mobilePanel" class="mobile-panel">
+      <div class="block">
+        <a href="/views/pages/index.html" class="active"><i class="fa fa-house"></i> Home</a>
+        <a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a>
+        <a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a>
+        <a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a>
+        <a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a>
+        <a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a>
+      </div>
+      <div class="block">
+        <span class="auth-pill"><i class="fa fa-user"></i><span id="mobileAuthText">Guest</span></span>
+        <div class="toolbar">
+          <button id="mobileLoginBtn" class="btn brand"><i class="fa fa-right-to-bracket"></i> Login</button>
+          <button id="mobileProfileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> Profile</button>
+          <button id="mobileLogoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+   <div id="notifFeed" class="feed hidden">
+  <div class="feed-toolbar">
+    <span class="muted small-text">Notifications</span>
+    <div style="color:var(--brand);display:flex;gap:.25rem;">
+      <button id="markAllReadBtn" class='btn ' style="color:var(--brand);" ><i class="fa fa-check-double"></i> Mark as Read</button>
+      <button id="clearAllNotifBtn" class='btn '><i class="fa fa-trash"></i> Clear</button>
+    </div>
+  </div>
+  <div id="notifList" class="list"></div>
+</div>
+<script type="module" src="/src/js/notifications.js"></script>
+  
+
+  <main class="container grid">
+    <!-- Hero Slider -->
+    <section class="hero card shadow" id="hero">
+      <div class="slides">
+        <div class="slide active">
+          <img src="/assets/screenshots/hero-lake.jpg" alt="Scenic lake view" loading="lazy">
+          <div class="overlay">
+            <h2>Our Travel and Tours Packages</h2>
+            <p>Explore world-class packages designed for comfort and transparency.</p>
+            <div class="toolbar">
+              <a class="btn brand" href="/views/pages/services.html"><i class="fa fa-arrow-right"></i> Learn more</a>
+            </div>
+          </div>
+        </div>
+        <div class="slide">
+          <img src="/assets/screenshots/tower-bridge.jpg" alt="Tower Bridge in London" loading="lazy">
+          <div class="overlay">
+            <h2>Your Journey, Our Expertise</h2>
+            <p>Visa assistance, Work & Pay, Flights — all in one place.</p>
+            <div class="toolbar">
+              <a class="btn brand" href="/views/pages/services.html"><i class="fa fa-arrow-right"></i> Learn more</a>
+            </div>
+          </div>
+        </div>
+        <div class="slide">
+          <img src="/assets/screenshots/airport-terminal.jpg" alt="Airport terminal" loading="lazy">
+          <div class="overlay">
+            <h2>Flight Bookings</h2>
+            <p>Competitive fares, flexible changes, and reliable support.</p>
+            <div class="toolbar">
+              <a class="btn brand" href="/views/pages/services.html"><i class="fa fa-arrow-right"></i> Learn more</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="arrow left" id="prevSlide" aria-label="Previous slide"><i class="fa fa-chevron-left"></i></button>
+      <button class="arrow right" id="nextSlide" aria-label="Next slide"><i class="fa fa-chevron-right"></i></button>
+      <div class="slider-controls" id="sliderDots"></div>
+
+      <div class="body index-cta">
+        <div class="toolbar">
+          <a href="#services" class="btn"><i class="fa fa-search"></i> Explore services</a>
+          <a href="/views/pages/work-and-pay.html" class="btn outline"><i class="fa fa-briefcase"></i> Work & Pay</a>
+          <a href="/views/pages/appointment.html" class="btn outline"><i class="fa fa-calendar"></i> Book appointment</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Services (now 100% dynamic, no hard-coded cards) -->
+    <section class="card hidden" id="services">
+      <div class="body">
+        <h3 class="section-title">Featured Services</h3>
+
+        <div class="express-banner" aria-live="polite">
+          <div class="left">
+            <i class="fa fa-bolt"></i>
+            <div>
+              <strong>Express Services</strong>
+              <div class="muted">Priority handling for urgent travel needs. Available to logged-in users.</div>
+            </div>
+          </div>
+          <div class="right">
+            <a id="expressBtn" class="btn brand" href="/views/pages/payments.html?type=service&service=express" data-requires-auth="true">
+              <i class="fa fa-rocket"></i> Get Express
+            </a>
+          </div>
+        </div>
+
+        <!-- Dynamic services from Supabase -->
+        <div id="dynamicServices" class="services-grid" style="margin-top:1rem;"></div>
+      </div>
+    </section>
+
+    <!-- Admin-posted Jobs (fully dynamic) -->
+    <section class="card hidden" id="jobs">
+      <div class="body">
+        <h3 class="section-title">Latest Jobs</h3>
+        <div class="muted" style="margin-bottom:.5rem">
+          Roles curated by our admin team. Log in to apply, pay, or request Express processing.
+        </div>
+        <div id="jobGrid" class="job-grid" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- Testimonials (from verified testimonial table) -->
+    <section class="card" id="testimonials">
+      <div class="body">
+        <h3 class="section-title">What Our Clients Say</h3>
+        <p class="muted" style="margin-bottom:.5rem;">Only verified testimonials from real clients are shown here.</p>
+        <div class="grid grid-2" id="testimonySlider"></div>
+        <div class="testimonial-controls">
+          <button class="btn outline" id="tPrev"><i class="fa fa-arrow-left"></i> Prev</button>
+          <button class="btn" id="tNext"><i class="fa fa-arrow-right"></i> Next</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="card" id="faq">
+      <div class="body">
+        <h3 class="section-title">Frequently Asked Questions</h3>
+        <div id="faqList" class="accordion faq-list"></div>
+      </div>
+    </section>
+
+    <!-- Latest News -->
+    <section class="card" id="news">
+      <div class="body">
+        <h3 class="section-title">Latest News & Updates</h3>
+        <div id="newsList" class="list"></div>
+      </div>
+    </section>
+
+    <!-- CTA Banner -->
+    <section class="cta-banner">
+      <h3>Ready to Start Your Journey?</h3>
+      <a href="/views/pages/appointment.html" class="btn"><i class="fa fa-calendar"></i> Book an Appointment</a>
+      <p class="muted" style="margin-top:.5rem;">Transparent pricing, verified partners, and responsive support.</p>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="grid">
+      <div>
+        <h4>Elite Travel & Tour</h4>
+        <p>Trusted partner for seamless journeys worldwide.</p>
+        <p class="muted">Visa assistance, Work & Pay programs, and flight bookings with premium support.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/views/pages/services.html">Services</a></li>
+          <li><a href="/views/pages/work-and-pay.html">Work & Pay</a></li>
+          <li><a href="/views/pages/appointment.html">Book Appointment</a></li>
+          <li><a href="/views/pages/contact.html">Contact</a></li>
+          <li><a href="/views/pages/about.html">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><i class="fa fa-phone"></i> +233 20 123 4567</p>
+        <p><i class="fa fa-envelope"></i> info@elitetravel.com</p>
+        <p><i class="fa fa-map-marker-alt"></i> Tema, Greater Accra, Ghana</p>
+        <div class="newsletter">
+          <label for="newsletterEmail" class="muted">Subscribe to our newsletter:</label><br>
+          <input id="newsletterEmail" type="email" placeholder="Your email">
+          <button id="subscribeBtn"><i class="fa fa-paper-plane"></i> Subscribe</button>
+        </div>
+        <div id="subscribeMsg" class="muted" style="margin-top:.5rem;"></div>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul class="list">
+          <li><a href="/views/pages/profile.html">Profile</a></li>
+          <li><a href="/views/pages/tracking.html">Tracking</a></li>
+          <li><a href="/views/pages/privacy.html">Privacy Policy</a></li>
+          <li><a href="/views/pages/terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="social">
+        <h4>Follow Us</h4>
+        <div class="toolbar">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© <span id="year"></span> Elite Travel & Tour. All rights reserved.</div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <i class="fa fa-info-circle"></i><span id="toastText">Notice</span>
+  </div>
+
+  <!-- Scripts -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    let currentUser=null;
+    const auth={ isLoggedIn(){ return !!currentUser; } };
+
+    // Footer year + newsletter
+    const yearSpan=document.getElementById('year');
+    if(yearSpan) yearSpan.textContent=new Date().getFullYear();
+
+    const subscribeBtn=document.getElementById('subscribeBtn');
+    const eemailInput=document.getElementById('newsletterEmail');
+    const subscribeMsg=document.getElementById('subscribeMsg');
+    subscribeBtn?.addEventListener('click',()=>{
+      const eemail=eemailInput.value.trim();
+      if(!eemail){
+        subscribeMsg.textContent='Please enter your email.';
+        subscribeMsg.style.color='red';
+        return;
+      }
+      subscribeMsg.textContent=`Thank you for subscribing, ${eemail}!`;
+      subscribeMsg.style.color='lightgreen';
+      eemailInput.value='';
+    });
+
+    // Toast
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(message,ms=2500){
+      if(!toast || !toastText) return;
+      toastText.textContent=message;
+      toast.classList.add('show');
+      setTimeout(()=> toast.classList.remove('show'),ms);
+    }
+
+    // Notification feed toggle
+    document.addEventListener('click',(e)=>{
+      const feed=document.getElementById('notifFeed');
+      if(!feed) return;
+      if(e.target.closest('#bellBtn')){
+        feed.classList.toggle('hidden');
+      }else if(!e.target.closest('#notifFeed')){
+        feed.classList.add('hidden');
+      }
+    });
+
+    // Notifications subscription
+    const notifList=document.getElementById('notifList');
+    const bellCount=document.getElementById('bellCount');
+    function renderNotification(n){
+      if(notifList){
+        const el=document.createElement('div');
+        el.className='item';
+        el.textContent=n.quote || n.text;
+        notifList.prepend(el);
+      }
+      if(bellCount){
+        const count=parseInt(bellCount.textContent||'0',10)+1;
+        bellCount.textContent=String(count);
+        bellCount.classList.remove('hidden');
+      }
+    }
+
+    let notifChannel=null;
+    async function subscribeNotifications(userId){
+      if(notifChannel){
+        await sb.removeChannel(notifChannel);
+        notifChannel=null;
+      }
+      notifChannel=sb.channel(`header-notifs-${userId}`)
+        .on('postgres_changes',{
+          event:'INSERT',
+          schema:'public',
+          table:'notifications',
+          filter:`user_id=eq.${userId}`
+        },payload=>{
+          renderNotification(payload.new);
+        })
+        .subscribe();
+    }
+
+    // Auth buttons
+    const loginBtn=document.getElementById('loginBtn');
+    const logoutBtn=document.getElementById('logoutBtn');
+    const profileBtn=document.getElementById('profileBtn');
+    const mobileLoginBtn=document.getElementById('mobileLoginBtn');
+    const mobileLogoutBtn=document.getElementById('mobileLogoutBtn');
+    const mobileProfileBtn=document.getElementById('mobileProfileBtn');
+    const authText=document.querySelector('#authStatus .auth-text');
+    const mobileAuthText=document.getElementById('mobileAuthText');
+    const authStatusPill=document.getElementById('authStatus');
+
+    function updateAuthUI(session){
+      const user=session?.user;
+      currentUser=user || null;
+
+      if(user){
+        if(authText) authText.textContent=user.email;
+        authStatusPill?.style.setProperty('display','none');
+        if(mobileAuthText) mobileAuthText.textContent=user.email;
+
+        loginBtn?.style.setProperty('display','none');
+        logoutBtn?.style.setProperty('display','inline-flex');
+        profileBtn?.style.setProperty('display','inline-flex');
+
+        mobileLoginBtn?.style.setProperty('display','none');
+        mobileLogoutBtn?.style.setProperty('display','inline-flex');
+        mobileProfileBtn?.style.setProperty('display','inline-flex');
+
+        profileBtn.onclick=()=> window.location.href=`/views/pages/user/profile.html?id=${user.id}`;
+        mobileProfileBtn.onclick=()=> window.location.href=`/views/pages/user/profile.html?id=${user.id}`;
+
+        subscribeNotifications(user.id);
+      }else{
+        if(authText) authText.textContent='Guest';
+        authStatusPill?.style.setProperty('display','inline-flex');
+        if(mobileAuthText) mobileAuthText.textContent='Guest';
+
+        loginBtn?.style.setProperty('display','inline-flex');
+        logoutBtn?.style.setProperty('display','none');
+        profileBtn?.style.setProperty('display','none');
+
+        mobileLoginBtn?.style.setProperty('display','inline-flex');
+        mobileLogoutBtn?.style.setProperty('display','none');
+        mobileProfileBtn?.style.setProperty('display','none');
+      }
+    }
+
+    {
+      const { data }=await sb.auth.getSession();
+      updateAuthUI(data.session);
+    }
+    sb.auth.onAuthStateChange((_event,session)=> updateAuthUI(session));
+
+    loginBtn?.addEventListener('click',()=> window.location.href='/views/pages/login.html');
+    mobileLoginBtn?.addEventListener('click',()=> window.location.href='/views/pages/login.html');
+
+    logoutBtn?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+    mobileLogoutBtn?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+
+    // Mobile menu
+    const menuToggle=document.getElementById('menuToggle');
+    const mobilePanel=document.getElementById('mobilePanel');
+    menuToggle?.addEventListener('click',()=>{
+      const isOpen=mobilePanel.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded',String(isOpen));
+    });
+    mobilePanel?.addEventListener('click',(e)=>{
+      if(e.target.matches('a')){
+        mobilePanel.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded','false');
+      }
+    });
+
+    // Hero slider
+    const slides=Array.from(document.querySelectorAll('#hero .slide'));
+    const dotsContainer=document.getElementById('sliderDots');
+    let idx=0;
+    let timer=null;
+
+    slides.forEach((_,i)=>{
+      const dot=document.createElement('button');
+      dot.className='dot'+(i===0?' active':'');
+      dot.setAttribute('aria-label','Go to slide '+(i+1));
+      dot.addEventListener('click',()=> showSlide(i,true));
+      dotsContainer.appendChild(dot);
+    });
+    const dots=Array.from(dotsContainer.children);
+
+    function showSlide(i,manual=false){
+      if(!slides.length) return;
+      slides[idx].classList.remove('active');
+      slides[idx].setAttribute('aria-hidden','true');
+      dots[idx].classList.remove('active');
+
+      idx=i;
+      slides[idx].classList.add('active');
+      slides[idx].setAttribute('aria-hidden','false');
+      dots[idx].classList.add('active');
+
+      if(manual) resetAutoplay();
+    }
+
+    function resetAutoplay(){
+      clearInterval(timer);
+      timer=setInterval(()=> showSlide((idx+1)%slides.length),5000);
+    }
+    resetAutoplay();
+
+    document.getElementById('prevSlide').addEventListener('click',()=>{
+      showSlide((idx-1+slides.length)%slides.length,true);
+    });
+    document.getElementById('nextSlide').addEventListener('click',()=>{
+      showSlide((idx+1)%slides.length,true);
+    });
+
+    // Dynamic services (Supabase, matches services page metadata shape)
+    const dynamicServices=document.getElementById('dynamicServices');
+
+    function normalizeService(row){
+      const m=row.metadata || {};
+      const banner=m.banner || m.image_url || '/assets/services/default.jpg';
+      const price_label=m.price_label || null;
+      const price_amount=m.price_amount || null;
+      const tags=Array.isArray(m.tags)?m.tags:(m.tags || []);
+      return {
+        id:row.id,
+        title:row.title,
+        slug:row.slug,
+        category:(row.category || 'service').toLowerCase(),
+        plan:row.plan || null,
+        status:row.status || 'draft',
+        description:row.description || m.short_desc || '',
+        banner,
+        price_label,
+        price_amount,
+        tags,
+        created_at:row.created_at
+      };
+    }
+
+    function serviceCardTemplateHome(s){
+      const href=s.slug ? `/views/pages/service-detail.html?slug=${encodeURIComponent(s.slug)}` : '/views/pages/services.html';
+      const planLabel=s.plan==='work'?'Work & Pay':s.plan==='express'?'Express':null;
+      let priceText='From consult';
+      if(s.price_label) priceText=s.price_label;
+      else if(s.price_amount) priceText=`From ${s.price_amount}`;
+      const tagsHtml=s.tags && s.tags.length
+        ? `<span class="tag"><i class="fa fa-hashtag"></i> ${s.tags[0]}</span>`
+        : `<span class="tag"><i class="fa fa-tag"></i> ${s.category}</span>`;
+
+      return `
+        <div class="card service-card">
+          <img src="${s.banner}" alt="${s.title}" loading="lazy">
+          <div class="body">
+            <strong>${s.title}${planLabel ? ` <span class="badge">${planLabel}</span>` : ''}</strong>
+            <p class="muted">${s.description || ''}</p>
+            <div class="service-meta">
+              <span class="price">${priceText}</span>
+              ${tagsHtml}
+            </div>
+            <div class="toolbar">
+              <a class="btn" href="${href}"><i class="fa fa-eye"></i> View</a>
+              <a class="btn brand" href="${href}#apply"><i class="fa fa-file-signature"></i> Apply</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadDynamicFeaturedServices(){
+      if(!dynamicServices) return;
+      try{
+        const { data,error }=await sb
+          .from('services')
+          .select('id,title,slug,category,plan,status,description,metadata,created_at')
+          .eq('status','active')
+          .order('created_at',{ ascending:false })
+          .limit(4);
+        if(error){
+          console.error('Supabase services error:',error);
+          return;
+        }
+        const list=(data || []).map(normalizeService);
+        if(!list.length) return;
+        dynamicServices.innerHTML=list.map(serviceCardTemplateHome).join('');
+        document.getElementById('services')?.classList.remove('hidden');
+      }catch(e){
+        console.error('loadDynamicFeaturedServices exception:',e);
+      }
+    }
+
+    // Jobs
+    const jobGrid=document.getElementById('jobGrid');
+
+    async function fetchSupabaseJobs(){
+      try{
+        const { data,error }=await sb
+          .from('jobs')
+          .select('id,title,country,city,plan,status,description,metadata,created_at')
+          .neq('status','deleted')
+          .order('created_at',{ ascending:false })
+          .limit(20);
+        if(error){
+          console.error('Supabase jobs error:',error);
+          return [];
+        }
+        return (data || []).map(j=>{
+          const m=j.metadata || {};
+          const location=j.city && j.location
+            ? `${j.city}, ${j.location}`
+            : j.location || j.city || 'Location not set';
+          return {
+            id:j.id,
+            title:j.title,
+            company:m.company || 'Elite Travel & Tour',
+            location,
+            type:m.job_type || 'N/A',
+            salary:m.salary || 'Negotiable',
+            cover:m.cover_image || '/assets/jobs/default-cover.jpg',
+            logo:m.logo || '/assets/jobs/default.jpg',
+            posted:j.created_at,
+            plan:j.plan || null,
+            status:j.status || 'draft'
+          };
+        });
+      }catch(e){
+        console.error('fetchSupabaseJobs exception:',e);
+        return [];
+      }
+    }
+
+    function jobCardTemplate(job){
+      const loggedIn=auth.isLoggedIn();
+      const cover=job.cover || job.logo || '/assets/jobs/default-cover.jpg';
+      const planLabel=job.plan==='work'?'Work & Pay':job.plan==='express'?'Express':null;
+      const created=job.posted ? new Date(job.posted).toLocaleDateString() : '—';
+      return `
+        <div class="job-card" data-job="${job.id}">
+          <img src="${cover}" alt="${job.title}" loading="lazy">
+          <div class="body">
+            <header style="display:flex;justify-content:space-between;align-items:flex-start;gap:.4rem;">
+              <strong>${job.title}</strong>
+              ${planLabel ? `<span class="badge"><i class="fa fa-layer-group"></i> ${planLabel}</span>` : ''}
+            </header>
+            <div class="meta">
+              <span class="pill"><i class="fa fa-building"></i> ${job.company}</span>
+              <span class="pill"><i class="fa fa-location-dot"></i> ${job.location}</span>
+              <span class="pill"><i class="fa fa-briefcase"></i> ${job.type}</span>
+              <span class="pill"><i class="fa fa-money-bill"></i> ${job.salary}</span>
+            </div>
+            <div class="muted">
+              <i class="fa fa-clock"></i> Posted ${created}
+            </div>
+            <div class="actions" style="margin-top:.75rem">
+              <a href="/views/pages/work-and-pay.html?id=${encodeURIComponent(job.id)}" class="btn job-view">
+                <i class="fa fa-eye"></i> Explore
+              </a>
+              <a href="/views/pages/application.html?job_id=${encodeURIComponent(job.id)}" class="btn brand job-apply" data-requires-auth="true">
+                <i class="fa fa-file-signature"></i> Apply
+              </a>
+              <a href="/views/pages/payments.html?type=job&job_id=${encodeURIComponent(job.id)}" class="btn brand job-pay" data-requires-auth="true">
+                <i class="fa fa-credit-card"></i> Pay
+              </a>
+              <a href="/views/pages/payments.html?type=express&job_id=${encodeURIComponent(job.id)}" class="btn ${loggedIn?'brand':'outline'} job-express" ${loggedIn?'':'data-requires-auth="true"'}>
+                <i class="fa fa-bolt"></i> Express
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function renderJobs(){
+      if(!jobGrid) return;
+      const supaJobs=await fetchSupabaseJobs();
+      if(!supaJobs.length){
+        jobGrid.innerHTML='<p class="muted">No jobs available yet. Check back soon.</p>';
+        return;
+      }
+      jobGrid.innerHTML=supaJobs.slice(0,6).map(jobCardTemplate).join('');
+      document.getElementById('jobs')?.classList.remove('hidden');
+    }
+
+    // Verified testimonials (dynamic)
+    const testimonySlider=document.getElementById('testimonySlider');
+    const tPrev=document.getElementById('tPrev');
+    const tNext=document.getElementById('tNext');
+
+    function testimonialCard(t){
+      const ratingStars='★★★★★'.slice(0,Math.max(1,Math.min(5,Math.round(t.rating || 5))));
+      return `
+        <div class="quote" data-testimonial="${t.id}">
+          <div class="user">
+            <img src="${t.avatar || '/assets/testimonials/default.jpg'}" alt="${t.name}" loading="lazy">
+            <div>
+              <strong>${t.name} <span class="badge">Verified</span></strong>
+              <p>"${t.quote}"</p>
+              <div class="stars">${ratingStars}</div>
+              <div class="muted" style="font-size:.78rem;margin-top:.2rem;">
+                ${t.location || '—'} • ${t.program || 'Elite service'}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function fetchTestimonials(){
+      try{
+        const { data,error }=await sb
+          .from('testimonials')
+          .select('id,name,quote,rating,location,program,avatar,is_active,created_at')
+          .eq('is_active',true)
+          .order('created_at',{ ascending:false })
+          .limit(12);
+        if(error){
+          console.error('fetchTestimonials error:',error);
+          return [];
+        }
+        return data || [];
+      }catch(e){
+        console.error('fetchTestimonials exception:',e);
+        return [];
+      }
+    }
+
+    async function renderTestimonials(){
+      if(!testimonySlider) return;
+      const testimonials=await fetchTestimonials();
+      if(!testimonials.length){
+        testimonySlider.innerHTML='<p class="muted">We\'re collecting verified stories from travellers. Check back soon.</p>';
+        tPrev?.setAttribute('disabled','true');
+        tNext?.setAttribute('disabled','true');
+        return;
+      }
+      testimonySlider.innerHTML=testimonials.map(testimonialCard).join('');
+      const quotes=Array.from(testimonySlider.querySelectorAll('.quote'));
+      let tOffset=0;
+      function render(offset){
+        quotes.forEach((q,i)=> q.style.display=(i>=offset && i<offset+2)?'block':'none');
+      }
+      render(tOffset);
+      tPrev?.addEventListener('click',()=>{
+        tOffset=Math.max(0,tOffset-1);
+        render(tOffset);
+      });
+      tNext?.addEventListener('click',()=>{
+        const total=quotes.length;
+        tOffset=Math.min(Math.max(0,total-2),tOffset+1);
+        render(tOffset);
+      });
+    }
+
+    // FAQ (static seed; can later be Supabase)
+    const faqList=document.getElementById('faqList');
+    if(faqList){
+      const faq=[
+        {
+          q:'What documents are required for my application?',
+          a:'You may need passport, photos, bank statements, invitation letters, and supporting forms depending on the destination.'
+        },
+        {
+          q:'How long does processing take?',
+          a:'Timelines vary by country and service. We provide an estimated window and keep you updated.'
+        },
+        {
+          q:'Are payment plans available?',
+          a:'Yes — terms depend on program and provider. We’ll outline all options during consultation.'
+        },
+        {
+          q:'Can I track progress?',
+          a:'Yes. Use the Tracking page for updates, and opt-in to email notifications for milestones.'
+        },
+        {
+          q:'Do you assist with flight changes?',
+          a:'Absolutely — we help with rebooking, cancellations, and fare comparisons to minimize costs.'
+        }
+      ];
+      faqList.innerHTML=faq.map(item=>`
+        <details>
+          <summary><strong>${item.q}</strong></summary>
+          <p>${item.a}</p>
+        </details>
+      `).join('');
+    }
+
+    // News (hardcoded base + optional Supabase extension)
+    const newsList=document.getElementById('newsList');
+    if(newsList){
+      const newsBase=[
+        {
+          title:'New Visa Partnerships',
+          text:'We partnered with additional embassies to streamline application reviews and reduce processing times.'
+        },
+        {
+          title:'Holiday Flight Deals',
+          text:'Seasonal discounts available for December bookings across Europe and Asia. Secure your tickets early.'
+        },
+        {
+          title:'Work & Pay Expansion',
+          text:'Our Work & Pay program now covers Canada and Australia; onboarding slots are limited.'
+        }
+      ];
+      newsList.innerHTML=newsBase.map(n=>`
+        <div class="news-card">
+          <h4>${n.title}</h4>
+          <p>${n.text}</p>
+        </div>
+      `).join('');
+    }
+
+    async function fetchSupabaseNews(){
+      try{
+        const { data,error }=await sb
+          .from('news')
+          .select('id,title,text,created_at')
+          .order('created_at',{ ascending:false })
+          .limit(10);
+        if(error){
+          console.error('Supabase news error:',error);
+          return [];
+        }
+        return data || [];
+      }catch(e){
+        console.error('fetchSupabaseNews exception:',e);
+        return [];
+      }
+    }
+
+    async function renderSupabaseNews(){
+      if(!newsList) return;
+      const supa=await fetchSupabaseNews();
+      if(!supa.length) return;
+      const html=supa.map(n=>`
+        <div class="news-card">
+          <h4>${n.title}</h4>
+          <p>${n.text}</p>
+          <div class="muted">${new Date(n.created_at).toLocaleString()}</div>
+        </div>
+      `).join('');
+      newsList.insertAdjacentHTML('beforeend',html);
+    }
+
+    // Auth gate for [data-requires-auth]
+    document.querySelectorAll('[data-requires-auth="true"]').forEach(el=>{
+      el.addEventListener('click',async(e)=>{
+        const { data:sessionData }=await sb.auth.getSession();
+        const user=sessionData?.session?.user;
+        if(!user){
+          e.preventDefault();
+          showToast('Please log in to continue.');
+          window.location.href='/views/pages/login.html';
+        }
+      });
+    });
+
+    // Extra safety for notifications
+    {
+      const { data:initSession }=await sb.auth.getSession();
+      const initUser=initSession?.session?.user;
+      if(initUser) subscribeNotifications(initUser.id);
+    }
+    sb.auth.onAuthStateChange((_evt,session)=>{
+      const u=session?.user;
+      if(u) subscribeNotifications(u.id);
+    });
+
+    // Initial loads
+    await loadDynamicFeaturedServices();
+    await renderJobs();
+    await renderTestimonials();
+    await renderSupabaseNews();
+  </script>
+</body>
+</html>

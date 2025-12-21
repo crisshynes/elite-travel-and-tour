@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — Tracking | Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Admin tracking management for Elite Travel & Tour — manage multi-stage tracking for Work & Pay, Express, and visa processes with full audit trail and documents overview."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <style>
+    :root{
+      --brand:#0077cc;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --light:#f9fafb;
+      --muted:#64748b;
+      --bg:#020617;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.7);
+      --radius:14px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --info:#0ea5e9;
+      --chip-bg:#020617;
+    }
+
+    html,body{
+      height:100%;
+    }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(59,130,246,.26) 0, transparent 45%),
+        #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+      overflow:auto;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      min-height:0;
+    }
+    @media(max-width:900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(31,41,55,.9);
+      background:radial-gradient(circle at top left, #020c28 0, #020617 60%);
+      padding:.8rem .7rem;
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      box-shadow:0 0 0 1px rgba(15,23,42,.9);
+    }
+    .sidebar-header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.2rem .1rem .4rem;
+    }
+    .sidebar-header .logo{
+      display:flex; align-items:center; gap:.4rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; font-size:.98rem;
+    }
+    .sidebar-header .logo i{ color:#38bdf8; }
+    .side-toggle{
+      display:none; border:none; background:rgba(15,23,42,.8);
+      color:#cbd5f5; padding:.35rem .5rem; border-radius:999px; cursor:pointer;
+    }
+    .side-toggle i{ font-size:.9rem; }
+    @media(max-width:900px){
+      .sidebar{
+        position:fixed; inset:0 auto 0 0; width:260px;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:60;
+      }
+      .sidebar.open{ transform:translateX(0); }
+      .side-toggle{ display:inline-flex; }
+    }
+
+    .nav-section{ margin-top:.4rem; }
+    .nav-label{
+      font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+      color:#64748b; margin:.4rem 0 .2rem; padding:0 .2rem;
+    }
+    .nav-list{ list-style:none; padding:0; margin:0; }
+    .nav-link{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.45rem .55rem; border-radius:10px;
+      color:#cbd5f5; text-decoration:none; font-size:.9rem;
+      border:1px solid transparent; cursor:pointer;
+      background:transparent;
+    }
+    .nav-link i{ font-size:.9rem; }
+    .nav-link:hover{
+      background:rgba(30,64,175,.45);
+      border-color:rgba(37,99,235,.6);
+    }
+    .nav-link.active{
+      background:rgba(37,99,235,.9);
+      border-color:rgba(37,99,235,1);
+      color:#e5e7eb;
+      box-shadow:0 10px 28px rgba(37,99,235,.6);
+    }
+
+    .sidebar-footer{
+      margin-top:auto; padding-top:.5rem;
+      border-top:1px solid rgba(30,64,175,.7);
+      font-size:.8rem; color:#64748b;
+    }
+    .sidebar-footer .chip{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.22rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(37,99,235,.7);
+      margin-top:.35rem; font-size:.78rem;
+    }
+    .sidebar-footer .chip i{ color:#22c55e; }
+
+    /* Main */
+    .main{
+      display:flex; flex-direction:column;
+      min-height:0;
+    }
+    .main-header{
+      padding:.55rem 1rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 16px 50px rgba(15,23,42,.8);
+    }
+    .breadcrumbs{
+      display:flex; align-items:center; gap:.35rem; font-size:.85rem; color:#9ca3af;
+    }
+    .breadcrumbs span.current{ color:#e5e7eb; font-weight:500; }
+    .main-header-right{ display:flex; align-items:center; gap:.5rem; }
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.78rem; color:#e5e7eb;
+    }
+
+    .main-body{
+      padding:1rem;
+    }
+
+    .card{
+      background:#020617;
+      border-radius:var(--radius);
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:var(--shadow);
+      padding:1rem;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+    }
+    .section-title{ font-size:1.15rem; margin-bottom:.4rem; }
+    .muted{ color:var(--muted); }
+
+    .toolbar{ display:flex; gap:.5rem; flex-wrap:wrap; margin:.6rem 0; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{ background:var(--brand); color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4); }
+    .btn.brand:hover{ background:var(--brand-600); transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{ border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7); }
+    .btn-sm{ padding:.25rem .55rem; font-size:.8rem; }
+    .btn[disabled]{ opacity:.5; cursor:not-allowed; }
+
+    .input,.textarea,select{
+      width:100%; box-sizing:border-box;
+      padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.9rem; color:#e5e7eb;
+      transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#6b7280; }
+    .input:focus,.textarea:focus,select:focus{
+      outline:none; border-color:#38bdf8;
+      box-shadow:0 0 0 2px rgba(56,189,248,.35);
+      background:#020617;
+    }
+    .textarea{ min-height:80px; resize:vertical; }
+
+    .table{
+      width:100%; border-collapse:collapse; font-size:.85rem;
+    }
+    .table th,.table td{
+      padding:.55rem .45rem; border-bottom:1px solid rgba(31,41,55,.9);
+    }
+    .table th{
+      text-align:left; font-weight:600; color:#9ca3af; font-size:.8rem;
+    }
+    .table tbody tr:hover{ background:#020c28; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.1rem .5rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020c28; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+    .badge.success{ background:rgba(22,163,74,.2); border-color:rgba(22,163,74,.7); color:#bbf7d0; }
+    .badge.danger{ background:rgba(220,38,38,.2); border-color:rgba(220,38,38,.7); color:#fecaca; }
+    .badge.warning{ background:rgba(234,179,8,.18); border-color:rgba(234,179,8,.7); color:#facc15; }
+    .badge.info{ background:rgba(59,130,246,.2); border-color:rgba(59,130,246,.7); color:#bfdbfe; }
+
+    .chip-row{ display:flex; flex-wrap:wrap; gap:.3rem; }
+    .chip{
+      padding:.18rem .5rem; border-radius:999px;
+      font-size:.78rem;
+      background:var(--chip-bg);
+      border:1px solid rgba(55,65,81,.9);
+      color:#e5e7eb;
+    }
+
+    .progress-bar{
+      width:100%;
+      height:6px;
+      border-radius:999px;
+      background:#0b1220;
+      overflow:hidden;
+      margin-bottom:.15rem;
+    }
+    .progress-bar-inner{
+      height:100%;
+      background:linear-gradient(90deg,#22c55e,#38bdf8);
+      width:0%;
+    }
+
+    .mono{ font-family:"JetBrains Mono","SF Mono",ui-monospace,monospace; font-size:.78rem; }
+
+    .split{
+      display:grid;
+      grid-template-columns: minmax(0,1.8fr) minmax(0,1.2fr);
+      gap:.9rem;
+      align-items:flex-start;
+      min-height:0;
+    }
+    @media(max-width:1100px){
+      .split{ grid-template-columns:1fr; }
+    }
+
+    .panel-title{
+      font-size:.95rem;
+      font-weight:600;
+      margin-bottom:.25rem;
+    }
+    .panel-sub{ font-size:.8rem; color:#9ca3af; }
+
+    .pill-soft-small{
+      display:inline-flex; align-items:center; gap:.25rem;
+      padding:.12rem .45rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.75rem; color:#e5e7eb;
+    }
+
+    .timeline{
+      list-style:none;
+      padding:0;
+      margin:.7rem 0 0;
+      border-left:1px solid rgba(51,65,85,.9);
+    }
+    .timeline-item{
+      padding:.45rem 0 .45rem .7rem;
+      position:relative;
+    }
+    .timeline-item::before{
+      content:"";
+      position:absolute;
+      left:-5px; top:.7rem;
+      width:8px; height:8px;
+      border-radius:50%;
+      background:#38bdf8;
+      box-shadow:0 0 0 3px rgba(56,189,248,.3);
+    }
+    .timeline-item-title{
+      font-size:.86rem; font-weight:600;
+    }
+    .timeline-item-meta{
+      font-size:.75rem; color:#9ca3af;
+    }
+    .timeline-item-body{
+      margin-top:.15rem; font-size:.83rem; color:#cbd5f5;
+    }
+
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+      font-size:.85rem;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    .status-text.muted{ color:#9ca3af; font-size:.8rem; }
+    .status-text.success{ color:#4ade80; font-size:.8rem; }
+    .status-text.danger{ color:#fecaca; font-size:.8rem; }
+    .status-text.warning{ color:#facc15; font-size:.8rem; }
+
+    .pill-stage{
+      display:inline-flex; align-items:center; gap:.25rem;
+      padding:.15rem .5rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      color:#e5e7eb;
+    }
+
+    .tag-docs{
+      display:inline-flex;
+      align-items:center;
+      gap:.25rem;
+      padding:.1rem .38rem;
+      border-radius:999px;
+      background:#0f172a;
+      border:1px solid rgba(56,189,248,.6);
+      font-size:.7rem;
+      color:#bfdbfe;
+    }
+
+    .docs-list{
+      margin-top:.4rem;
+      max-height:180px;
+      overflow:auto;
+      border-radius:10px;
+      border:1px solid rgba(31,41,55,.9);
+      background:#020617;
+      padding:.4rem .5rem;
+      font-size:.8rem;
+    }
+    .docs-list-empty{
+      color:#64748b;
+      font-size:.8rem;
+    }
+    .docs-item{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:.4rem; padding:.25rem 0;
+      border-bottom:1px solid rgba(31,41,55,.7);
+    }
+    .docs-item:last-child{ border-bottom:none; }
+    .docs-item-main{
+      display:flex; flex-direction:column; gap:.1rem;
+    }
+    .docs-item-title{ font-weight:500; }
+    .docs-item-meta{ font-size:.75rem; color:#9ca3af; }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.7);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:80;
+    }
+    .modal .card{
+      max-width:520px;
+      width:94%;
+      max-height:80vh;
+      overflow:auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/views/admin/index.html" class="logo">
+          <i class="fa-solid fa-compass"></i> <span>Elite Admin</span>
+        </a>
+        <button class="side-toggle" id="sideToggle"><i class="fa fa-xmark"></i></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/index.html"><i class="fa fa-gauge-high"></i> Dashboard</a></li>
+          <li><a class="nav-link" href="/views/admin/analytics.html"><i class="fa fa-chart-line"></i> Analytics</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Jobs & Services</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/createjobs.html"><i class="fa fa-plus"></i> Create Job</a></li>
+          <li><a class="nav-link" href="/views/admin/jobs.html"><i class="fa fa-briefcase"></i> Jobs</a></li>
+          <li><a class="nav-link" href="/views/admin/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+          <li><a class="nav-link" href="/views/admin/activeprocess.html"><i class="fa fa-spinner"></i> Active processes</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Users & Activity</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/users.html"><i class="fa fa-users"></i> Users</a></li>
+          <li><a class="nav-link" href="/views/admin/user-details.html"><i class="fa fa-id-card"></i> User details</a></li>
+          <li><a class="nav-link" href="/views/admin/activeusers.html"><i class="fa fa-user-check"></i> Active users</a></li>
+          <li><a class="nav-link active" href="/views/admin/tracking.html"><i class="fa fa-location-crosshairs"></i> Tracking</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Transactions</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/payments.html"><i class="fa fa-credit-card"></i> Payments</a></li>
+          <li><a class="nav-link" href="/views/admin/appointments.html"><i class="fa fa-calendar"></i> Appointments</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Content & Feedback</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/notifications.html"><i class="fa fa-bell"></i> Notifications</a></li>
+          <li><a class="nav-link" href="/views/admin/testimonials.html"><i class="fa fa-star"></i> Testimonials</a></li>
+          <li><a class="nav-link" href="/views/admin/contacts.html"><i class="fa fa-envelope-open-text"></i> Contact messages</a></li>
+          <li><a class="nav-link" href="/views/admin/applications.html"><i class="fa fa-file-signature"></i> Applications</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Session</div>
+        <div class="chip">
+          <i class="fa fa-user-shield"></i> <span id="adminEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="breadcrumbs">
+          <button class="side-toggle" id="openSideOnMobile"><i class="fa fa-bars"></i></button>
+          <span>Admin</span> <span>/</span>
+          <span class="current">Tracking</span>
+        </div>
+        <div class="main-header-right">
+          <span class="pill-soft"><i class="fa fa-location-crosshairs"></i> Multi-stage tracking</span>
+          <button class="btn outline btn-sm" id="adminLogout"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="main-body">
+        <article class="card">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h2 class="section-title">Application tracking</h2>
+              <p class="muted" style="font-size:.85rem;">
+                Control premium tracking stages for Work & Pay, Express, and visa processes. Changes here reflect instantly on the public tracking page and user profile.
+              </p>
+            </div>
+            <div class="chip-row">
+              <span class="chip"><i class="fa fa-database"></i> applications + jobs + users</span>
+              <span class="chip"><i class="fa fa-bars-progress"></i> multi-stage journey</span>
+              <span class="chip"><i class="fa fa-file-alt"></i> progress JSON + tracking logs</span>
+              <span class="chip"><i class="fa fa-folder-open"></i> documents overview</span>
+            </div>
+          </div>
+
+          <div class="split" style="margin-top:.8rem;">
+            <!-- LEFT: TABLE -->
+            <section>
+              <div class="panel-title">Tracking list</div>
+              <p class="panel-sub" id="trackStatusText">Loading tracking records...</p>
+
+              <div class="toolbar" style="margin-top:.4rem;">
+                <input id="trackSearch" class="input" placeholder="Search tracking ID, email, job, or applicant" style="max-width:240px;">
+                <select id="trackStageFilter" class="input" style="max-width:150px;">
+                  <option value="">All stages</option>
+                  <option value="application">Application</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="documents">Documents stage</option>
+                  <option value="visa_processing">Visa processing</option>
+                  <option value="completed">Completed</option>
+                </select>
+                <select id="trackStatusFilter" class="input" style="max-width:150px;">
+                  <option value="">All statuses</option>
+                  <option value="submitted">Submitted</option>
+                  <option value="reviewing">Reviewing</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="completed">Completed</option>
+                </select>
+                <button class="btn outline btn-sm" id="trackRefreshBtn"><i class="fa fa-rotate-right"></i> Reload</button>
+              </div>
+
+              <div style="border-radius:14px;border:1px solid rgba(31,41,55,.9);overflow:hidden;margin-top:.4rem;">
+                <table class="table" id="trackTable">
+                  <thead>
+                    <tr>
+                      <th>Tracking ID</th>
+                      <th>Applicant</th>
+                      <th>Job</th>
+                      <th>Stage</th>
+                      <th>Status</th>
+                      <th>Progress</th>
+                      <th>Updated</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td colspan="8" class="muted">Loading...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <!-- RIGHT: DETAIL PANEL -->
+            <section>
+              <div class="panel-title">Selected application</div>
+              <p class="panel-sub">Select a row to view details, documents, accept, request documents, and push stages forward.</p>
+
+              <div id="detailCard" style="margin-top:.5rem;border-radius:var(--radius);border:1px solid rgba(31,41,55,.9);background:#020617;padding:.75rem .8rem;">
+                <div id="detailEmpty">
+                  <p class="muted" style="font-size:.85rem;">No application selected. Choose a row from the list on the left.</p>
+                </div>
+
+                <div id="detailContent" style="display:none;">
+                  <!-- top summary -->
+                  <div style="display:flex;justify-content:space-between;gap:.5rem;align-items:flex-start;flex-wrap:wrap;">
+                    <div>
+                      <div class="mono" id="detailTrackingId">—</div>
+                      <div class="muted" style="font-size:.8rem;" id="detailApplicant">—</div>
+                      <div class="muted" style="font-size:.78rem;margin-top:.1rem;" id="detailJob">—</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div id="detailStagePill" class="pill-soft-small"><i class="fa fa-bars-progress"></i> Stage</div>
+                      <div style="margin-top:.2rem;" id="detailStatusPill">
+                        <span class="badge">Status</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- progress -->
+                  <div style="margin-top:.6rem;">
+                    <div class="muted" style="font-size:.8rem;margin-bottom:.2rem;">Progress</div>
+                    <div class="progress-bar">
+                      <div class="progress-bar-inner" id="detailProgressBar"></div>
+                    </div>
+                    <div class="muted" style="font-size:.76rem;margin-top:.1rem;">
+                      <span id="detailProgressText">0%</span>
+                    </div>
+                  </div>
+
+                  <!-- tags -->
+                  <div style="margin-top:.7rem;display:flex;flex-wrap:wrap;gap:.3rem;" id="detailTags"></div>
+
+                  <!-- documents -->
+                  <div style="margin-top:.8rem;">
+                    <div class="panel-title" style="font-size:.9rem;">Documents</div>
+                    <p class="muted" style="font-size:.8rem;">All documents uploaded by the user for this application.</p>
+                    <div id="detailDocs" class="docs-list">
+                      <div class="docs-list-empty">No documents linked yet.</div>
+                    </div>
+                  </div>
+
+                  <!-- timeline -->
+                  <div style="margin-top:.8rem;">
+                    <div class="panel-title" style="font-size:.9rem;">Timeline / Audit trail</div>
+                    <ul class="timeline" id="detailTimeline"></ul>
+                  </div>
+
+                  <!-- admin form -->
+                  <form id="trackForm" style="margin-top:.8rem;">
+                    <div class="panel-title" style="font-size:.9rem;">Admin actions</div>
+                    <div class="muted" style="font-size:.8rem;">
+                      Update stage, status, and add an audit note. This will reflect on the public tracking page, update tracking logs, and notify the user.
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;margin-top:.5rem;">
+                      <div>
+                        <label class="muted" style="font-size:.8rem;">Stage</label>
+                        <select id="trackStage" class="input">
+                          <option value="application">Application</option>
+                          <option value="accepted">Accepted</option>
+                          <option value="documents">Documents stage</option>
+                          <option value="visa_processing">Visa processing</option>
+                          <option value="completed">Completed</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="muted" style="font-size:.8rem;">Status</label>
+                        <select id="trackStatus" class="input">
+                          <option value="submitted">Submitted</option>
+                          <option value="reviewing">Reviewing</option>
+                          <option value="accepted">Accepted</option>
+                          <option value="rejected">Rejected</option>
+                          <option value="completed">Completed</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="muted" style="font-size:.8rem;">Progress (%)</label>
+                        <input id="trackProgress" class="input" type="number" min="0" max="100" value="0">
+                      </div>
+                      <div>
+                        <label class="muted" style="font-size:.8rem;">Tracking ID</label>
+                        <div style="display:flex;gap:.4rem;">
+                          <input id="trackPublicId" class="input" placeholder="ET-WP-2025-000123">
+                          <button type="button" class="btn outline btn-sm" id="trackGenerateId"><i class="fa fa-wand-magic-sparkles"></i></button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style="margin-top:.6rem;">
+                      <label class="muted" style="font-size:.8rem;">Admin note (for audit trail)</label>
+                      <textarea id="trackNote" class="textarea" placeholder="e.g., Accepted, awaiting payment."></textarea>
+                    </div>
+
+                    <p id="trackFormStatus" class="status-text muted" style="margin-top:.3rem;"></p>
+
+                    <div class="toolbar" style="margin-top:.6rem;justify-content:space-between;flex-wrap:wrap;">
+                      <div class="toolbar" style="gap:.35rem;">
+                        <button type="button" class="btn outline btn-sm" id="trackMarkAccepted"><i class="fa fa-check"></i> Accept</button>
+                        <button type="button" class="btn outline btn-sm" id="trackMarkDocs"><i class="fa fa-file-arrow-up"></i> Docs stage</button>
+                        <button type="button" class="btn outline btn-sm" id="trackMarkVisa"><i class="fa fa-passport"></i> Visa stage</button>
+                        <button type="button" class="btn outline btn-sm" id="trackMarkCompleted"><i class="fa fa-flag-checkered"></i> Complete</button>
+                      </div>
+                      <div class="toolbar" style="gap:.35rem;">
+                        <button type="button" class="btn outline btn-sm" id="trackViewLogsBtn"><i class="fa fa-clock-rotate-left"></i> View JSON</button>
+                        <button type="submit" class="btn brand btn-sm" id="trackModalSave"><i class="fa fa-floppy-disk"></i> Save changes</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </section>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Logs modal -->
+  <div class="modal" id="logsModal">
+    <section class="card">
+      <h3 style="margin-top:0;">Progress JSON view</h3>
+      <p class="muted" style="font-size:.8rem;">Raw progress JSON for debugging and advanced audit. This is the same data the public tracking page reads.</p>
+      <pre id="logsContainer" style="margin-top:.6rem;max-height:50vh;overflow:auto;background:#020617;border-radius:10px;border:1px solid rgba(31,41,55,.9);padding:.5rem;font-size:.8rem;"></pre>
+      <div class="toolbar" style="margin-top:.7rem;justify-content:flex-end;">
+        <button class="btn outline btn-sm" id="logsCloseBtn"><i class="fa fa-xmark"></i> Close</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <i class="fa fa-info-circle"></i><span id="toastText">Notice</span>
+  </div>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(message, ms=2500){
+      if(!toast || !toastText) return;
+      toastText.textContent=message;
+      toast.classList.add('show');
+      setTimeout(()=> toast.classList.remove('show'),ms);
+    }
+
+    /* Sidebar mobile toggle */
+    const sidebar=document.getElementById('sidebar');
+    const sideToggle=document.getElementById('sideToggle');
+    const openSideOnMobile=document.getElementById('openSideOnMobile');
+    sideToggle?.addEventListener('click',()=> sidebar.classList.remove('open'));
+    openSideOnMobile?.addEventListener('click',()=> sidebar.classList.add('open'));
+
+    /* Auth guard */
+    const adminEmailSpan=document.getElementById('adminEmail');
+    const adminLogout=document.getElementById('adminLogout');
+
+    const { data:sessionData } = await sb.auth.getSession();
+    const session=sessionData.session;
+    const admin=session?.user;
+
+    if(!admin){
+      showToast('Admin session required.');
+      window.location.href='/views/pages/login.html';
+    }else{
+      adminEmailSpan.textContent=admin.email;
+    }
+
+    adminLogout?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Tracking logic – using applications as source of truth */
+
+    const trackTableBody=document.querySelector('#trackTable tbody');
+    const trackStatusText=document.getElementById('trackStatusText');
+    const trackRefreshBtn=document.getElementById('trackRefreshBtn');
+    const trackSearch=document.getElementById('trackSearch');
+    const trackStatusFilter=document.getElementById('trackStatusFilter');
+    const trackStageFilter=document.getElementById('trackStageFilter');
+
+    const detailEmpty=document.getElementById('detailEmpty');
+    const detailContent=document.getElementById('detailContent');
+    const detailTrackingId=document.getElementById('detailTrackingId');
+    const detailApplicant=document.getElementById('detailApplicant');
+    const detailJob=document.getElementById('detailJob');
+    const detailStagePill=document.getElementById('detailStagePill');
+    const detailStatusPill=document.getElementById('detailStatusPill');
+    const detailProgressBar=document.getElementById('detailProgressBar');
+    const detailProgressText=document.getElementById('detailProgressText');
+    const detailTags=document.getElementById('detailTags');
+    const detailTimeline=document.getElementById('detailTimeline');
+    const detailDocs=document.getElementById('detailDocs');
+
+    const trackForm=document.getElementById('trackForm');
+    const trackStage=document.getElementById('trackStage');
+    const trackStatus=document.getElementById('trackStatus');
+    const trackProgress=document.getElementById('trackProgress');
+    const trackPublicId=document.getElementById('trackPublicId');
+    const trackNote=document.getElementById('trackNote');
+    const trackFormStatus=document.getElementById('trackFormStatus');
+
+    const trackGenerateId=document.getElementById('trackGenerateId');
+    const trackMarkAccepted=document.getElementById('trackMarkAccepted');
+    const trackMarkDocs=document.getElementById('trackMarkDocs');
+    const trackMarkVisa=document.getElementById('trackMarkVisa');
+    const trackMarkCompleted=document.getElementById('trackMarkCompleted');
+    const trackViewLogsBtn=document.getElementById('trackViewLogsBtn');
+    const trackModalSave=document.getElementById('trackModalSave');
+
+    const logsModal=document.getElementById('logsModal');
+    const logsContainer=document.getElementById('logsContainer');
+    const logsCloseBtn=document.getElementById('logsCloseBtn');
+
+    let trackCache=[];
+    let currentApp=null;
+
+    function setTrackStatus(msg,type='muted'){
+      trackStatusText.textContent=msg||'';
+      trackStatusText.className='status-text '+type;
+    }
+
+    function progressFromStageAndStatus(stage,status){
+      if(stage==='completed' || status==='completed') return 100;
+      if(stage==='visa_processing') return 80;
+      if(stage==='documents') return 55;
+      if(stage==='accepted') return 35;
+      if(stage==='application') return 10;
+      return 10;
+    }
+
+    function deriveStageFromApp(app){
+      const status=app.status || 'submitted';
+      const steps = Array.isArray(app.progress) ? app.progress : [];
+      const keys=new Set(steps.map(s=>(s.step||s.status||'').toLowerCase()));
+
+      if(status==='completed' || keys.has('completed') || keys.has('departure')) return 'completed';
+      if(keys.has('visa_submitted') || keys.has('visa_approved') || keys.has('process_handling')) return 'visa_processing';
+      if(keys.has('documents_submitted') || keys.has('docs_submitted') || keys.has('documents')) return 'documents';
+      if(status==='accepted') return 'accepted';
+      return 'application';
+    }
+
+    function stageLabel(stage){
+      switch(stage){
+        case 'accepted': return 'Accepted (awaiting payment)';
+        case 'documents': return 'Documents stage';
+        case 'visa_processing': return 'Visa processing';
+        case 'completed': return 'Completed';
+        default: return 'Application';
+      }
+    }
+
+    function statusBadge(status){
+      const base='<span class="badge';
+      if(status==='completed') return base+' success">'+status+'</span>';
+      if(status==='rejected') return base+' danger">'+status+'</span>';
+      if(status==='accepted') return base+' info">'+status+'</span>';
+      if(status==='reviewing') return base+' warning">'+status+'</span>';
+      return base+'">'+(status||'submitted')+'</span>';
+    }
+
+    function renderTable(){
+      const q=trackSearch.value.trim().toLowerCase();
+      const statusFilter=trackStatusFilter.value;
+      const stageFilter=trackStageFilter.value;
+
+      const list=trackCache.filter(app=>{
+        const stage=deriveStageFromApp(app);
+        if(statusFilter && app.status!==statusFilter) return false;
+        if(stageFilter && stage!==stageFilter) return false;
+
+        if(q){
+          const details = app.details || {};
+          const applicant = details.applicant || {};
+          const hay=(
+            (app.tracking_id||'')+' '+
+            (app.jobs?.title||'')+' '+
+            (app.user_email||'')+' '+
+            (app.id||'')+' '+
+            (app.plan||'')+' '+
+            (app.application_type||'')+' '+
+            (details.fullname||'')+' '+
+            (details.full_name||'')+' '+
+            (details.name||'')+' '+
+            (details.applicant_name||'')+' '+
+            (applicant.name||'')+' '+
+            (applicant.email||'')+' '+
+            (applicant.phone||'')
+          ).toLowerCase();
+          if(!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if(!list.length){
+        trackTableBody.innerHTML='<tr><td colspan="8" class="muted">No tracking records match the filters.</td></tr>';
+        setTrackStatus('No records match the search/filter.','muted');
+        return;
+      }
+
+      trackTableBody.innerHTML=list.map(app=>{
+        const stage=deriveStageFromApp(app);
+        const dt=app.updated_at ? new Date(app.updated_at).toLocaleString() : (app.created_at ? new Date(app.created_at).toLocaleString():'—');
+        const prog=progressFromStageAndStatus(stage,app.status);
+        const details=app.details || {};
+        const applicant=details.applicant || {};
+        const applicantName = applicant.name || details.fullname || details.full_name || details.name || 'Applicant';
+        const jobTitle=app.jobs?.title || '(no job)';
+        return `
+          <tr data-id="${app.id}">
+            <td class="mono">${app.tracking_id || '—'}</td>
+            <td>
+              <div>${applicantName}</div>
+              <div class="muted" style="font-size:.78rem;">${app.user_email || applicant.email || '—'}</div>
+            </td>
+            <td>
+              <div>${jobTitle}</div>
+              <div class="muted" style="font-size:.78rem;">${app.plan || '—'} · ${app.application_type || 'job'}</div>
+            </td>
+            <td><span class="pill-stage"><i class="fa fa-bars-progress"></i> ${stageLabel(stage)}</span></td>
+            <td>${statusBadge(app.status)}</td>
+            <td>
+              <div class="progress-bar"><div class="progress-bar-inner" style="width:${prog}%"></div></div>
+              <span class="muted" style="font-size:.75rem;">${prog}%</span>
+            </td>
+            <td>${dt}</td>
+            <td>
+              <button class="btn outline btn-sm" data-action="edit"><i class="fa fa-pen"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      setTrackStatus(`${list.length} record${list.length===1?'':'s'} shown.`,'muted');
+    }
+
+    async function loadTracking(){
+      trackTableBody.innerHTML='<tr><td colspan="8" class="muted">Loading tracking records...</td></tr>';
+      setTrackStatus('Loading...','muted');
+      try{
+        const { data:rows, error }=await sb
+          .from('applications')
+          .select(`
+            id,
+            user_id,
+            job_id,
+            tracking_id,
+            status,
+            plan,
+            application_type,
+            progress,
+            details,
+            created_at,
+            updated_at,
+            jobs:job_id ( id, title, country, city ),
+            users:user_id ( email )
+          `)
+          .not('tracking_id','is',null)
+          .order('updated_at',{ ascending:false })
+          .limit(300);
+        if(error) throw error;
+
+        trackCache=(rows||[]).map(r=>({
+          ...r,
+          user_email: r.users?.email || null
+        }));
+        renderTable();
+      }catch(e){
+        console.error(e);
+        trackTableBody.innerHTML='<tr><td colspan="8" class="muted">Failed to load tracking records.</td></tr>';
+        setTrackStatus('Failed to load tracking from database.','danger');
+      }
+    }
+
+    async function loadDocumentsForApp(app){
+      detailDocs.innerHTML='<div class="docs-list-empty">Loading documents...</div>';
+      if(!app || !app.id) return;
+      try{
+        const { data:docs, error } = await sb
+          .from('documents')
+          .select('id,file_name,file_url,file_type,category,size_bytes,created_at')
+          .eq('application_id', app.id)
+          .order('created_at',{ ascending:false });
+        if(error) throw error;
+        const list=docs || [];
+        if(!list.length){
+          detailDocs.innerHTML='<div class="docs-list-empty">No documents linked yet.</div>';
+          return;
+        }
+        detailDocs.innerHTML=list.map(d=>{
+          const created = d.created_at ? new Date(d.created_at).toLocaleString() : '';
+          const size = d.size_bytes ? Math.round(d.size_bytes/1024) + ' KB' : '';
+          const cat = d.category || (d.file_type || '').split('/')[0] || 'document';
+          return `
+            <div class="docs-item">
+              <div class="docs-item-main">
+                <div class="docs-item-title">${d.file_name}</div>
+                <div class="docs-item-meta">
+                  <span>${cat}</span>
+                  ${created ? ` • <span>${created}</span>` : ''}
+                  ${size ? ` • <span>${size}</span>` : ''}
+                </div>
+              </div>
+              <div>
+                <a href="${d.file_url}" target="_blank" rel="noopener" class="btn outline btn-sm">
+                  <i class="fa fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }catch(e){
+        console.error(e);
+        detailDocs.innerHTML='<div class="docs-list-empty">Failed to load documents.</div>';
+      }
+    }
+
+    function setDetail(app){
+      currentApp = app;
+      if(!app){
+        detailEmpty.style.display='block';
+        detailContent.style.display='none';
+        return;
+      }
+      detailEmpty.style.display='none';
+      detailContent.style.display='block';
+
+      const stage=deriveStageFromApp(app);
+      const prog=progressFromStageAndStatus(stage,app.status);
+
+      detailTrackingId.textContent = app.tracking_id || 'No tracking ID';
+      const details = app.details || {};
+      const applicant = details.applicant || {};
+      const applicantName = applicant.name || details.fullname || details.full_name || details.name || 'Applicant';
+      const applicantEmail = app.user_email || applicant.email || '—';
+      detailApplicant.textContent = `${applicantName} • ${applicantEmail}`;
+
+      const jobTitle=app.jobs?.title || '(No job)';
+      const jobLocation = app.jobs?.city && app.jobs?.country
+        ? `${app.jobs.city}, ${app.jobs.country}`
+        : app.jobs?.country || app.jobs?.city || '';
+      detailJob.textContent = jobLocation ? `${jobTitle} • ${jobLocation}` : jobTitle;
+
+      detailStagePill.innerHTML = `<i class="fa fa-bars-progress"></i> ${stageLabel(stage)}`;
+      detailStatusPill.innerHTML = statusBadge(app.status);
+
+      detailProgressBar.style.width = prog+'%';
+      detailProgressText.textContent = prog+'%';
+
+      const tags=[];
+      if(app.plan){
+        const pl = app.plan==='work'?'Work & Pay':app.plan==='express'?'Express':app.plan;
+        tags.push(`<span class="pill-soft-small"><i class="fa fa-layer-group"></i> ${pl}</span>`);
+      }
+      if(app.application_type){
+        tags.push(`<span class="pill-soft-small"><i class="fa fa-briefcase"></i> ${app.application_type}</span>`);
+      }
+      tags.push(`<span class="pill-soft-small"><i class="fa fa-user"></i> App ID: ${app.id.slice(0,8)}…</span>`);
+      if(app.tracking_id){
+        tags.push(`<span class="pill-soft-small"><i class="fa fa-location-crosshairs"></i> Tracking</span>`);
+      }
+
+      detailTags.innerHTML = tags.join('');
+
+      const progressArr = Array.isArray(app.progress) ? app.progress : [];
+      if(!progressArr.length){
+        detailTimeline.innerHTML='<li class="timeline-item"><div class="timeline-item-title">No progress entries yet</div><div class="timeline-item-body muted">Use admin actions to add stages. Public tracking will follow.</div></li>';
+      }else{
+        detailTimeline.innerHTML = progressArr.slice().reverse().map(item=>{
+          const step = item.step || item.status || 'update';
+          const at = item.at || item.time || null;
+          const info = item.note || item.message || '';
+          const label = step.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+          const when = at ? new Date(at).toLocaleString() : '';
+          return `
+            <li class="timeline-item">
+              <div class="timeline-item-title">${label}</div>
+              <div class="timeline-item-meta">${when}</div>
+              ${info ? `<div class="timeline-item-body">${info}</div>` : ''}
+            </li>
+          `;
+        }).join('');
+      }
+
+      trackStage.value = stage;
+      trackStatus.value = app.status || 'submitted';
+      trackProgress.value = prog;
+      trackPublicId.value = app.tracking_id || '';
+      trackNote.value='';
+      trackFormStatus.textContent='';
+      trackFormStatus.className='status-text muted';
+
+      loadDocumentsForApp(app);
+    }
+
+    trackTableBody.addEventListener('click',(e)=>{
+      const btn=e.target.closest('button[data-action="edit"]');
+      if(!btn) return;
+      const tr=btn.closest('tr');
+      const id=tr.dataset.id;
+      const row=trackCache.find(x=>String(x.id)===String(id));
+      if(!row) return;
+      setDetail(row);
+    });
+
+    trackSearch.addEventListener('input',renderTable);
+    trackStatusFilter.addEventListener('change',renderTable);
+    trackStageFilter.addEventListener('change',renderTable);
+    trackRefreshBtn.addEventListener('click',loadTracking);
+
+    function generateTrackingId(plan='work'){
+      const prefix = plan === 'express' ? 'ET-EX' : 'ET-WP';
+      const year = new Date().getFullYear();
+      const random = Math.floor(100000 + Math.random()*900000);
+      return `${prefix}-${year}-${random}`;
+    }
+
+    trackGenerateId.addEventListener('click',()=>{
+      if(!currentApp){
+        trackFormStatus.textContent='Select an application first.';
+        trackFormStatus.className='status-text warning';
+        return;
+      }
+      const newId = generateTrackingId(currentApp.plan || 'work');
+      trackPublicId.value = newId;
+      trackFormStatus.textContent='Generated new tracking ID — remember to save.';
+      trackFormStatus.className='status-text muted';
+    });
+
+    function applyPreset(stage){
+      if(!currentApp) return;
+      trackStage.value = stage;
+      if(stage==='accepted'){
+        trackStatus.value='accepted';
+      }else if(stage==='documents'){
+        trackStatus.value='reviewing';
+      }else if(stage==='visa_processing'){
+        trackStatus.value='reviewing';
+      }else if(stage==='completed'){
+        trackStatus.value='completed';
+      }
+      const prog=progressFromStageAndStatus(stage,trackStatus.value);
+      trackProgress.value=prog;
+    }
+
+    trackMarkAccepted.addEventListener('click',()=>{
+      if(!currentApp){
+        trackFormStatus.textContent='Select an application first.';
+        trackFormStatus.className='status-text warning';
+        return;
+      }
+      applyPreset('accepted');
+      if(!trackPublicId.value.trim()){
+        trackPublicId.value = generateTrackingId(currentApp.plan || 'work');
+      }
+      if(!trackNote.value.trim()){
+        trackNote.value='Application accepted. Awaiting payment to proceed.';
+      }
+    });
+
+    trackMarkDocs.addEventListener('click',()=>{
+      if(!currentApp){
+        trackFormStatus.textContent='Select an application first.';
+        trackFormStatus.className='status-text warning';
+        return;
+      }
+      applyPreset('documents');
+      if(!trackNote.value.trim()){
+        trackNote.value='Documents submitted or requested; moved to documents stage.';
+      }
+    });
+
+    trackMarkVisa.addEventListener('click',()=>{
+      if(!currentApp){
+        trackFormStatus.textContent='Select an application first.';
+        trackFormStatus.className='status-text warning';
+        return;
+      }
+      applyPreset('visa_processing');
+      if(!trackNote.value.trim()){
+        trackNote.value='Moved to visa / process handling stage.';
+      }
+    });
+
+    trackMarkCompleted.addEventListener('click',()=>{
+      if(!currentApp){
+        trackFormStatus.textContent='Select an application first.';
+        trackFormStatus.className='status-text warning';
+        return;
+      }
+      applyPreset('completed');
+      if(!trackNote.value.trim()){
+        trackNote.value='Marked as completed.';
+      }
+    });
+
+    async function createUserNotification(app, stage, status, trackingId, note){
+      try{
+        const userId = app.user_id;
+        const email = app.user_email || null;
+        if(!userId && !email) return;
+
+        const stageText = stageLabel(stage);
+        const title = 'Your application status was updated';
+        const category = 'tracking';
+        const importance = status === 'completed' ? 'high' : 'normal';
+
+        const jobTitle = app.jobs?.title || 'your application';
+        const parts = [];
+        if(trackingId){
+          parts.push(`Tracking ID: ${trackingId}.`);
+        }
+        parts.push(`${jobTitle} — stage: ${stageText}, status: ${status}.`);
+        if(stage === 'accepted'){
+          parts.push('Please complete payment to continue to the documents stage.');
+        }
+        if(note){
+          parts.push(`Note: ${note}`);
+        }
+
+        const message = parts.join(' ');
+
+        await sb.from('notifications').insert({
+          user_id: userId || null,
+          user_email: email || null,
+          title,
+          category,
+          message,
+          importance,
+          email_ready: false
+        });
+      }catch(e){
+        console.warn('Failed to create notification', e);
+      }
+    }
+
+    async function upsertTrackingAndLog(app, stage, status, progressPercent, trackingId, note){
+      if(!app || !app.id) return;
+
+      const jobTitle = app.jobs?.title || null;
+      const metadata = {
+        plan: app.plan || null,
+        application_type: app.application_type || null
+      };
+
+      const { data: existing, error: trackErr } = await sb
+        .from('tracking')
+        .select('id')
+        .eq('application_id', app.id)
+        .maybeSingle();
+
+      if(trackErr){
+        console.warn('Error checking tracking record', trackErr);
+      }
+
+      let trackingIdDb = existing?.id || null;
+
+      if(!trackingIdDb){
+        const insertPayload = {
+          user_id: app.user_id,
+          job_id: app.job_id,
+          application_id: app.id,
+          public_id: trackingId || null,
+          user_email: app.user_email || null,
+          job_title: jobTitle,
+          current_stage: stage,
+          status,
+          progress_percent: progressPercent,
+          metadata
+        };
+        const { data: created, error: createErr } = await sb
+          .from('tracking')
+          .insert(insertPayload)
+          .select('id')
+          .single();
+        if(createErr) throw createErr;
+        trackingIdDb = created.id;
+      }else{
+        const updatePayload = {
+          public_id: trackingId || null,
+          current_stage: stage,
+          status,
+          progress_percent: progressPercent,
+          job_title: jobTitle,
+          metadata
+        };
+        const { error: updErr } = await sb
+          .from('tracking')
+          .update(updatePayload)
+          .eq('id', trackingIdDb);
+        if(updErr) throw updErr;
+      }
+
+      const logMessage = note || `Stage updated to ${stage}, status to ${status}.`;
+      const { error: logErr } = await sb
+        .from('tracking_logs')
+        .insert({
+          tracking_id: trackingIdDb,
+          stage,
+          message: logMessage,
+          admin_id: admin?.id || null
+        });
+
+      if(logErr) throw logErr;
+    }
+
+    trackForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      if(!currentApp){
+        trackFormStatus.textContent='Select an application first.';
+        trackFormStatus.className='status-text warning';
+        return;
+      }
+
+      const stage = trackStage.value;
+      const status = trackStatus.value;
+      const progressRaw = trackProgress.value.trim();
+      const trackingId = trackPublicId.value.trim() || null;
+      const note = trackNote.value.trim();
+
+      let progress = parseInt(progressRaw,10);
+      if(Number.isNaN(progress) || progress<0) progress=0;
+      if(progress>100) progress=100;
+
+      trackFormStatus.textContent='Saving tracking, logging changes, and notifying user...';
+      trackFormStatus.className='status-text muted';
+      trackModalSave.disabled=true;
+
+      try{
+        const oldProgress = Array.isArray(currentApp.progress) ? currentApp.progress : [];
+        const newProgress = [...oldProgress];
+
+        const stepLabelMap = {
+          application:'application_stage',
+          accepted:'accepted',
+          documents:'documents_submitted',
+          visa_processing:'visa_processing',
+          completed:'completed'
+        };
+        const step = stepLabelMap[stage] || 'update';
+
+        const entry = {
+          step,
+          at:new Date().toISOString()
+        };
+        if(note){
+          entry.note = note;
+        }
+        newProgress.push(entry);
+
+        const oldDetails=currentApp.details || {};
+        const newDetails = { ...oldDetails };
+        if(stage==='accepted' && !newDetails.accepted_at){
+          newDetails.accepted_at = new Date().toISOString();
+        }
+
+        const { data:updated, error } = await sb
+          .from('applications')
+          .update({
+            tracking_id: trackingId,
+            status,
+            progress: newProgress,
+            details: newDetails
+          })
+          .eq('id', currentApp.id)
+          .select(`
+            id,
+            user_id,
+            job_id,
+            tracking_id,
+            status,
+            plan,
+            application_type,
+            progress,
+            details,
+            created_at,
+            updated_at,
+            jobs:job_id ( id, title, country, city ),
+            users:user_id ( email )
+          `)
+          .single();
+        if(error) throw error;
+
+        const updatedApp = {
+          ...updated,
+          user_email: updated.users?.email || null
+        };
+
+        await upsertTrackingAndLog(updatedApp, stage, status, progress, trackingId, note);
+        await createUserNotification(updatedApp, stage, status, trackingId, note);
+
+        const idx = trackCache.findIndex(x=>x.id===updatedApp.id);
+        if(idx>=0){
+          trackCache[idx]=updatedApp;
+        }else{
+          trackCache.unshift(updatedApp);
+        }
+
+        setDetail(updatedApp);
+        renderTable();
+
+        trackFormStatus.textContent='Tracking saved, log recorded, and user notified.';
+        trackFormStatus.className='status-text success';
+        showToast('Tracking updated and log created.');
+      }catch(e){
+        console.error(e);
+        trackFormStatus.textContent=e.message || 'Failed to save tracking.';
+        trackFormStatus.className='status-text danger';
+        showToast('Failed to save tracking.',3000);
+      }finally{
+        trackModalSave.disabled=false;
+      }
+    });
+
+    trackViewLogsBtn.addEventListener('click',()=>{
+      if(!currentApp){
+        trackFormStatus.textContent='Select an application first.';
+        trackFormStatus.className='status-text warning';
+        return;
+      }
+      logsContainer.textContent = JSON.stringify(currentApp.progress || [],null,2);
+      logsModal.style.display='flex';
+      trapFocus(logsModal);
+    });
+
+    function trapFocus(container){
+      const focusable=container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      const first=focusable[0];
+      const last=focusable[focusable.length-1];
+      function handler(e){
+        if(e.key!=='Tab') return;
+        if(e.shiftKey){
+          if(document.activeElement===first){ e.preventDefault(); last.focus(); }
+        }else{
+          if(document.activeElement===last){ e.preventDefault(); first.focus(); }
+        }
+      }
+      container.addEventListener('keydown',handler,{ once:true });
+      first && first.focus();
+    }
+
+    logsCloseBtn.addEventListener('click',()=>{ logsModal.style.display='none'; });
+    logsModal.addEventListener('click',(e)=>{ if(e.target===logsModal) logsModal.style.display='none'; });
+
+    await loadTracking();
+  </script>
+</body>
+</html>

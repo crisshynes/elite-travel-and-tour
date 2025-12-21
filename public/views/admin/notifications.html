@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — Notifications | Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Admin notifications center for Elite Travel & Tour — send targeted or broadcast notifications and review history."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <style>
+    :root{
+      --brand:#0077cc;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --light:#fff;
+      --muted:#64748b;
+      --bg:#020617;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.7);
+      --radius:14px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --info:#0ea5e9;
+      --chip-bg:#0b1220;
+    }
+
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(59,130,246,.26) 0, transparent 45%),
+        #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      min-height:0;
+    }
+    @media(max-width:900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(31,41,55,.9);
+      background:radial-gradient(circle at top left, #020c28 0, #020617 60%);
+      padding:.8rem .7rem;
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      box-shadow:0 0 0 1px rgba(15,23,42,.9);
+    }
+    .sidebar-header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.2rem .1rem .4rem;
+    }
+    .sidebar-header .logo{
+      display:flex; align-items:center; gap:.4rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; font-size:.98rem;
+    }
+    .sidebar-header .logo i{ color:#38bdf8; }
+    .side-toggle{
+      display:none; border:none; background:rgba(15,23,42,.8);
+      color:#cbd5f5; padding:.35rem .5rem; border-radius:999px; cursor:pointer;
+    }
+    .side-toggle i{ font-size:.9rem; }
+    @media(max-width:900px){
+      .sidebar{
+        position:fixed; inset:0 auto 0 0; width:260px;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:60;
+      }
+      .sidebar.open{ transform:translateX(0); }
+      .side-toggle{ display:inline-flex; }
+    }
+
+    .nav-section{ margin-top:.4rem; }
+    .nav-label{
+      font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+      color:#64748b; margin:.4rem 0 .2rem; padding:0 .2rem;
+    }
+    .nav-list{ list-style:none; padding:0; margin:0; }
+    .nav-link{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.45rem .55rem; border-radius:10px;
+      color:#cbd5f5; text-decoration:none; font-size:.9rem;
+      border:1px solid transparent; cursor:pointer;
+      background:transparent;
+    }
+    .nav-link i{ font-size:.9rem; }
+    .nav-link:hover{
+      background:rgba(30,64,175,.45);
+      border-color:rgba(37,99,235,.6);
+    }
+    .nav-link.active{
+      background:rgba(37,99,235,.9);
+      border-color:rgba(37,99,235,1);
+      color:#e5e7eb;
+      box-shadow:0 10px 28px rgba(37,99,235,.6);
+    }
+
+    .sidebar-footer{
+      margin-top:auto; padding-top:.5rem;
+      border-top:1px solid rgba(30,64,175,.7);
+      font-size:.8rem; color:#64748b;
+    }
+    .sidebar-footer .chip{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.22rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(37,99,235,.7);
+      margin-top:.35rem; font-size:.78rem;
+    }
+    .sidebar-footer .chip i{ color:#22c55e; }
+
+    /* Main */
+    .main{
+      display:flex; flex-direction:column;
+      min-height:0;
+    }
+    .main-header{
+      padding:.55rem 1rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 16px 50px rgba(15,23,42,.8);
+      position:sticky; top:0; z-index:40;
+    }
+    .breadcrumbs{
+      display:flex; align-items:center; gap:.35rem; font-size:.85rem; color:#9ca3af;
+    }
+    .breadcrumbs span.current{ color:#e5e7eb; font-weight:500; }
+    .main-header-right{ display:flex; align-items:center; gap:.5rem; }
+
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.78rem; color:#e5e7eb;
+    }
+
+    .main-body{
+      padding:1rem;
+      overflow:auto;
+    }
+    .card{
+      background:#020617;
+      border-radius:var(--radius);
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:var(--shadow);
+      padding:1rem;
+    }
+    .section-title{ font-size:1.15rem; margin-bottom:.4rem; }
+    .muted{ color:var(--muted); }
+
+    .toolbar{ display:flex; gap:.5rem; flex-wrap:wrap; margin:.6rem 0; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{ background:var(--brand); color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4); }
+    .btn.brand:hover{ background:var(--brand-600); transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{ border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7); }
+    .btn-sm{ padding:.25rem .55rem; font-size:.8rem; }
+
+    .input,.textarea,select{
+      width:100%; box-sizing:border-box;
+      padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.9rem; color:#e5e7eb;
+      transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#6b7280; }
+    .input:focus,.textarea:focus,select:focus{
+      outline:none; border-color:#38bdf8;
+      box-shadow:0 0 0 2px rgba(56,189,248,.35);
+      background:#020617;
+    }
+    .textarea{ min-height:80px; resize:vertical; }
+
+    .table{
+      width:100%; border-collapse:collapse; font-size:.85rem;
+    }
+    .table th,.table td{
+      padding:.55rem .45rem; border-bottom:1px solid rgba(31,41,55,.9);
+    }
+    .table th{
+      text-align:left; font-weight:600; color:#9ca3af; font-size:.8rem;
+    }
+    .table tbody tr:hover{ background:#020c28; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.1rem .5rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020c28; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+    .badge.info{ background:rgba(59,130,246,.20); border-color:rgba(59,130,246,.7); color:#bfdbfe; }
+    .badge.success{ background:rgba(22,163,74,.2); border-color:rgba(22,163,74,.7); color:#bbf7d0; }
+    .badge.warning{ background:rgba(234,179,8,.18); border-color:rgba(234,179,8,.7); color:#facc15; }
+
+    .chip-row{ display:flex; flex-wrap:wrap; gap:.3rem; }
+    .chip{
+      padding:.18rem .5rem; border-radius:999px;
+      font-size:.78rem;
+      background:var(--chip-bg);
+      border:1px solid rgba(55,65,81,.9);
+      color:#e5e7eb;
+    }
+
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    .modal{
+      display:none; position:fixed; inset:0;
+      background:rgba(15,23,42,.75);
+      align-items:center; justify-content:center; z-index:1000;
+    }
+    .modal .card{
+      max-width:520px; width:92%;
+      border-radius:var(--radius);
+      border:1px solid rgba(148,163,184,.8);
+      box-shadow:var(--shadow);
+      background:#020617; color:#e5e7eb;
+    }
+    .modal .body{ padding:1rem; }
+
+    .grid-2{ display:grid; gap:.7rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    @media(max-width:900px){ .grid-2{ grid-template-columns:1fr; } }
+
+    .pill-label{
+      font-size:.8rem;
+      padding:.14rem .45rem;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      background:#020617;
+      color:#e5e7eb;
+      display:inline-flex;
+      align-items:center;
+      gap:.3rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/views/admin/index.html" class="logo">
+          <i class="fa-solid fa-compass"></i> <span>Elite Admin</span>
+        </a>
+        <button class="side-toggle" id="sideToggle"><i class="fa fa-xmark"></i></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/index.html"><i class="fa fa-gauge-high"></i> Dashboard</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Jobs & Services</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/jobs.html"><i class="fa fa-briefcase"></i> Jobs</a></li>
+          <li><a class="nav-link" href="/views/admin/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Users & Activity</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/users.html"><i class="fa fa-users"></i> Users</a></li>
+          <li><a class="nav-link" href="/views/admin/tracking.html"><i class="fa fa-location-crosshairs"></i> Tracking</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Transactions</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/payments.html"><i class="fa fa-credit-card"></i> Payments</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Content</div>
+        <ul class="nav-list">
+          <li><button class="nav-link active"><i class="fa fa-bell"></i> Notifications</button></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Session</div>
+        <div class="chip">
+          <i class="fa fa-user-shield"></i> <span id="adminEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="breadcrumbs">
+          <button class="side-toggle" id="openSideOnMobile"><i class="fa fa-bars"></i></button>
+          <span>Admin</span> <span>/</span> <span class="current">Notifications</span>
+        </div>
+        <div class="main-header-right">
+          <span class="pill-soft"><i class="fa fa-shield-halved"></i> Admin</span>
+          <button class="btn outline" id="adminLogout"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="main-body">
+        <article class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h2 class="section-title">Notifications</h2>
+              <p class="muted">
+                Send targeted or broadcast notifications to users. These appear in the bell icon feed and, optionally, in email or other channels.
+              </p>
+            </div>
+            <div class="chip-row">
+              <span class="chip"><i class="fa fa-database"></i> notifications table</span>
+              <span class="chip"><i class="fa fa-bullhorn"></i> broadcast & targeted</span>
+            </div>
+          </div>
+
+          <div class="toolbar" style="margin-top:.8rem;">
+            <span class="pill-label"><i class="fa fa-location-arrow"></i> Create & send</span>
+          </div>
+
+          <form id="notifForm" class="grid-2" style="margin-top:.5rem;gap:.7rem;">
+            <div>
+              <label class="muted" style="font-size:.85rem;">Target</label>
+              <select id="notifTargetType" class="input">
+                <option value="broadcast">Broadcast (all users)</option>
+                <option value="email">Single user by email</option>
+              </select>
+            </div>
+            <div>
+              <label class="muted" style="font-size:.85rem;">Target email (optional)</label>
+              <input id="notifEmail" class="input" placeholder="user@example.com">
+            </div>
+
+            <div>
+              <label class="muted" style="font-size:.85rem;">Title</label>
+              <input id="notifTitle" class="input" placeholder="e.g., Application status update">
+            </div>
+            <div>
+              <label class="muted" style="font-size:.85rem;">Category</label>
+              <select id="notifCategory" class="input">
+                <option value="">General</option>
+                <option value="application">Application</option>
+                <option value="payment">Payment</option>
+                <option value="tracking">Tracking</option>
+                <option value="system">System</option>
+              </select>
+            </div>
+
+            <div style="grid-column:1/-1;">
+              <label class="muted" style="font-size:.85rem;">Message</label>
+              <textarea id="notifMessage" class="textarea" placeholder="Notification message shown to the user"></textarea>
+            </div>
+
+            <div style="grid-column:1/-1;">
+              <label class="muted" style="font-size:.85rem;">Link (optional)</label>
+              <input id="notifLink" class="input" placeholder="/views/pages/tracking.html or https://...">
+            </div>
+
+            <div>
+              <label class="muted" style="font-size:.85rem;">Send as email (future)</label>
+              <select id="notifEmailFlag" class="input">
+                <option value="false">No (in-app only)</option>
+                <option value="true">Yes (mark as email-ready)</option>
+              </select>
+            </div>
+            <div>
+              <label class="muted" style="font-size:.85rem;">Importance</label>
+              <select id="notifImportance" class="input">
+                <option value="normal">Normal</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+          </form>
+
+          <div class="toolbar" style="margin-top:.6rem;justify-content:flex-end;">
+            <button class="btn outline" id="notifReset"><i class="fa fa-rotate-left"></i> Reset</button>
+            <button class="btn brand" id="notifSend"><i class="fa fa-paper-plane"></i> Send</button>
+          </div>
+
+          <p id="notifStatus" class="muted" style="margin-top:.5rem;"></p>
+        </article>
+
+        <article class="card" style="margin-top:1rem;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h3 class="section-title">Recent notifications</h3>
+              <p class="muted">A quick view of the latest messages sent to users.</p>
+            </div>
+            <div class="chip-row">
+              <span class="chip"><i class="fa fa-clock"></i> latest first</span>
+            </div>
+          </div>
+
+          <div class="toolbar" style="margin-top:.5rem;">
+            <input class="input" id="notifSearch" placeholder="Search by email, title, or category" style="max-width:260px;">
+            <select class="input" id="notifCategoryFilter" style="max-width:200px;">
+              <option value="">All categories</option>
+              <option value="application">Application</option>
+              <option value="payment">Payment</option>
+              <option value="tracking">Tracking</option>
+              <option value="system">System</option>
+            </select>
+            <button class="btn outline" id="notifRefresh"><i class="fa fa-rotate"></i> Refresh</button>
+          </div>
+
+          <table class="table" id="notifTable">
+            <thead>
+              <tr>
+                <th>To</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Message</th>
+                <th>Link</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="6" class="muted">Loading notifications...</td></tr>
+            </tbody>
+          </table>
+
+          <p id="notifListStatus" class="muted" style="margin-top:.5rem;"></p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><i class="fa fa-info-circle"></i><span id="toastText"></span></div>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(msg,ms=2500){
+      toastText.textContent=msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),ms);
+    }
+
+    /* Sidebar mobile toggle */
+    const sidebar=document.getElementById('sidebar');
+    const sideToggle=document.getElementById('sideToggle');
+    const openSideOnMobile=document.getElementById('openSideOnMobile');
+    sideToggle?.addEventListener('click',()=> sidebar.classList.remove('open'));
+    openSideOnMobile?.addEventListener('click',()=> sidebar.classList.add('open'));
+
+    /* Auth guard */
+    const adminEmailSpan=document.getElementById('adminEmail');
+    const adminLogout=document.getElementById('adminLogout');
+
+    const { data } = await sb.auth.getSession();
+    const session=data.session;
+    const user=session?.user;
+
+    if(!user){
+      showToast('Admin session required.');
+      window.location.href='/views/pages/login.html';
+    }else{
+      adminEmailSpan.textContent=user.email;
+      // Optionally enforce admin role via users.role
+    }
+
+    adminLogout?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Elements */
+    const notifFormStatus=document.getElementById('notifStatus');
+    const notifSendBtn=document.getElementById('notifSend');
+    const notifResetBtn=document.getElementById('notifReset');
+
+    const notifTargetType=document.getElementById('notifTargetType');
+    const notifEmail=document.getElementById('notifEmail');
+    const notifTitle=document.getElementById('notifTitle');
+    const notifCategory=document.getElementById('notifCategory');
+    const notifMessage=document.getElementById('notifMessage');
+    const notifLink=document.getElementById('notifLink');
+    const notifEmailFlag=document.getElementById('notifEmailFlag');
+    const notifImportance=document.getElementById('notifImportance');
+
+    const notifSearch=document.getElementById('notifSearch');
+    const notifCategoryFilter=document.getElementById('notifCategoryFilter');
+    const notifRefresh=document.getElementById('notifRefresh');
+    const notifTableBody=document.querySelector('#notifTable tbody');
+    const notifListStatus=document.getElementById('notifListStatus');
+
+    let notifCache=[];
+
+    function setNotifStatus(msg,type='muted'){
+      notifFormStatus.textContent=msg||'';
+      notifFormStatus.className=type;
+    }
+
+    function setNotifListStatus(msg,type='muted'){
+      notifListStatus.textContent=msg||'';
+      notifListStatus.className=type;
+    }
+
+    notifResetBtn.addEventListener('click',()=>{
+      notifTitle.value='';
+      notifCategory.value='';
+      notifMessage.value='';
+      notifLink.value='';
+      notifEmail.value='';
+      notifTargetType.value='broadcast';
+      notifEmailFlag.value='false';
+      notifImportance.value='normal';
+      setNotifStatus('');
+    });
+
+    notifTargetType.addEventListener('change',()=>{
+      if(notifTargetType.value==='broadcast'){
+        notifEmail.placeholder='(optional) specific email, leave blank for all users';
+      }else{
+        notifEmail.placeholder='user@example.com';
+      }
+    });
+
+    notifSendBtn.addEventListener('click',async()=>{
+      const targetType=notifTargetType.value;
+      const email=notifEmail.value.trim();
+      const title=notifTitle.value.trim();
+      const category=notifCategory.value || null;
+      const message=notifMessage.value.trim();
+      const link=notifLink.value.trim() || null;
+      const emailFlag=notifEmailFlag.value === 'true';
+      const importance=notifImportance.value;
+
+      if(!message){
+        setNotifStatus('Message is required.','danger');
+        return;
+      }
+      if(targetType==='email' && !email){
+        setNotifStatus('Target email is required for single-user notifications.','danger');
+        return;
+      }
+
+      const payload={
+        user_email: targetType==='email' ? email : null,
+        title: title || null,
+        category,
+        message,
+        link,
+        importance,
+        email_ready: emailFlag,
+        admin_id: user.id
+      };
+
+      setNotifStatus('Sending notification...','muted');
+      notifSendBtn.disabled=true;
+
+      try{
+        const { error }=await sb.from('notifications').insert(payload);
+        if(error) throw error;
+        setNotifStatus('Notification queued successfully.','success');
+        showToast('Notification queued');
+        await loadNotifications();
+      }catch(e){
+        console.error(e);
+        setNotifStatus(e.message || 'Failed to send notification.','danger');
+        showToast('Failed to send notification.',3000);
+      }finally{
+        notifSendBtn.disabled=false;
+      }
+    });
+
+    async function loadNotifications(){
+      notifTableBody.innerHTML='<tr><td colspan="6" class="muted">Loading notifications...</td></tr>';
+      setNotifListStatus('');
+      try{
+        const { data:rows,error }=await sb.from('notifications')
+          .select('id,user_email,title,category,message,link,created_at')
+          .order('created_at',{ ascending:false }).limit(200);
+        if(error) throw error;
+        notifCache=rows || [];
+        applyNotifFilters();
+      }catch(e){
+        console.error(e);
+        notifTableBody.innerHTML='<tr><td colspan="6" class="muted">Failed to load notifications.</td></tr>';
+        setNotifListStatus('Failed to load notifications from database.','danger');
+      }
+    }
+
+    function applyNotifFilters(){
+      const q=notifSearch.value.trim().toLowerCase();
+      const cat=notifCategoryFilter.value;
+      let list=notifCache.filter(n=>{
+        if(cat && n.category!==cat) return false;
+        if(q){
+          const hay=((n.user_email||'')+' '+(n.title||'')+' '+(n.category||'')).toLowerCase();
+          if(!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if(!list.length){
+        notifTableBody.innerHTML='<tr><td colspan="6" class="muted">No notifications match the filters.</td></tr>';
+        setNotifListStatus('No notifications match the search/filter.','muted');
+        return;
+      }
+
+      notifTableBody.innerHTML=list.map(n=>{
+        const dt=n.created_at ? new Date(n.created_at).toLocaleString() : '—';
+        const to=n.user_email || 'broadcast';
+        const catLabel=n.category || 'general';
+        const msg=(n.message||'');
+        const msgShort=msg.length>80 ? msg.slice(0,77)+'…' : msg;
+        return `
+          <tr>
+            <td>${to}</td>
+            <td>${n.title || '—'}</td>
+            <td>${catLabel}</td>
+            <td title="${msg.replace(/"/g,'&quot;')}">${msgShort}</td>
+            <td>${n.link || '—'}</td>
+            <td>${dt}</td>
+          </tr>
+        `;
+      }).join('');
+
+      setNotifListStatus(`${list.length} notification${list.length===1?'':'s'} shown.`,'muted');
+    }
+
+    notifSearch.addEventListener('input',applyNotifFilters);
+    notifCategoryFilter.addEventListener('change',applyNotifFilters);
+    notifRefresh.addEventListener('click',loadNotifications);
+
+    // Initial load
+    await loadNotifications();
+  </script>
+</body>
+</html>

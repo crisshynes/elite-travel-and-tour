@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — Contacts | Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Admin contact messages management for Elite Travel & Tour — handle inquiries, feedback, and support with full status and notes."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+
+  <style>
+    :root{
+      --brand:#0077cc;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --light:#fff;
+      --muted:#64748b;
+      --bg:#020617;
+      --gray-50:#0b1120;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-700:#374151;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.7);
+      --radius:14px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --info:#0ea5e9;
+      --chip-bg:#020617;
+    }
+
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(59,130,246,.26) 0, transparent 45%),
+        #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      min-height:0;
+    }
+    @media(max-width:900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(31,41,55,.9);
+      background:radial-gradient(circle at top left, #020c28 0, #020617 60%);
+      padding:.8rem .7rem;
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      box-shadow:0 0 0 1px rgba(15,23,42,.9);
+    }
+    .sidebar-header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.2rem .1rem .4rem;
+    }
+    .sidebar-header .logo{
+      display:flex; align-items:center; gap:.4rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; font-size:.98rem;
+    }
+    .sidebar-header .logo i{ color:#38bdf8; }
+    .side-toggle{
+      display:none; border:none; background:rgba(15,23,42,.8);
+      color:#cbd5f5; padding:.35rem .5rem; border-radius:999px; cursor:pointer;
+    }
+    .side-toggle i{ font-size:.9rem; }
+    @media(max-width:900px){
+      .sidebar{
+        position:fixed; inset:0 auto 0 0; width:260px;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:60;
+      }
+      .sidebar.open{ transform:translateX(0); }
+      .side-toggle{ display:inline-flex; }
+    }
+
+    .nav-section{ margin-top:.4rem; }
+    .nav-label{
+      font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+      color:#64748b; margin:.4rem 0 .2rem; padding:0 .2rem;
+    }
+    .nav-list{ list-style:none; padding:0; margin:0; }
+    .nav-link{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.45rem .55rem; border-radius:10px;
+      color:#cbd5f5; text-decoration:none; font-size:.9rem;
+      border:1px solid transparent; cursor:pointer;
+      background:transparent;
+    }
+    .nav-link:hover{
+      background:rgba(30,64,175,.45);
+      border-color:rgba(37,99,235,.6);
+    }
+    .nav-link.active{
+      background:rgba(37,99,235,.9);
+      border-color:rgba(37,99,235,1);
+      color:#e5e7eb;
+      box-shadow:0 10px 28px rgba(37,99,235,.6);
+    }
+
+    .sidebar-footer{
+      margin-top:auto; padding-top:.5rem;
+      border-top:1px solid rgba(30,64,175,.7);
+      font-size:.8rem; color:#64748b;
+    }
+    .sidebar-footer .chip{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.22rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(37,99,235,.7);
+      margin-top:.35rem; font-size:.78rem;
+    }
+    .sidebar-footer .chip i{ color:#22c55e; }
+
+    /* Main */
+    .main{
+      display:flex; flex-direction:column;
+      min-height:0;
+    }
+    .main-header{
+      padding:.55rem 1rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 16px 50px rgba(15,23,42,.8);
+      position:sticky; top:0; z-index:40;
+    }
+    .breadcrumbs{
+      display:flex; align-items:center; gap:.35rem; font-size:.85rem; color:#9ca3af;
+    }
+    .breadcrumbs span.current{ color:#e5e7eb; font-weight:500; }
+
+    .main-body{
+      padding:1rem;
+      overflow:auto;
+    }
+
+    .card{
+      background:#020617;
+      border-radius:var(--radius);
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:var(--shadow);
+      padding:1rem;
+    }
+    .section-title{ font-size:1.15rem; margin-bottom:.4rem; }
+    .muted{ color:var(--muted); }
+
+    .toolbar{ display:flex; gap:.5rem; flex-wrap:wrap; margin:.6rem 0; align-items:center; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{ background:var(--brand); color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4); }
+    .btn.brand:hover{ background:var(--brand-600); transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{ border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7); }
+    .btn-sm{ padding:.25rem .55rem; font-size:.8rem; }
+    .btn[disabled]{ opacity:.55; cursor:not-allowed; }
+
+    .input,select,textarea{
+      width:100%; box-sizing:border-box;
+      padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.9rem; color:#e5e7eb;
+      transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#6b7280; }
+    .input:focus,select:focus,textarea:focus{
+      outline:none; border-color:#38bdf8;
+      box-shadow:0 0 0 2px rgba(56,189,248,.35);
+      background:#020617;
+    }
+    .textarea{ min-height:110px; resize:vertical; }
+
+    .table-wrapper{
+      margin-top:.6rem;
+      border-radius:12px;
+      overflow:auto;
+      border:1px solid rgba(31,41,55,.9);
+      background:radial-gradient(circle at top left, #02081e 0, #020617 60%);
+    }
+
+    .table{
+      width:100%; border-collapse:collapse; font-size:.85rem;
+      min-width:780px;
+    }
+    .table th,.table td{
+      padding:.55rem .6rem; border-bottom:1px solid rgba(31,41,55,.9);
+    }
+    .table th{
+      text-align:left; font-weight:600; color:#9ca3af; font-size:.8rem;
+      background:rgba(15,23,42,.9);
+      position:sticky; top:0; z-index:1;
+    }
+    .table tbody tr:nth-child(even){
+      background:rgba(15,23,42,.7);
+    }
+    .table tbody tr:hover{ background:#020c28; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.1rem .5rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020c28; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+    .badge.new{ background:rgba(59,130,246,.22); border-color:#3b82f6; color:#dbeafe; }
+    .badge.opened{ background:rgba(234,179,8,.22); border-color:#f59e0b; color:#fef9c3; }
+    .badge.resolved{ background:rgba(22,163,74,.22); border-color:#16a34a; color:#bbf7d0; }
+
+    .chip-row{ display:flex; flex-wrap:wrap; gap:.3rem; }
+    .chip{
+      padding:.18rem .5rem; border-radius:999px;
+      font-size:.78rem;
+      background:var(--chip-bg);
+      border:1px solid rgba(55,65,81,.9);
+      color:#e5e7eb;
+      display:inline-flex; align-items:center; gap:.25rem;
+    }
+    .chip i{ color:#38bdf8; }
+
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.78rem; color:#e5e7eb;
+    }
+
+    .small-text{ font-size:.83rem; }
+
+    .status-dot{
+      width:7px; height:7px; border-radius:50%;
+      display:inline-block; margin-right:.25rem;
+    }
+    .status-dot.new{ background:#3b82f6; }
+    .status-dot.opened{ background:#f59e0b; }
+    .status-dot.resolved{ background:#22c55e; }
+
+    .truncate{
+      max-width:260px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    /* Toast */
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+      font-size:.88rem;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    /* Modal */
+    .modal{
+      display:none; position:fixed; inset:0;
+      background:rgba(15,23,42,.75);
+      align-items:center; justify-content:center; z-index:1000;
+    }
+    .modal.open{ display:flex; }
+    .modal .card{
+      max-width:720px; width:94%;
+      border-radius:var(--radius);
+      border:1px solid rgba(148,163,184,.8);
+      box-shadow:var(--shadow);
+      background:#020617; color:#e5e7eb;
+    }
+    .modal .body{ padding:1rem; }
+
+    .grid-2{ display:grid; gap:.7rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    @media(max-width:900px){ .grid-2{ grid-template-columns:1fr; } }
+
+    .field-label{
+      font-size:.82rem; color:#9ca3af; margin-bottom:.15rem;
+    }
+
+    .meta-row{
+      display:flex; justify-content:space-between; flex-wrap:wrap; gap:.3rem;
+      margin-top:.35rem; font-size:.78rem; color:#9ca3af;
+    }
+
+    .tag-row{
+      display:flex; flex-wrap:wrap; gap:.25rem; margin-top:.4rem;
+    }
+    .tag{
+      border-radius:999px; padding:.12rem .45rem;
+      border:1px solid rgba(75,85,99,.8);
+      font-size:.75rem; color:#9ca3af;
+    }
+
+    .empty-state{
+      text-align:center; padding:1.5rem 1rem; color:#9ca3af;
+      font-size:.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/views/admin/index.html" class="logo">
+          <i class="fa-solid fa-compass"></i> <span>Elite Admin</span>
+        </a>
+        <button class="side-toggle" id="sideToggle"><i class="fa fa-xmark"></i></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/index.html"><i class="fa fa-gauge-high"></i> Dashboard</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Users & Activity</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/users.html"><i class="fa fa-users"></i> Users</a></li>
+          <li><a class="nav-link" href="/views/admin/userdetails.html"><i class="fa fa-id-card"></i> User details</a></li>
+          <li><a class="nav-link" href="/views/admin/tracking.html"><i class="fa fa-location-crosshairs"></i> Tracking</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Content</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/notifications.html"><i class="fa fa-bell"></i> Notifications</a></li>
+          <li><a class="nav-link" href="/views/admin/testimonials.html"><i class="fa fa-star"></i> Testimonials</a></li>
+          <li><button class="nav-link active"><i class="fa fa-envelope"></i> Contacts</button></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Session</div>
+        <div class="chip">
+          <i class="fa fa-user-shield"></i> <span id="adminEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="breadcrumbs">
+          <button class="side-toggle" id="openSideOnMobile"><i class="fa fa-bars"></i></button>
+          <span>Admin</span> <span>/</span> <span class="current">Contacts</span>
+        </div>
+        <div class="main-header-right">
+          <span class="pill-soft"><i class="fa fa-shield-halved"></i> Admin</span>
+          <button class="btn outline" id="adminLogout"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="main-body">
+        <!-- Overview & filters -->
+        <article class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h2 class="section-title">Contact messages</h2>
+              <p class="muted">
+                Manage inquiries, feedback, and support messages submitted through the site.
+                Use status, search, and quick actions to stay on top of conversations.
+              </p>
+              <div class="tag-row">
+                <span class="tag"><i class="fa fa-table"></i> contacts table</span>
+                <span class="tag"><i class="fa fa-filter"></i> status + search</span>
+                <span class="tag"><i class="fa fa-note-sticky"></i> admin notes</span>
+              </div>
+            </div>
+            <div class="chip-row">
+              <span class="chip"><i class="fa fa-inbox"></i> Inbox view</span>
+              <span class="chip"><i class="fa fa-database"></i> Supabase synced</span>
+            </div>
+          </div>
+
+          <div class="toolbar" style="margin-top:.7rem;">
+            <input id="contactSearch" class="input" placeholder="Search by name, email, subject, message" style="max-width:260px;">
+            <select id="contactStatusFilter" class="input" style="max-width:200px;">
+              <option value="">All statuses</option>
+              <option value="new">New</option>
+              <option value="opened">Opened</option>
+              <option value="resolved">Resolved</option>
+            </select>
+            <button class="btn outline" id="contactRefresh"><i class="fa fa-rotate"></i> Refresh</button>
+            <span id="contactSummary" class="small-text muted"></span>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="table" id="contactTable">
+              <thead>
+                <tr>
+                  <th style="width:150px;">Name</th>
+                  <th style="width:190px;">Email</th>
+                  <th style="width:110px;">Status</th>
+                  <th>Subject</th>
+                  <th>Message</th>
+                  <th style="width:140px;">Date</th>
+                  <th style="width:80px;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td colspan="7" class="empty-state">Loading messages...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p id="contactStatusText" class="muted small-text" style="margin-top:.5rem;"></p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal: view / update contact -->
+  <div class="modal" id="contactModal">
+    <section class="card"><div class="body">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;">
+        <div>
+          <h3 id="contactModalTitle">Message details</h3>
+          <div id="contactMeta" class="meta-row small-text">
+            <span id="contactIdMeta">ID: —</span>
+            <span id="contactDateMeta">Received: —</span>
+          </div>
+        </div>
+        <button class="btn outline btn-sm" id="contactModalCloseTop"><i class="fa fa-xmark"></i> Close</button>
+      </div>
+
+      <form id="contactForm" class="grid-2" style="margin-top:.7rem;gap:.7rem;">
+        <div>
+          <div class="field-label">Name</div>
+          <input id="cName" class="input" disabled>
+        </div>
+        <div>
+          <div class="field-label">Email</div>
+          <input id="cEmail" class="input" disabled>
+        </div>
+        <div>
+          <div class="field-label">Subject</div>
+          <input id="cSubject" class="input" disabled>
+        </div>
+        <div>
+          <div class="field-label">Status</div>
+          <select id="cStatus" class="input">
+            <option value="new">New</option>
+            <option value="opened">Opened</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </div>
+      </form>
+
+      <div style="margin-top:.7rem;">
+        <div class="field-label">Message</div>
+        <textarea id="cMessage" class="textarea" disabled></textarea>
+      </div>
+
+      <div style="margin-top:.7rem;">
+        <div class="field-label">Admin notes</div>
+        <textarea id="cNotes" class="textarea" placeholder="Internal notes — what was done, follow-up required, channels used, etc."></textarea>
+      </div>
+
+      <p id="contactFormStatus" class="muted small-text" style="margin-top:.5rem;"></p>
+
+      <div class="toolbar" style="margin-top:.6rem;justify-content:space-between;">
+        <span class="small-text muted">
+          Changes are saved to the <span class="badge">contacts</span> table only. Use notifications if you want to message the user.
+        </span>
+        <div style="display:flex;gap:.4rem;">
+          <button class="btn outline btn-sm" id="contactModalCancel"><i class="fa fa-xmark"></i> Close</button>
+          <button class="btn brand btn-sm" id="contactModalSave"><i class="fa fa-save"></i> Save</button>
+        </div>
+      </div>
+    </div></section>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><i class="fa fa-info-circle"></i><span id="toastText"></span></div>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(msg,ms=2500){
+      if(!toast || !toastText) return;
+      toastText.textContent=msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),ms);
+    }
+
+    /* Sidebar mobile toggle */
+    const sidebar=document.getElementById('sidebar');
+    const sideToggle=document.getElementById('sideToggle');
+    const openSideOnMobile=document.getElementById('openSideOnMobile');
+    sideToggle?.addEventListener('click',()=> sidebar.classList.remove('open'));
+    openSideOnMobile?.addEventListener('click',()=> sidebar.classList.add('open'));
+
+    /* Auth guard */
+    const adminEmailSpan=document.getElementById('adminEmail');
+    const adminLogout=document.getElementById('adminLogout');
+
+    const { data:sessionData } = await sb.auth.getSession();
+    const session=sessionData.session;
+    const admin=session?.user;
+
+    if(!admin){
+      showToast('Admin session required.');
+      window.location.href='/views/pages/login.html';
+    }else{
+      adminEmailSpan.textContent=admin.email || 'Admin';
+      // If you want strict role enforcement, you can query `users` table here.
+    }
+
+    adminLogout?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Contacts logic */
+    const contactSearch=document.getElementById('contactSearch');
+    const contactStatusFilter=document.getElementById('contactStatusFilter');
+    const contactRefresh=document.getElementById('contactRefresh');
+    const contactTable=document.getElementById('contactTable');
+    const contactStatusText=document.getElementById('contactStatusText');
+    const contactSummary=document.getElementById('contactSummary');
+
+    const contactModal=document.getElementById('contactModal');
+    const contactModalCloseTop=document.getElementById('contactModalCloseTop');
+    const contactModalCancel=document.getElementById('contactModalCancel');
+    const contactModalSave=document.getElementById('contactModalSave');
+    const contactModalTitle=document.getElementById('contactModalTitle');
+    const contactIdMeta=document.getElementById('contactIdMeta');
+    const contactDateMeta=document.getElementById('contactDateMeta');
+    const contactFormStatus=document.getElementById('contactFormStatus');
+
+    const cName=document.getElementById('cName');
+    const cEmail=document.getElementById('cEmail');
+    const cSubject=document.getElementById('cSubject');
+    const cStatus=document.getElementById('cStatus');
+    const cMessage=document.getElementById('cMessage');
+    const cNotes=document.getElementById('cNotes');
+
+    let contactsRaw=[];
+    let filteredContacts=[];
+    let activeContact=null;
+    let loading=false;
+
+    function formatDateTime(ts){
+      if(!ts) return '—';
+      const d=new Date(ts);
+      if(Number.isNaN(d.getTime())) return ts;
+      return d.toLocaleString(undefined,{
+        year:'numeric',month:'short',day:'2-digit',
+        hour:'2-digit',minute:'2-digit'
+      });
+    }
+
+    function statusBadge(status){
+      const s=status || 'new';
+      const label =
+        s==='opened' ? 'Opened' :
+        s==='resolved' ? 'Resolved' :
+        'New';
+      const cls = s==='opened' ? 'opened' : s==='resolved' ? 'resolved' : 'new';
+      return `
+        <span class="badge ${cls}">
+          <span class="status-dot ${cls}"></span> ${label}
+        </span>
+      `;
+    }
+
+    function normalizeText(v){
+      return (v || '').toString().toLowerCase();
+    }
+
+    function applyFilters(){
+      const searchTerm=normalizeText(contactSearch.value);
+      const statusFilter=contactStatusFilter.value || '';
+
+      let list=[...contactsRaw];
+      if(statusFilter){
+        list=list.filter(c=> (c.status || 'new') === statusFilter);
+      }
+      if(searchTerm){
+        list=list.filter(c=>{
+          return (
+            normalizeText(c.name).includes(searchTerm) ||
+            normalizeText(c.email).includes(searchTerm) ||
+            normalizeText(c.subject).includes(searchTerm) ||
+            normalizeText(c.message).includes(searchTerm)
+          );
+        });
+      }
+      filteredContacts=list;
+      renderTable();
+    }
+
+    function renderTable(){
+      const tbody=contactTable.querySelector('tbody');
+      tbody.innerHTML='';
+
+      if(!filteredContacts.length){
+        tbody.innerHTML=`<tr><td colspan="7" class="empty-state">No messages found for the current filter.</td></tr>`;
+      }else{
+        for(const row of filteredContacts){
+          const tr=document.createElement('tr');
+
+          const nameTd=document.createElement('td');
+          nameTd.textContent=row.name || '—';
+
+          const emailTd=document.createElement('td');
+          emailTd.textContent=row.email || '—';
+          emailTd.classList.add('small-text');
+
+          const statusTd=document.createElement('td');
+          statusTd.innerHTML=statusBadge(row.status);
+
+          const subjectTd=document.createElement('td');
+          subjectTd.classList.add('truncate');
+          subjectTd.title=row.subject || '';
+          subjectTd.textContent=row.subject || '—';
+
+          const messageTd=document.createElement('td');
+          messageTd.classList.add('truncate');
+          messageTd.title=row.message || '';
+          messageTd.textContent=row.message || '—';
+
+          const dateTd=document.createElement('td');
+          dateTd.classList.add('small-text');
+          dateTd.textContent=formatDateTime(row.created_at || row.ts || null);
+
+          const actionsTd=document.createElement('td');
+          actionsTd.style.textAlign='right';
+          const viewBtn=document.createElement('button');
+          viewBtn.className='btn outline btn-sm';
+          viewBtn.innerHTML='<i class="fa fa-eye"></i>';
+          viewBtn.title='View / update';
+          viewBtn.addEventListener('click',()=> openContactModal(row));
+          actionsTd.appendChild(viewBtn);
+
+          tr.appendChild(nameTd);
+          tr.appendChild(emailTd);
+          tr.appendChild(statusTd);
+          tr.appendChild(subjectTd);
+          tr.appendChild(messageTd);
+          tr.appendChild(dateTd);
+          tr.appendChild(actionsTd);
+
+          tbody.appendChild(tr);
+        }
+      }
+
+      const total=contactsRaw.length;
+      const filtered=filteredContacts.length;
+      contactSummary.textContent = total
+        ? `Showing ${filtered} of ${total} messages`
+        : 'No messages yet';
+    }
+
+    async function loadContacts(){
+      if(loading) return;
+      loading=true;
+
+      contactStatusText.textContent='Loading messages...';
+      contactStatusText.style.color='var(--muted)';
+
+      try{
+        const { data, error } = await sb
+          .from('contacts')
+          .select('id,name,email,subject,message,status,notes,created_at,ts,source')
+          .order('created_at',{ ascending:false });
+        if(error) throw error;
+
+        contactsRaw=data || [];
+        applyFilters();
+
+        const newCount=contactsRaw.filter(c=> (c.status || 'new') === 'new').length;
+        const openedCount=contactsRaw.filter(c=> c.status==='opened').length;
+        const resolvedCount=contactsRaw.filter(c=> c.status==='resolved').length;
+
+        const parts=[];
+        parts.push(`${contactsRaw.length} total`);
+        parts.push(`${newCount} new`);
+        if(openedCount) parts.push(`${openedCount} opened`);
+        if(resolvedCount) parts.push(`${resolvedCount} resolved`);
+
+        contactStatusText.textContent=parts.join(' • ') || 'No messages yet.';
+        contactStatusText.style.color='var(--muted)';
+      }catch(err){
+        console.error('Failed to load contacts',err);
+        contactStatusText.textContent='Failed to load messages.';
+        contactStatusText.style.color='var(--danger)';
+        showToast('Failed to load contact messages.',3000);
+      }finally{
+        loading=false;
+      }
+    }
+
+    function openContactModal(row){
+      activeContact=row;
+      if(!row) return;
+
+      contactModalTitle.textContent='Message from ' + (row.name || 'Unknown');
+      contactIdMeta.textContent=`ID: ${row.id || '—'}`;
+      contactDateMeta.textContent=`Received: ${formatDateTime(row.created_at || row.ts)}`;
+
+      cName.value=row.name || '';
+      cEmail.value=row.email || '';
+      cSubject.value=row.subject || '';
+      cStatus.value=row.status || 'new';
+      cMessage.value=row.message || '';
+      cNotes.value=row.notes || '';
+
+      contactFormStatus.textContent='';
+      contactFormStatus.style.color='var(--muted)';
+
+      contactModal.classList.add('open');
+    }
+
+    function closeContactModal(){
+      contactModal.classList.remove('open');
+      activeContact=null;
+      contactFormStatus.textContent='';
+    }
+
+    async function saveContactChanges(){
+      if(!activeContact) return;
+      contactFormStatus.textContent='';
+      contactFormStatus.style.color='var(--muted)';
+
+      const newStatus=cStatus.value || 'new';
+      const newNotes=cNotes.value || null;
+
+      contactModalSave.disabled=true;
+      contactModalSave.innerHTML='<i class="fa fa-spinner fa-spin"></i> Saving';
+
+      try{
+        const { data, error } = await sb
+          .from('contacts')
+          .update({
+            status:newStatus,
+            notes:newNotes
+          })
+          .eq('id', activeContact.id)
+          .select()
+          .single();
+
+        if(error) throw error;
+
+        // Sync in-memory copy
+        const index=contactsRaw.findIndex(c=> c.id===activeContact.id);
+        if(index!==-1){
+          contactsRaw[index]={ ...contactsRaw[index], ...data };
+        }
+        activeContact={ ...activeContact, ...data };
+
+        applyFilters();
+        contactFormStatus.textContent='Changes saved.';
+        contactFormStatus.style.color='var(--success)';
+        showToast('Contact updated.',2200);
+      }catch(err){
+        console.error('Failed to update contact',err);
+        contactFormStatus.textContent=err.message || 'Failed to save changes.';
+        contactFormStatus.style.color='var(--danger)';
+        showToast('Failed to save changes.',2800);
+      }finally{
+        contactModalSave.disabled=false;
+        contactModalSave.innerHTML='<i class="fa fa-save"></i> Save';
+      }
+    }
+
+    /* Event wiring */
+    contactSearch?.addEventListener('input',()=>{
+      applyFilters();
+    });
+
+    contactStatusFilter?.addEventListener('change',()=>{
+      applyFilters();
+    });
+
+    contactRefresh?.addEventListener('click',()=>{
+      loadContacts();
+    });
+
+    contactModalCloseTop?.addEventListener('click', closeContactModal);
+    contactModalCancel?.addEventListener('click', closeContactModal);
+    contactModal?.addEventListener('click',(e)=>{
+      if(e.target===contactModal) closeContactModal();
+    });
+
+    contactModalSave?.addEventListener('click',(e)=>{
+      e.preventDefault();
+      saveContactChanges();
+    });
+
+    // Initial load
+    await loadContacts();
+  </script>
+</body>
+</html>

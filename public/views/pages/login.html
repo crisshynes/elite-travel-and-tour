@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Login — Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Secure login to your Elite Travel & Tour account."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/index.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+
+  <!-- Standard ICO -->
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+<!-- Or PNG -->
+<link rel="icon" href="/favicon.png" type="image/png">
+
+<!-- Optional: SVG -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+    :root{
+      --brand:#0077cc;
+      --brand-50:#e6f2fb;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#0f172a;
+      --light:#fff;
+      --muted:#667085;
+      --bg:#0b1120;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-400:#9ca3af;
+      --shadow:0 24px 60px rgba(15,23,42,.65);
+      --radius:16px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+    }
+
+    html,body{
+      height:100%;
+    }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(56,189,248,.16) 0, transparent 45%),
+        radial-gradient(circle at bottom, rgba(37,99,235,.18) 0, #020617 60%);
+      color:var(--light);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* NAV */
+    nav{
+      position:sticky; top:0; z-index:50;
+      background:rgba(15,23,42,.96);
+      backdrop-filter:blur(14px);
+      border-bottom:1px solid rgba(31,41,55,.9);
+      color:#e5e7eb; padding:.45rem 1rem;
+      box-shadow:0 15px 45px rgba(15,23,42,.85);
+    }
+    nav .wrap{
+      max-width:1100px; margin:0 auto;
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+    }
+    nav .logo{
+      display:flex; align-items:center; gap:.45rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; letter-spacing:.02em;
+    }
+    nav .logo i{ color:#38bdf8; }
+    nav ul.primary{ display:flex; gap:.9rem; list-style:none; margin:0; padding:0; }
+    nav a{
+      text-decoration:none; color:#cbd5f5;
+      font-weight:500; padding:.35rem .6rem;
+      border-radius:999px; font-size:.9rem;
+      display:inline-flex; align-items:center; gap:.35rem;
+    }
+    nav a:hover,nav a.active{ color:#0ea5e9; background:rgba(37,99,235,.18); }
+
+    .auth-pill{
+      display:inline-flex; align-items:center; gap:.4rem;
+      padding:.25rem .65rem; border-radius:999px;
+      background:rgba(15,23,42,.9); color:#e5e7eb;
+      border:1px solid rgba(148,163,184,.7); font-size:.8rem;
+      max-width:45vw; overflow:hidden; text-overflow:ellipsis;
+    }
+    .auth-pill i{ color:#38bdf8; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{
+      background:var(--brand); color:#f9fafb;
+      box-shadow:0 10px 26px rgba(37,99,235,.4);
+    }
+    .btn.brand:hover{ background:var(--brand-600); transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{
+      border-color:#38bdf8; color:#38bdf8;
+      background:rgba(15,23,42,.7);
+    }
+    .btn[disabled]{ opacity:.6; cursor:not-allowed; box-shadow:none; transform:none; }
+    .toolbar{ display:flex; gap:.5rem; flex-wrap:wrap; }
+
+    .menu-toggle{
+      display:none; border:none; background:rgba(15,23,42,.9);
+      color:#e5e7eb; padding:.4rem .55rem; border-radius:999px;
+    }
+    .menu-toggle i{ font-size:1rem; }
+
+    .mobile-panel{
+      display:none; background:#020617; border-radius:14px; margin-top:.5rem;
+      box-shadow:0 18px 40px rgba(15,23,42,.9); border:1px solid rgba(30,64,175,.9);
+    }
+    .mobile-panel.open{ display:block; }
+    .mobile-panel .block{ padding:.6rem .7rem; border-bottom:1px solid rgba(30,64,175,.55); }
+    .mobile-panel .block:last-child{ border:none; }
+    .mobile-panel a{
+      display:block; padding:.45rem .55rem; border-radius:999px;
+      color:#e5e7eb; text-decoration:none; font-size:.9rem;
+    }
+    .mobile-panel a:hover{ background:rgba(37,99,235,.35); }
+
+    .bell{ position:relative; }
+    .count{
+      position:absolute; top:-4px; right:-4px; background:#f97316;
+      color:#fff; font-size:.7rem; border-radius:999px; padding:0 5px;
+      border:1px solid #0f172a;
+    }
+
+    .hidden{ display:none!important; }
+
+    @media(max-width:880px){
+      nav ul.primary{ display:none; }
+      .menu-toggle{ display:inline-flex; }
+      .auth-pill{ display:none; }
+    }
+
+    /* Notification feed */
+    #notifFeed{
+      background:#020617; color:#e5e7eb;
+      border:1px solid rgba(30,64,175,.7);
+      box-shadow:0 18px 40px rgba(15,23,42,.8);
+      position:absolute; right:1rem; top:60px;
+      width:300px; border-radius:14px; padding:.4rem .5rem;
+      z-index:60;
+    }
+    #notifFeed h4{ margin:.25rem .25rem .35rem; font-size:.95rem; }
+    #notifList{ max-height:260px; overflow-y:auto; }
+    #notifList .item{
+      padding:.35rem .4rem; border-radius:10px;
+      background:#020617; border:1px solid rgba(30,64,175,.5);
+      font-size:.85rem; margin-bottom:.3rem;
+    }
+
+    /* Toast */
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    /* MAIN LAYOUT */
+    .page{
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:1.5rem .75rem 2rem;
+    }
+    .page-inner{
+      max-width:1100px; width:100%;
+      display:grid; grid-template-columns:1.25fr 1fr; gap:1.5rem;
+      align-items:stretch;
+    }
+    @media(max-width:900px){
+      .page-inner{ grid-template-columns:1fr; }
+    }
+
+    .hero-panel{
+      color:#e5e7eb;
+      padding:1.25rem 1.1rem;
+      border-radius:var(--radius);
+      border:1px solid rgba(37,99,235,.55);
+      background:radial-gradient(circle at top left, rgba(59,130,246,.3) 0, transparent 55%),
+                 radial-gradient(circle at bottom, rgba(8,47,73,.9) 0, #020617 55%);
+      box-shadow:var(--shadow);
+      display:grid; gap:.9rem;
+      position:relative; overflow:hidden;
+    }
+    .hero-panel::after{
+      content:""; position:absolute; inset:0;
+      background:radial-gradient(circle at top right, rgba(56,189,248,.2), transparent 55%);
+      opacity:.75; pointer-events:none;
+    }
+    .hero-panel-content{ position:relative; z-index:1; }
+
+    .hero-kicker{
+      display:inline-flex; align-items:center; gap:.4rem;
+      padding:.2rem .55rem; border-radius:999px;
+      background:rgba(15,23,42,.75); border:1px solid rgba(148,163,184,.7);
+      font-size:.75rem; color:#cbd5f5;
+    }
+    .hero-kicker i{ color:#22c55e; }
+
+    .hero-title{ font-size:1.9rem; margin:.4rem 0 .2rem; }
+    .hero-sub{ font-size:.95rem; color:#cbd5f5; max-width:460px; }
+
+    .hero-list{ margin:.7rem 0 0; padding:0; list-style:none; font-size:.9rem; }
+    .hero-list li{ display:flex; gap:.45rem; margin-bottom:.35rem; align-items:flex-start; }
+    .hero-list li i{ color:#22c55e; margin-top:.2rem; }
+
+    .hero-strip{
+      display:flex; gap:.4rem; flex-wrap:wrap; margin-top:.8rem;
+      font-size:.78rem;
+    }
+    .hero-strip span{
+      padding:.18rem .5rem; border-radius:999px; border:1px solid rgba(148,163,184,.7);
+      background:rgba(15,23,42,.75);
+    }
+
+    .login-card{
+      border-radius:var(--radius);
+      border:1px solid rgba(148,163,184,.55);
+      box-shadow:var(--shadow);
+      background:radial-gradient(circle at top, rgba(15,23,42,.9) 0, #020617 65%);
+      color:#e5e7eb;
+      padding:1.2rem 1.1rem 1.1rem;
+      max-width:480px;
+      margin:0 auto;
+    }
+    .login-card h2{ margin-bottom:.25rem; }
+    .login-card .hint{ font-size:.9rem; color:#9ca3af; margin-bottom:1rem; }
+
+    .form-grid{ display:grid; gap:.8rem; margin-top:.4rem; }
+
+    .input,.textarea,select{
+      width:100%; box-sizing:border-box;
+      padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.95rem; color:#e5e7eb;
+      transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#6b7280; }
+    .input:focus,.textarea:focus,select:focus{
+      outline:none; border-color:#38bdf8;
+      box-shadow:0 0 0 2px rgba(56,189,248,.35);
+      background:#020617;
+    }
+
+    .password-toggle{ position:relative; }
+    .password-toggle input{ width:100%; padding-right:2rem; }
+    .password-toggle i{
+      position:absolute; right:10px; top:50%; transform:translateY(-50%);
+      cursor:pointer; color:#9ca3af; font-size:.9rem;
+    }
+    .password-toggle i:hover{ color:#e5e7eb; }
+
+    .social-login{
+      display:flex; gap:.6rem; margin-top:1rem;
+    }
+    .social-login button{
+      flex:1; font-size:.9rem;
+      background:#020617; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+    .social-login button:hover{
+      border-color:#38bdf8; background:rgba(15,23,42,.95);
+    }
+
+    .alert{
+      margin-top:.6rem; padding:.55rem .7rem;
+      border-radius:10px; border:1px solid rgba(148,163,184,.6);
+      font-size:.85rem; background:rgba(15,23,42,.92);
+    }
+    .alert.success{
+      border-color:rgba(22,163,74,.5); background:rgba(22,163,74,.1); color:#bbf7d0;
+    }
+    .alert.danger{
+      border-color:rgba(220,38,38,.7); background:rgba(248,113,113,.14); color:#fecaca;
+    }
+    .alert.info{
+      border-color:rgba(59,130,246,.6); background:rgba(59,130,246,.15); color:#bfdbfe;
+    }
+
+    .page-title{ font-size:1.5rem; }
+    .section-title{ margin:.75rem 0 .35rem; }
+
+    /* Modal */
+    .modal{
+      display:none; position:fixed; inset:0;
+      background:rgba(15,23,42,.75);
+      align-items:center; justify-content:center; z-index:1000;
+    }
+    .modal .card{
+      max-width:400px; width:90%;
+      border-radius:var(--radius);
+      border:1px solid rgba(148,163,184,.8);
+      box-shadow:var(--shadow);
+      background:#020617; color:#e5e7eb;
+    }
+    .modal .body{ padding:1rem; }
+
+    /* Footer */
+    footer{
+      background:#020617; color:#e5e7eb;
+      padding:2rem 1rem 1.5rem; margin-top:auto;
+      border-top:1px solid rgba(31,41,55,.85);
+    }
+    footer .grid{
+      max-width:1100px; margin:0 auto;
+      display:grid; gap:1rem;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    }
+    footer a{ color:#e5e7eb; text-decoration:none; font-size:.9rem; }
+    footer a:hover{ text-decoration:underline; }
+    footer .social i{ margin-right:.5rem; }
+    .newsletter input{
+      padding:.5rem .6rem; border-radius:999px; border:1px solid var(--gray-400); width:100%; max-width:240px; background:#020617; color:#e5e7eb;
+    }
+    .footer-bottom{
+      max-width:1100px; margin:.75rem auto 0; text-align:center;
+      color:#9ca3af; font-size:.85rem;
+    }
+
+    @media(max-width:600px){
+      .hero-panel{ display:none; }
+      .page-inner{ max-width:480px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav aria-label="Primary">
+    <div class="wrap">
+      <a class="logo" href="/"><img src="/assets/logo/logo.png" alt="Elite Travel & Tour"></a>
+      <ul class="primary">
+        <li><a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a></li>
+        <li><a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+        <li><a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a></li>
+        <li><a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a></li>
+        <li><a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a></li>
+        <li><a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a></li>
+      </ul>
+      <div class="nav-right">
+        <button id="bellBtn" class="btn outline bell" aria-label="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span id="bellCount" class="count hidden">0</span>
+        </button>
+        <span id="authStatus" class="auth-pill" style="display:none;">
+          <i class="fa fa-user-check"></i><span class="auth-text">Guest</span>
+        </span>
+        <button id="loginBtn" class="btn outline"><i class="fa fa-right-to-bracket"></i> Login</button>
+        <button id="profileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i></button>
+        <button id="logoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        <button id="menuToggle" class="menu-toggle" aria-expanded="false"><i class="fa fa-bars"></i></button>
+      </div>
+    </div>
+
+    <!-- Mobile panel -->
+    <div id="mobilePanel" class="mobile-panel">
+      <div class="block">
+        <a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a>
+        <a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a>
+        <a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a>
+        <a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a>
+        <a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a>
+        <a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a>
+      </div>
+      <div class="block">
+        <span class="auth-pill"><i class="fa fa-user"></i><span id="mobileAuthText">Guest</span></span>
+        <div class="toolbar">
+          <button id="mobileLoginBtn" class="btn brand"><i class="fa fa-right-to-bracket"></i> Login</button>
+          <button id="mobileProfileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> Profile</button>
+          <button id="mobileLogoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+   <div id="notifFeed" class="feed hidden">
+  <div class="feed-toolbar">
+    <span class="muted small-text">Notifications</span>
+    <div style="color:var(--brand);display:flex;gap:.25rem;">
+      <button id="markAllReadBtn" class='btn ' style="color:var(--brand);" ><i class="fa fa-check-double"></i> Mark as Read</button>
+      <button id="clearAllNotifBtn" class='btn '><i class="fa fa-trash"></i> Clear</button>
+    </div>
+  </div>
+  <div id="notifList" class="list"></div>
+</div>
+<script type="module" src="/src/js/notifications.js"></script>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"><i class="fa fa-info-circle"></i><span id="toastText">Notice</span></div>
+
+  <!-- MAIN -->
+  <div class="page">
+    <div class="page-inner">
+      <!-- Left hero / trust -->
+      <section class="hero-panel" aria-label="Why login">
+        <div class="hero-panel-content">
+          <div class="hero-kicker">
+            <i class="fa fa-shield-halved"></i> Secure access to your journey
+          </div>
+          <h1 class="hero-title">Sign in to track every step.</h1>
+          <p class="hero-sub">
+            One login unlocks your applications, Work & Pay updates, payments, and real-time notifications from Elite Travel & Tour.
+          </p>
+
+          <ul class="hero-list">
+            <li><i class="fa fa-circle-check"></i><span>View and track your Work & Pay or Express applications in real time.</span></li>
+            <li><i class="fa fa-circle-check"></i><span>Check payment history and receipts in your profile.</span></li>
+            <li><i class="fa fa-circle-check"></i><span>Receive important alerts when admins review or update your case.</span></li>
+          </ul>
+
+          <div class="hero-strip">
+            <span><i class="fa fa-lock"></i> Powered by secure Supabase auth</span>
+            <span><i class="fa fa-envelope"></i> Login with your registered email</span>
+            <span><i class="fa fa-badge-check"></i> Ghana-based support</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right login card -->
+      <section class="login-card card" aria-label="Login form">
+        <div class="body">
+          <h2 class="page-title">Login</h2>
+          <p class="hint">Use your registered email and password. If your account was created by an admin, use that email here.</p>
+
+          <form id="loginForm" class="form-grid" novalidate>
+            <input class="input" id="email" type="email" placeholder="Email (required)" autocomplete="email" required>
+            <div class="password-toggle">
+              <input class="input" id="password" type="password" placeholder="Password (min. 6 characters)" minlength="6" required autocomplete="current-password">
+              <i id="togglePass" class="fa fa-eye" aria-label="Toggle password visibility" role="button" tabindex="0"></i>
+            </div>
+            <button class="btn brand" type="submit"><i class="fa fa-sign-in-alt"></i> Login</button>
+            <p class="muted" style="font-size:.9rem;margin-top:.25rem;">
+              <a href="/views/pages/reset-password.html">Forgot password?</a>
+            </p>
+          </form>
+          <p class="muted" style="margin-top:1rem;font-size:.9rem;">Don’t have an account? <a style="color:var(--brand);" href="/views/pages/register.html">Register</a></p>
+          <div class="social-login hidden" aria-label="Social login options">
+            <button class="btn" id="googleLogin"><i class="fa-brands fa-google"></i> Google</button>
+            <button class="btn" id="facebookLogin"><i class="fa-brands fa-facebook"></i> Facebook</button>
+          </div>
+
+          
+
+          <div id="statusMsg" class="alert info" role="status" aria-live="polite" style="margin-top:.75rem;display:none;"></div>
+
+          <div style="margin-top:1.5rem">
+            <h4 class="section-title">Security tips</h4>
+            <ul class="hint" style="list-style:none;padding:0;font-size:.85rem;">
+              <li><i class="fa fa-lock"></i> Use at least 6 characters with letters and numbers.</li>
+              <li><i class="fa fa-envelope"></i> Login only with the email used during registration.</li>
+              <li><i class="fa fa-shield-halved"></i> We never ask for your password via WhatsApp or phone.</li>
+              <li><i class="fa fa-user-check"></i> After logging in on a shared device, remember to logout.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <section class="card"><div class="body">
+      <h3 id="confirmTitle">Login successful</h3>
+      <p id="confirmText">You are now logged in. Redirecting to your profile...</p>
+      <div class="toolbar" style="margin-top:.6rem; justify-content:flex-end;">
+        <button class="btn brand" id="okBtn">OK</button>
+      </div>
+    </div></section>
+  </div>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="grid">
+      <div>
+        <h4>Elite Travel & Tour</h4>
+        <p>Trusted partner for seamless journeys worldwide.</p>
+        <p class="muted">Visa assistance, Work & Pay programs, and flight bookings with premium support.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/views/pages/services.html">Services</a></li>
+          <li><a href="/views/pages/work-and-pay.html">Work & Pay</a></li>
+          <li><a href="/views/pages/appointment.html">Book Appointment</a></li>
+          <li><a href="/views/pages/contact.html">Contact</a></li>
+          <li><a href="/views/pages/about.html">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><i class="fa fa-phone"></i> +233 59 911 7007</p>
+        <p><i class="fa fa-envelope"></i> info@elitetravel.com</p>
+        <p><i class="fa fa-map-marker-alt"></i> Adabraka Akasanoma rd, Greater Accra, Ghana</p>
+        <div class="newsletter" style="margin-top:.75rem;">
+          <label for="newsletterEmail" class="muted">Subscribe to our newsletter:</label><br>
+          <input id="newsletterEmail" type="email" placeholder="Your email">
+          <button id="subscribeBtn" class="btn brand" style="margin-top:.4rem;"><i class="fa fa-paper-plane"></i> Subscribe</button>
+          <div id="subscribeMsg" class="muted" style="margin-top:.5rem;"></div>
+        </div>
+      </div>
+      <div class="social">
+        <h4>Follow Us</h4>
+        <div class="toolbar">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© <span id="year"></span> Elite Travel & Tour. All rights reserved.</div>
+  </footer>
+
+  <script>
+    // Dynamic year + newsletter
+    document.getElementById('year').textContent=new Date().getFullYear();
+    const subscribeBtn=document.getElementById('subscribeBtn');
+    const eemailInput=document.getElementById('newsletterEmail');
+    const subscribeMsg=document.getElementById('subscribeMsg');
+    subscribeBtn?.addEventListener('click',()=>{
+      const eemail=eemailInput.value.trim();
+      if(!eemail){ subscribeMsg.textContent="Please enter your email."; subscribeMsg.style.color="red"; return; }
+      subscribeMsg.textContent=`Thank you for subscribing, ${eemail}!`;
+      subscribeMsg.style.color="lightgreen";
+      eemailInput.value="";
+    });
+  </script>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Notification feed toggle */
+    document.addEventListener('click',(e)=>{
+      const feed=document.getElementById('notifFeed');
+      if(!feed) return;
+      if(e.target.closest('#bellBtn')){ feed.classList.toggle('hidden'); }
+      else if(!e.target.closest('#notifFeed')){ feed.classList.add('hidden'); }
+    });
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(message, ms=2500){
+      if(!toast || !toastText) return;
+      toastText.textContent = message;
+      toast.classList.add('show');
+      setTimeout(()=> toast.classList.remove('show'), ms);
+    }
+
+    /* Supabase notifications subscription */
+    function renderNotification(n){
+      const list=document.getElementById('notifList');
+      const bellCount=document.getElementById('bellCount');
+      if(list){
+        const el=document.createElement('div');
+        el.className='item';
+        el.textContent=n.message || n.text;
+        list.prepend(el);
+      }
+      if(bellCount){
+        const count=parseInt(bellCount.textContent||'0',10)+1;
+        bellCount.textContent=String(count);
+        bellCount.classList.remove('hidden');
+      }
+    }
+    let channel;
+    async function subscribeNotifications(userId){
+      if(channel){ await sb.removeChannel(channel); channel=null; }
+      channel=sb.channel(`header-notifs-${userId}`)
+        .on('postgres_changes',{
+          event:'INSERT',
+          schema:'public',
+          table:'notifications',
+          filter:`user_id=eq.${userId}`
+        },payload=>{
+          renderNotification(payload.new);
+        })
+        .subscribe();
+    }
+
+    /* Auth buttons + state */
+    const loginBtn=document.getElementById('loginBtn');
+    const logoutBtn=document.getElementById('logoutBtn');
+    const profileBtn=document.getElementById('profileBtn');
+    const mobileLoginBtn=document.getElementById('mobileLoginBtn');
+    const mobileLogoutBtn=document.getElementById('mobileLogoutBtn');
+    const mobileProfileBtn=document.getElementById('mobileProfileBtn');
+    const authText=document.querySelector('#authStatus .auth-text');
+    const authPill=document.getElementById('authStatus');
+    const mobileAuthText=document.getElementById('mobileAuthText');
+
+    function updateAuthUI(session){
+      const user=session?.user;
+      if(user){
+        authText && (authText.textContent=user.email);
+        authPill && (authPill.style.display='inline-flex');
+        mobileAuthText && (mobileAuthText.textContent=user.email);
+
+        loginBtn?.style.setProperty('display','none');
+        logoutBtn?.style.setProperty('display','inline-flex');
+        profileBtn?.style.setProperty('display','inline-flex');
+
+        mobileLoginBtn?.style.setProperty('display','none');
+        mobileLogoutBtn?.style.setProperty('display','inline-flex');
+        mobileProfileBtn?.style.setProperty('display','inline-flex');
+
+        profileBtn && (profileBtn.onclick=()=>window.location.href='/views/pages/profile.html');
+        mobileProfileBtn && (mobileProfileBtn.onclick=()=>window.location.href='/views/pages/profile.html');
+
+        subscribeNotifications(user.id);
+      } else {
+        authText && (authText.textContent='Guest');
+        authPill && (authPill.style.display='none');
+        mobileAuthText && (mobileAuthText.textContent='Guest');
+
+        loginBtn?.style.setProperty('display','inline-flex');
+        logoutBtn?.style.setProperty('display','none');
+        profileBtn?.style.setProperty('display','none');
+
+        mobileLoginBtn?.style.setProperty('display','inline-flex');
+        mobileLogoutBtn?.style.setProperty('display','none');
+        mobileProfileBtn?.style.setProperty('display','none');
+      }
+    }
+
+    const { data } = await sb.auth.getSession();
+    updateAuthUI(data.session);
+    sb.auth.onAuthStateChange((_event, session)=> updateAuthUI(session));
+
+    loginBtn?.addEventListener('click', ()=> window.location.href='/views/pages/login.html');
+    mobileLoginBtn?.addEventListener('click', ()=> window.location.href='/views/pages/login.html');
+    logoutBtn?.addEventListener('click', async ()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+    mobileLogoutBtn?.addEventListener('click', async ()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Mobile menu toggle */
+    const menuToggle=document.getElementById('menuToggle');
+    const mobilePanel=document.getElementById('mobilePanel');
+    menuToggle?.addEventListener('click', ()=>{
+      const isOpen = mobilePanel.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    mobilePanel?.addEventListener('click', (e)=>{
+      if(e.target.matches('a')) {
+        mobilePanel.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded','false');
+      }
+    });
+
+    /* Login logic */
+    const form=document.getElementById('loginForm');
+    const statusMsg=document.getElementById('statusMsg');
+    const confirmModal=document.getElementById('confirmModal');
+    const togglePass=document.getElementById('togglePass');
+    const passwordInput=document.getElementById('password');
+    const emailInput=document.getElementById('email');
+    const okBtn=document.getElementById('okBtn');
+    const googleLogin=document.getElementById('googleLogin');
+    const facebookLogin=document.getElementById('facebookLogin');
+    
+    const LANDING_URL = data.session?.user.role === 'admin'
+  ? '/views/admin/jobs.html'
+  : '/views/pages/user/profile.html';
+
+    function showStatus(text,type='info'){
+      if(!statusMsg) return;
+      statusMsg.style.display=text ? 'block' : 'none';
+      statusMsg.textContent=text || '';
+      statusMsg.className = `alert ${type}`;
+    }
+
+    // Modal focus trap
+    function trapFocus(modal){
+      const focusable = modal.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])');
+      const first = focusable[0];
+      const last  = focusable[focusable.length-1];
+      function keyHandler(e){
+        if(e.key !== 'Tab') return;
+        if(e.shiftKey){
+          if(document.activeElement === first){ e.preventDefault(); last.focus(); }
+        } else {
+          if(document.activeElement === last){ e.preventDefault(); first.focus(); }
+        }
+      }
+      modal.addEventListener('keydown', keyHandler);
+      first && first.focus();
+    }
+    function openModal(m){ m.style.display='flex'; trapFocus(m); }
+    function closeModal(m){ m.style.display='none'; }
+
+    // Toggle password visibility
+    function togglePassword(){
+      const type=passwordInput.getAttribute('type')==='password'?'text':'password';
+      passwordInput.setAttribute('type',type);
+      togglePass.className= type==='password'?'fa fa-eye':'fa fa-eye-slash';
+    }
+    togglePass?.addEventListener('click',togglePassword);
+    togglePass?.addEventListener('keydown',(e)=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); togglePassword(); } });
+
+    // Handle login
+    form?.addEventListener('submit',async(e)=>{
+      e.preventDefault();
+      const email=emailInput.value.trim();
+      const password=passwordInput.value.trim();
+      if(!email||!password){ 
+        showStatus("Please fill all fields.","danger"); 
+        return; 
+      }
+      if(password.length<6){
+        showStatus("Password must be at least 6 characters.","danger");
+        return;
+      }
+
+      try {
+        showStatus('Signing you in...','info');
+        const { data:loginData, error }=await sb.auth.signInWithPassword({ email, password });
+        if(error){ 
+          showStatus(error.message || 'Invalid credentials.','danger');
+          showToast('Login failed.');
+        } else {
+          showStatus('Login successful.','success');
+          openModal(confirmModal);
+          setTimeout(()=>{ window.location.href=LANDING_URL; },1400);
+        }
+      } catch(err){
+        showStatus("Login failed. Please try again.","danger");
+        showToast('Unexpected error.');
+      }
+    });
+
+    okBtn?.addEventListener('click',()=>{
+      closeModal(confirmModal);
+      window.location.href=LANDING_URL;
+    });
+    confirmModal?.addEventListener('click',(e)=>{ if(e.target===confirmModal) closeModal(confirmModal); });
+
+    // Social login handlers
+    googleLogin?.addEventListener('click',async()=>{
+      try{
+        showStatus('Opening Google login...','info');
+        const { error }=await sb.auth.signInWithOAuth({
+          provider:'google',
+          options:{ redirectTo: window.location.origin + LANDING_URL }
+        });
+        if(error){ 
+          showStatus(error.message,"danger");
+        }
+      }catch(err){ 
+        showStatus("Google login failed.","danger");
+      }
+    });
+
+    facebookLogin?.addEventListener('click',async()=>{
+      try{
+        showStatus('Opening Facebook login...','info');
+        const { error }=await sb.auth.signInWithOAuth({
+          provider:'facebook',
+          options:{ redirectTo: window.location.origin + LANDING_URL }
+        });
+        if(error){ 
+          showStatus(error.message,"danger");
+        }
+      }catch(err){ 
+        showStatus("Facebook login failed.","danger");
+      }
+    });
+
+    // Submit on Enter in entire form
+    form?.addEventListener('keydown',(e)=>{
+      if(e.key==='Enter'){ e.preventDefault(); form.dispatchEvent(new Event('submit',{cancelable:true})); }
+    });
+
+    // If already logged in, redirect
+    (async()=>{
+      const { data:{ session } } = await sb.auth.getSession();
+      if(session){
+        window.location.href=LANDING_URL;
+      }
+    })();
+  </script>
+</body>
+</html>

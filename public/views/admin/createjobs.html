@@ -1,0 +1,1179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — Job builder | Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Create and edit rich, image-ready jobs for Work & Pay, Express, and other programs with full metadata and preview."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <style>
+    :root{
+      --brand:#0077cc;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --light:#fff;
+      --muted:#64748b;
+      --bg:#020617;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.7);
+      --radius:14px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --info:#0ea5e9;
+      --chip-bg:#0b1220;
+    }
+
+    *{ box-sizing:border-box; }
+
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(59,130,246,.26) 0, transparent 45%),
+        #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      min-height:0;
+    }
+    @media(max-width:900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(31,41,55,.9);
+      background:radial-gradient(circle at top left, #020c28 0, #020617 60%);
+      padding:.8rem .7rem;
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      box-shadow:0 0 0 1px rgba(15,23,42,.9);
+      overflow-y:auto;
+      max-height:100vh;
+    }
+    .sidebar-header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.2rem .1rem .4rem;
+    }
+    .sidebar-header .logo{
+      display:flex; align-items:center; gap:.4rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; font-size:.98rem;
+    }
+    .sidebar-header .logo i{ color:#38bdf8; }
+    .side-toggle{
+      display:none; border:none; background:rgba(15,23,42,.8);
+      color:#cbd5f5; padding:.35rem .5rem; border-radius:999px; cursor:pointer;
+    }
+    .side-toggle i{ font-size:.9rem; }
+    @media(max-width:900px){
+      .sidebar{
+        position:fixed; inset:0 auto 0 0; width:260px;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:60;
+      }
+      .sidebar.open{ transform:translateX(0); }
+      .side-toggle{ display:inline-flex; }
+    }
+
+    .nav-section{ margin-top:.4rem; }
+    .nav-label{
+      font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+      color:#64748b; margin:.4rem 0 .2rem; padding:0 .2rem;
+    }
+    .nav-list{ list-style:none; padding:0; margin:0; }
+    .nav-link{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.45rem .55rem; border-radius:10px;
+      color:#cbd5f5; text-decoration:none; font-size:.9rem;
+      border:1px solid transparent; cursor:pointer;
+      background:transparent;
+    }
+    .nav-link:hover{
+      background:rgba(30,64,175,.45);
+      border-color:rgba(37,99,235,.6);
+    }
+    .nav-link.active{
+      background:rgba(37,99,235,.9);
+      border-color:rgba(37,99,235,1);
+      color:#e5e7eb;
+      box-shadow:0 10px 28px rgba(37,99,235,.6);
+    }
+
+    .sidebar-footer{
+      margin-top:auto; padding-top:.5rem;
+      border-top:1px solid rgba(30,64,175,.7);
+      font-size:.8rem; color:#64748b;
+    }
+    .sidebar-footer .chip{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.22rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(37,99,235,.7);
+      margin-top:.35rem; font-size:.78rem;
+    }
+    .sidebar-footer .chip i{ color:#22c55e; }
+
+    /* Main */
+    .main{
+      display:flex; flex-direction:column;
+      min-height:0;
+    }
+    .main-header{
+      padding:.55rem 1rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 16px 50px rgba(15,23,42,.8);
+      position:sticky; top:0; z-index:40;
+    }
+    .breadcrumbs{
+      display:flex; align-items:center; gap:.35rem; font-size:.85rem; color:#9ca3af;
+    }
+    .breadcrumbs span.current{ color:#e5e7eb; font-weight:500; }
+
+    .main-body{
+      padding:1rem;
+      overflow:auto;
+      min-height:0;
+    }
+
+    .card{
+      background:#020617;
+      border-radius:var(--radius);
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:var(--shadow);
+      padding:1rem;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    /* On large screens, card fills viewport minus header for split layout */
+    @media(min-width:901px){
+      .card{
+        height:calc(100vh - 72px - 2rem);
+      }
+    }
+
+    .section-title{ font-size:1.15rem; margin-bottom:.4rem; }
+    .muted{ color:var(--muted); }
+
+    .toolbar{ display:flex; gap:.5rem; flex-wrap:wrap; margin:.6rem 0; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{ background:var(--brand); color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4); }
+    .btn.brand:hover{ background:var(--brand-600); transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{ border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7); }
+    .btn-sm{ padding:.25rem .55rem; font-size:.8rem; }
+
+    .input,select,textarea{
+      width:100%; box-sizing:border-box;
+      padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.9rem; color:#e5e7eb;
+      transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#6b7280; }
+    .input:focus,select:focus,textarea:focus{
+      outline:none; border-color:#38bdf8;
+      box-shadow:0 0 0 2px rgba(56,189,248,.35);
+      background:#020617;
+    }
+    .textarea{ min-height:90px; resize:vertical; }
+
+    .grid-main{
+      display:grid; gap:.9rem; grid-template-columns:2.1fr 1.35fr;
+      flex:1;
+      min-height:0;
+    }
+    @media(max-width:1100px){
+      .grid-main{
+        grid-template-columns:1fr;
+        height:auto;
+      }
+    }
+
+    .form-scroll-wrap{
+      overflow-y:auto;
+      padding-right:.4rem;
+      min-width:0;
+    }
+
+    .preview-wrap{
+      position:sticky;
+      top:0.5rem;
+      align-self:flex-start;
+      min-width:0;
+    }
+
+    .grid-2{ display:grid; gap:.7rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .grid-3{ display:grid; gap:.7rem; grid-template-columns:repeat(3,minmax(0,1fr)); }
+    @media(max-width:1100px){
+      .form-scroll-wrap{ max-height:none; }
+      .preview-wrap{
+        position:static;
+        margin-top:1rem;
+      }
+    }
+    @media(max-width:900px){
+      .grid-2,.grid-3{ grid-template-columns:1fr; }
+    }
+
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.78rem; color:#e5e7eb;
+    }
+
+    .chip-row{ display:flex; flex-wrap:wrap; gap:.3rem; }
+    .chip{
+      padding:.18rem .5rem; border-radius:999px;
+      font-size:.78rem;
+      background:var(--chip-bg);
+      border:1px solid rgba(55,65,81,.9);
+      color:#e5e7eb;
+    }
+
+    .preview-card{
+      background:
+        radial-gradient(circle at top left, rgba(37,99,235,.35), transparent 55%),
+        radial-gradient(circle at bottom, rgba(16,185,129,.16), transparent 60%),
+        #020617;
+      border-radius:14px;
+      border:1px solid rgba(31,41,55,.9);
+      padding:.9rem .9rem 1rem;
+      box-shadow:0 18px 50px rgba(15,23,42,.9);
+    }
+    .preview-header{
+      display:flex; justify-content:space-between; align-items:center; gap:.6rem;
+    }
+    .preview-logo{
+      width:44px; height:44px;
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid rgba(148,163,184,.7);
+      background:#020617;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.1rem;
+    }
+    .preview-logo img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .preview-title{ font-size:.98rem; font-weight:600; }
+    .preview-sub{ font-size:.84rem; color:#9ca3af; }
+
+    .preview-cover{
+      margin-top:.7rem;
+      border-radius:12px;
+      overflow:hidden;
+      border:1px solid rgba(31,41,55,.9);
+      background:#020617;
+      height:140px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#64748b;
+      font-size:.86rem;
+    }
+    .preview-cover img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    .preview-meta{
+      display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.6rem;
+    }
+
+    .preview-body{
+      margin-top:.55rem;
+      font-size:.86rem;
+      color:#cbd5f5;
+    }
+
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.1rem .5rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020c28; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+    .badge.success{ background:rgba(22,163,74,.2); border-color:rgba(22,163,74,.7); color:#bbf7d0; }
+    .badge.warning{ background:rgba(234,179,8,.18); border-color:rgba(234,179,8,.7); color:#facc15; }
+
+    .file-subtext{
+      font-size:.78rem;
+      color:#9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/views/admin/index.html" class="logo">
+          <i class="fa-solid fa-compass"></i> <span>Elite Admin</span>
+        </a>
+        <button class="side-toggle" id="sideToggle"><i class="fa fa-xmark"></i></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a class="nav-link" href="/views/admin/index.html">
+              <i class="fa fa-gauge-high"></i> <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/views/admin/analytics.html">
+              <i class="fa fa-chart-line"></i> <span>Analytics</span>
+              <span class="badge">beta</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Jobs & Services</div>
+        <ul class="nav-list">
+          <li><button class="nav-link active"><i class="fa fa-plus"></i> <span>Create Job</span></button></li>
+          <li><a class="nav-link" href="/views/admin/jobs.html"><i class="fa fa-briefcase"></i> <span>Jobs</span></a></li>
+          <li><a class="nav-link" href="/views/admin/services.html"><i class="fa fa-suitcase"></i> <span>Services</span></a></li>
+          <li><a class="nav-link" href="/views/admin/activeprocess.html"><i class="fa fa-spinner"></i> <span>Active processes</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Users & Activity</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/users.html"><i class="fa fa-users"></i> <span>Users</span></a></li>
+          <li><a class="nav-link" href="/views/admin/user-details.html"><i class="fa fa-id-card"></i> <span>User details</span></a></li>
+          <li><a class="nav-link" href="/views/admin/activeusers.html"><i class="fa fa-user-check"></i> <span>Active users</span></a></li>
+          <li><a class="nav-link" href="/views/admin/tracking.html"><i class="fa fa-location-crosshairs"></i> <span>Tracking</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Transactions</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/payments.html"><i class="fa fa-credit-card"></i> <span>Payments</span></a></li>
+          <li><a class="nav-link" href="/views/admin/appointments.html"><i class="fa fa-calendar"></i> <span>Appointments</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Content & Feedback</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/notifications.html"><i class="fa fa-bell"></i> <span>Notifications</span></a></li>
+          <li><a class="nav-link" href="/views/admin/testimonials.html"><i class="fa fa-star"></i> <span>Testimonials</span></a></li>
+          <li><a class="nav-link" href="/views/admin/contacts.html"><i class="fa fa-envelope-open-text"></i> <span>Contact messages</span></a></li>
+          <li><a class="nav-link" href="/views/admin/applications.html"><i class="fa fa-file-signature"></i> <span>Applications</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Session</div>
+        <div class="chip">
+          <i class="fa fa-user-shield"></i> <span id="adminEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="breadcrumbs">
+          <button class="side-toggle" id="openSideOnMobile"><i class="fa fa-bars"></i></button>
+          <span>Admin</span> <span>/</span>
+          <span class="current" id="crumbMode">Create job</span>
+        </div>
+        <div class="main-header-right">
+          <span class="pill-soft" id="modeBadge"><i class="fa fa-circle-plus"></i> Create</span>
+          <button class="btn outline" id="adminLogout"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="main-body">
+        <article class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h2 class="section-title" id="pageTitle">Job builder</h2>
+              <p class="muted" id="pageSubtitle">
+                Create a new job for Work & Pay, Express, or other programs. Use images to match your public site branding.
+              </p>
+            </div>
+            <div class="chip-row">
+              <span class="chip"><i class="fa fa-database"></i> jobs + metadata</span>
+              <span class="chip"><i class="fa fa-image"></i> cover & logo uploads</span>
+            </div>
+          </div>
+
+          <div class="grid-main" style="margin-top:.9rem;">
+            <!-- LEFT: FORM -->
+            <div class="form-scroll-wrap">
+              <form id="jobForm" style="display:flex;flex-direction:column;gap:.9rem;">
+                <!-- Core -->
+                <section>
+                  <h3 class="section-title" style="font-size:1rem;">Core details</h3>
+                  <div class="grid-3">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Job title</label>
+                      <input id="jobTitle" class="input" placeholder="Warehouse worker in Canada" required>
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Country</label>
+                      <input id="jobCountry" class="input" placeholder="Canada, UK, Czech">
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">City</label>
+                      <input id="jobCity" class="input" placeholder="Toronto, London, Prague">
+                    </div>
+                  </div>
+                  <div class="grid-3" style="margin-top:.6rem;">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Plan</label>
+                      <select id="jobPlan" class="input">
+                        <option value="">No specific plan</option>
+                        <option value="work">Work & Pay</option>
+                        <option value="express">Express</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Status</label>
+                      <select id="jobStatus" class="input">
+                        <option value="active">Active</option>
+                        <option value="draft">Draft</option>
+                        <option value="archived">Archived</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Job type</label>
+                      <select id="jobType" class="input">
+                        <option value="">Not set</option>
+                        <option value="full-time">Full-time</option>
+                        <option value="part-time">Part-time</option>
+                        <option value="contract">Contract</option>
+                        <option value="seasonal">Seasonal</option>
+                      </select>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Images -->
+                <section>
+                  <h3 class="section-title" style="font-size:1rem;">Images</h3>
+                  <div class="grid-2">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Upload cover image</label>
+                      <input id="jobCoverFile" type="file" accept="image/*" class="input">
+                      <p class="file-subtext">
+                        Select an image to use as the main cover. It will be uploaded to Storage and shown in the preview.
+                      </p>
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Upload logo image</label>
+                      <input id="jobLogoFile" type="file" accept="image/*" class="input">
+                      <p class="file-subtext">
+                        Optional logo for the partner or employer. If provided, it replaces the default briefcase icon.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="grid-2" style="margin-top:.6rem;">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Gallery image URLs (optional)</label>
+                      <input id="jobGallery" class="input" placeholder="External URLs or CDN images, comma separated">
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Company (optional)</label>
+                      <input id="jobCompany" class="input" placeholder="Partner company name">
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Pay & Contract -->
+                <section>
+                  <h3 class="section-title" style="font-size:1rem;">Pay & contract</h3>
+                  <div class="grid-3">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Salary / pay (text)</label>
+                      <input id="jobSalary" class="input" placeholder="15 CAD/hour or 2,000 CAD/month">
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Salary amount</label>
+                      <input id="jobSalaryAmount" type="number" class="input" placeholder="2000">
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Pay frequency</label>
+                      <select id="jobPayFrequency" class="input">
+                        <option value="">Not specified</option>
+                        <option value="hourly">Hourly</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="grid-3" style="margin-top:.6rem;">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Contract length</label>
+                      <input id="jobContractLength" class="input" placeholder="6 months, 2 years">
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Currency</label>
+                      <input id="jobCurrency" class="input" placeholder="CAD, EUR, GBP, USD">
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Languages</label>
+                      <input id="jobLanguages" class="input" placeholder="English (required), French (bonus)">
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Requirements -->
+                <section>
+                  <h3 class="section-title" style="font-size:1rem;">Requirements</h3>
+                  <div class="grid-3">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Experience level</label>
+                      <select id="jobExperienceLevel" class="input">
+                        <option value="">Not specified</option>
+                        <option value="entry">Entry</option>
+                        <option value="mid">Mid</option>
+                        <option value="senior">Senior</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Min experience</label>
+                      <input id="jobMinExperience" class="input" placeholder="1 year, 6 months">
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Education</label>
+                      <input id="jobEducation" class="input" placeholder="SHS, Diploma, Degree">
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Descriptions -->
+                <section>
+                  <h3 class="section-title" style="font-size:1rem;">Descriptions</h3>
+                  <div style="margin-bottom:.6rem;">
+                    <label class="muted" style="font-size:.85rem;">Short description</label>
+                    <textarea id="jobShortDesc" class="textarea" placeholder="2–3 lines used for job cards and quick preview."></textarea>
+                  </div>
+                  <div class="grid-2">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Responsibilities</label>
+                      <textarea id="jobResponsibilities" class="textarea" placeholder="- Load/unload goods&#10;- Follow safety rules&#10;- Work in shifts"></textarea>
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Requirements (detailed)</label>
+                      <textarea id="jobReqDetails" class="textarea" placeholder="- Able to lift 20kg&#10;- Valid passport&#10;- Previous warehouse experience"></textarea>
+                    </div>
+                  </div>
+                  <div style="margin-top:.6rem;">
+                    <label class="muted" style="font-size:.85rem;">Benefits</label>
+                    <textarea id="jobBenefits" class="textarea" placeholder="- Accommodation support&#10;- Transport to site&#10;- Paid overtime"></textarea>
+                  </div>
+                </section>
+
+                <!-- Meta & admin -->
+                <section>
+                  <h3 class="section-title" style="font-size:1rem;">Meta & admin</h3>
+                  <div class="grid-3">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Category</label>
+                      <input id="jobCategory" class="input" placeholder="Warehouse, Hospitality, Construction">
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Tags (comma separated)</label>
+                      <input id="jobTags" class="input" placeholder="canada, warehouse, night-shift">
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Priority</label>
+                      <input id="jobPriority" type="number" class="input" value="0">
+                    </div>
+                  </div>
+                  <div class="grid-3" style="margin-top:.6rem;">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Featured</label>
+                      <select id="jobFeatured" class="input">
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                      </select>
+                    </div>
+                    <div style="grid-column:1/-1;margin-top:.6rem;">
+                      <label class="muted" style="font-size:.85rem;">Admin note (internal only)</label>
+                      <textarea id="jobAdminNote" class="textarea" placeholder="Internal note — partner agency, special conditions, etc."></textarea>
+                    </div>
+                  </div>
+                </section>
+
+                <div class="toolbar" style="margin-top:.7rem;">
+                  <button class="btn brand" id="jobSaveBtn" type="button">
+                    <i class="fa fa-save"></i> <span id="saveLabel">Save job</span>
+                  </button>
+                  <button class="btn outline" id="jobResetBtn" type="button">
+                    <i class="fa fa-rotate-left"></i> Reset
+                  </button>
+                  <a href="/views/admin/jobs.html" class="btn outline">
+                    <i class="fa fa-list"></i> Back to jobs
+                  </a>
+                </div>
+
+                <p id="jobStatusText" class="muted" style="margin-top:.4rem;"></p>
+              </form>
+            </div>
+
+            <!-- RIGHT: PREVIEW -->
+            <div class="preview-wrap">
+              <section class="preview-card" id="jobPreview">
+                <div class="preview-header">
+                  <div style="display:flex;gap:.6rem;align-items:center;">
+                    <div class="preview-logo" id="prevLogoWrap">
+                      <span id="prevLogoText"><i class="fa fa-briefcase"></i></span>
+                    </div>
+                    <div>
+                      <div class="preview-title" id="prevTitle">Job title</div>
+                      <div class="preview-sub" id="prevLocation">Location — Country</div>
+                      <div class="preview-sub" id="prevPlan">Plan: —</div>
+                    </div>
+                  </div>
+                  <span class="badge" id="prevStatusBadge">Draft</span>
+                </div>
+
+                <div class="preview-cover" id="prevCover">
+                  <span id="prevCoverText">Cover image preview</span>
+                </div>
+
+                <div class="preview-meta">
+                  <span class="chip" id="prevTagPlan">Plan</span>
+                  <span class="chip" id="prevTagType">Type</span>
+                  <span class="chip" id="prevTagCategory">Category</span>
+                  <span class="chip" id="prevTagSalary">Salary</span>
+                </div>
+
+                <div class="preview-body" id="prevShort">
+                  Short description will appear here as applicants see it on the listing page.
+                </div>
+              </section>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><i class="fa fa-info-circle"></i><span id="toastText"></span></div>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(msg,ms=2500){
+      toastText.textContent=msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),ms);
+    }
+
+    /* Sidebar / header menu toggle */
+    const sidebar=document.getElementById('sidebar');
+    const sideToggle=document.getElementById('sideToggle');
+    const openSideOnMobile=document.getElementById('openSideOnMobile');
+
+    sideToggle?.addEventListener('click',()=> sidebar.classList.remove('open'));
+    openSideOnMobile?.addEventListener('click',()=>{
+      if(sidebar.classList.contains('open')){
+        sidebar.classList.remove('open');
+      }else{
+        sidebar.classList.add('open');
+      }
+    });
+
+    /* Auth guard */
+    const adminEmailSpan=document.getElementById('adminEmail');
+    const adminLogout=document.getElementById('adminLogout');
+
+    const { data } = await sb.auth.getSession();
+    const session=data.session;
+    const admin=session?.user;
+
+    if(!admin){
+      showToast('Admin session required.');
+      window.location.href='/views/pages/login.html';
+    }else{
+      adminEmailSpan.textContent=admin.email;
+    }
+
+    adminLogout?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Form references */
+    const jobForm=document.getElementById('jobForm');
+    const jobSaveBtn=document.getElementById('jobSaveBtn');
+    const jobResetBtn=document.getElementById('jobResetBtn');
+    const saveLabel=document.getElementById('saveLabel');
+    const jobStatusText=document.getElementById('jobStatusText');
+
+    const jobTitle=document.getElementById('jobTitle');
+    const jobCountry=document.getElementById('jobCountry');
+    const jobCity=document.getElementById('jobCity');
+    const jobPlan=document.getElementById('jobPlan');
+    const jobStatus=document.getElementById('jobStatus');
+    const jobType=document.getElementById('jobType');
+
+    const jobCoverFile=document.getElementById('jobCoverFile');
+    const jobLogoFile=document.getElementById('jobLogoFile');
+    const jobGallery=document.getElementById('jobGallery');
+    const jobCompany=document.getElementById('jobCompany');
+
+    const jobSalary=document.getElementById('jobSalary');
+    const jobSalaryAmount=document.getElementById('jobSalaryAmount');
+    const jobPayFrequency=document.getElementById('jobPayFrequency');
+    const jobContractLength=document.getElementById('jobContractLength');
+    const jobCurrency=document.getElementById('jobCurrency');
+
+    const jobExperienceLevel=document.getElementById('jobExperienceLevel');
+    const jobMinExperience=document.getElementById('jobMinExperience');
+    const jobEducation=document.getElementById('jobEducation');
+    const jobLanguages=document.getElementById('jobLanguages');
+
+    const jobShortDesc=document.getElementById('jobShortDesc');
+    const jobResponsibilities=document.getElementById('jobResponsibilities');
+    const jobReqDetails=document.getElementById('jobReqDetails');
+    const jobBenefits=document.getElementById('jobBenefits');
+
+    const jobCategory=document.getElementById('jobCategory');
+    const jobTags=document.getElementById('jobTags');
+    const jobPriority=document.getElementById('jobPriority');
+    const jobFeatured=document.getElementById('jobFeatured');
+    const jobAdminNote=document.getElementById('jobAdminNote');
+
+    const prevLogoText=document.getElementById('prevLogoText');
+    const prevTitle=document.getElementById('prevTitle');
+    const prevLocation=document.getElementById('prevLocation');
+    const prevPlan=document.getElementById('prevPlan');
+    const prevStatusBadge=document.getElementById('prevStatusBadge');
+    const prevCover=document.getElementById('prevCover');
+    const prevTagPlan=document.getElementById('prevTagPlan');
+    const prevTagType=document.getElementById('prevTagType');
+    const prevTagCategory=document.getElementById('prevTagCategory');
+    const prevTagSalary=document.getElementById('prevTagSalary');
+    const prevShort=document.getElementById('prevShort');
+
+    const crumbMode=document.getElementById('crumbMode');
+    const pageTitle=document.getElementById('pageTitle');
+    const modeBadge=document.getElementById('modeBadge');
+
+    let editingId=null;
+    let currentCoverUrl=null;
+    let currentLogoUrl=null;
+
+    function setJobStatus(msg,type='muted'){
+      jobStatusText.textContent=msg||'';
+      jobStatusText.style.color=
+        type==='success'? '#4ade80' :
+        type==='danger'? '#fecaca' :
+        type==='warning'? '#fbbf24' :
+        '#9ca3af';
+    }
+
+    function slugify(text){
+      return text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g,'-')
+        .replace(/(^-|-$)+/g,'');
+    }
+
+    async function generateUniqueSlug(baseSlug){
+      let slug=baseSlug || 'job';
+      let counter=1;
+
+      while(true){
+        const { data: existing, error } = await sb
+          .from('jobs')
+          .select('id')
+          .eq('slug', slug)
+          .maybeSingle();
+
+        if(error){
+          console.error('Slug check error:', error);
+          return slug;
+        }
+
+        if(!existing || (editingId && existing.id === editingId)){
+          return slug;
+        }
+
+        counter++;
+        slug = `${baseSlug}-${counter}`;
+      }
+    }
+
+    function updatePreview(){
+      const title=jobTitle.value.trim() || 'Job title';
+      const location=(jobCity.value.trim() && jobCountry.value.trim())
+        ? `${jobCity.value.trim()}, ${jobCountry.value.trim()}`
+        : jobCountry.value.trim() || jobCity.value.trim() || 'Location — Country';
+
+      const plan=jobPlan.value || '';
+      const type=jobType.value || '';
+      const category=jobCategory.value.trim();
+      const salaryText=jobSalary.value.trim();
+      const salaryAmount=jobSalaryAmount.value.trim();
+      const currency=jobCurrency.value.trim() || '';
+
+      prevTitle.textContent=title;
+      prevLocation.textContent=location;
+      prevPlan.textContent = plan
+        ? `Plan: ${plan === 'work' ? 'Work & Pay' : plan === 'express' ? 'Express' : plan}`
+        : 'Plan: —';
+
+      prevStatusBadge.textContent =
+        jobStatus.value === 'active' ? 'Active' :
+        jobStatus.value === 'archived' ? 'Archived' :
+        'Draft';
+
+      prevTagPlan.textContent = plan || 'Plan';
+      prevTagType.textContent = type || 'Type';
+      prevTagCategory.textContent = category || 'Category';
+
+      let salaryLabel='Salary';
+      if(salaryText){
+        salaryLabel=salaryText;
+      }else if(salaryAmount){
+        salaryLabel = currency ? `${salaryAmount} ${currency}` : salaryAmount;
+      }
+      prevTagSalary.textContent = salaryLabel;
+
+      prevShort.textContent = jobShortDesc.value.trim()
+        || 'Short description will appear here as applicants see it on the listing page.';
+
+      if(currentLogoUrl){
+        prevLogoText.innerHTML=`<img src="${currentLogoUrl}" alt="logo">`;
+      }else{
+        prevLogoText.innerHTML='<i class="fa fa-briefcase"></i>';
+      }
+
+      if(currentCoverUrl){
+        prevCover.innerHTML=`<img src="${currentCoverUrl}" alt="cover">`;
+      }else{
+        prevCover.innerHTML='<span id="prevCoverText">Cover image preview</span>';
+      }
+    }
+
+    [
+      jobTitle,jobCountry,jobCity,jobPlan,jobStatus,jobType,
+      jobGallery,jobCompany,
+      jobSalary,jobSalaryAmount,jobPayFrequency,jobContractLength,
+      jobCurrency,
+      jobExperienceLevel,jobMinExperience,jobEducation,jobLanguages,
+      jobShortDesc,jobResponsibilities,jobReqDetails,jobBenefits,
+      jobCategory,jobTags,jobPriority,jobFeatured,jobAdminNote
+    ].forEach(el=>{
+      el?.addEventListener('input',updatePreview);
+      el?.addEventListener('change',updatePreview);
+    });
+
+    jobCoverFile.addEventListener('change',()=>{
+      const file=jobCoverFile.files?.[0];
+      if(file){
+        const tmpUrl=URL.createObjectURL(file);
+        currentCoverUrl=tmpUrl;
+        updatePreview();
+      }
+    });
+
+    jobLogoFile.addEventListener('change',()=>{
+      const file=jobLogoFile.files?.[0];
+      if(file){
+        const tmpUrl=URL.createObjectURL(file);
+        currentLogoUrl=tmpUrl;
+        updatePreview();
+      }
+    });
+
+    updatePreview();
+
+    jobResetBtn.addEventListener('click',()=>{
+      jobForm.reset();
+      editingId=null;
+      currentCoverUrl=null;
+      currentLogoUrl=null;
+      const url=new URL(window.location.href);
+      url.searchParams.delete('id');
+      history.replaceState(null,'',url.toString());
+      crumbMode.textContent='Create job';
+      pageTitle.textContent='Job builder';
+      modeBadge.innerHTML='<i class="fa fa-circle-plus"></i> Create';
+      saveLabel.textContent='Save job';
+      setJobStatus('');
+      updatePreview();
+    });
+
+    const urlParams=new URLSearchParams(window.location.search);
+    const existingId=urlParams.get('id');
+    if(existingId){
+      editingId=existingId;
+      crumbMode.textContent='Edit job';
+      pageTitle.textContent='Edit job';
+      modeBadge.innerHTML='<i class="fa fa-pen"></i> Edit';
+      saveLabel.textContent='Update job';
+      loadExistingJob(existingId);
+    }
+
+    async function loadExistingJob(id){
+      setJobStatus('Loading job...','muted');
+      try{
+        const { data:row, error } = await sb
+          .from('jobs')
+          .select('id,title,country,city,plan,status,description,metadata,created_at')
+          .eq('id',id)
+          .single();
+        if(error) throw error;
+        if(!row){ setJobStatus('Job not found.','danger'); return; }
+
+        jobTitle.value=row.title || '';
+        jobCountry.value=row.country || '';
+        jobCity.value=row.city || '';
+        jobPlan.value=row.plan || '';
+        jobStatus.value=row.status || 'draft';
+        jobShortDesc.value=row.description || '';
+
+        const m=row.metadata || {};
+
+        jobType.value=m.job_type || '';
+        currentCoverUrl=m.cover_image || null;
+        currentLogoUrl=m.logo || null;
+        jobGallery.value=(m.gallery_images || []).join(', ');
+        jobSalary.value=m.salary || '';
+        jobSalaryAmount.value=m.salary_amount != null ? String(m.salary_amount) : '';
+        jobPayFrequency.value=m.pay_frequency || '';
+        jobContractLength.value=m.contract_length || '';
+        jobCompany.value=m.company || '';
+        jobCurrency.value=m.currency || '';
+        jobExperienceLevel.value=m.experience_level || '';
+        jobMinExperience.value=m.min_experience || '';
+        jobEducation.value=m.education || '';
+        jobLanguages.value=m.languages || '';
+        jobResponsibilities.value=m.responsibilities || '';
+        jobReqDetails.value=m.requirements_detailed || '';
+        jobBenefits.value=m.benefits || '';
+        jobCategory.value=m.category || '';
+        jobTags.value=(m.tags || []).join(', ');
+        jobPriority.value=String(m.priority ?? 0);
+        jobFeatured.value=m.featured ? 'true' : 'false';
+        jobAdminNote.value=m.admin_note || '';
+
+        updatePreview();
+        setJobStatus('Loaded job for editing.','success');
+      }catch(e){
+        console.error(e);
+        setJobStatus('Failed to load job.','danger');
+      }
+    }
+
+    async function uploadFileToBucket(file,folder){
+      if(!file) return null;
+      const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_')}`;
+      const path = `${folder}/${safeName}`;
+      try{
+        const { error: uploadError } = await sb.storage
+          .from('public-assets')
+          .upload(path,file,{ cacheControl:'3600', upsert:false });
+        if(uploadError){
+          console.error(uploadError);
+          showToast('Failed to upload image.',3000);
+          return null;
+        }
+        const { data: urlData } = sb.storage.from('public-assets').getPublicUrl(path);
+        return urlData.publicUrl || null;
+      }catch(e){
+        console.error(e);
+        showToast('Failed to upload image.',3000);
+        return null;
+      }
+    }
+
+    async function prepareImagesInMetadata(metadata){
+      let coverUrl=currentCoverUrl;
+      let logoUrl=currentLogoUrl;
+
+      const coverFile=jobCoverFile.files?.[0];
+      const logoFile=jobLogoFile.files?.[0];
+
+      if(coverFile){
+        const uploadedCover=await uploadFileToBucket(coverFile,'jobs/covers');
+        if(uploadedCover){
+          coverUrl=uploadedCover;
+        }
+      }
+
+      if(logoFile){
+        const uploadedLogo=await uploadFileToBucket(logoFile,'jobs/logos');
+        if(uploadedLogo){
+          logoUrl=uploadedLogo;
+        }
+      }
+
+      metadata.cover_image=coverUrl || null;
+      metadata.logo=logoUrl || null;
+
+      currentCoverUrl=coverUrl;
+      currentLogoUrl=logoUrl;
+      updatePreview();
+
+      return metadata;
+    }
+
+    function buildMetadataPayloadBase(){
+      const galleryRaw=jobGallery.value.trim();
+      const gallery_images=galleryRaw ? galleryRaw.split(',').map(u=>u.trim()).filter(Boolean) : [];
+      const job_type=jobType.value || null;
+      const salary=jobSalary.value.trim() || null;
+      const salary_amount_raw=jobSalaryAmount.value.trim();
+      const salary_amount=salary_amount_raw ? Number(salary_amount_raw) : null;
+      const pay_frequency=jobPayFrequency.value || null;
+      const contract_length=jobContractLength.value.trim() || null;
+      const company=jobCompany.value.trim() || null;
+      const currency=jobCurrency.value.trim() || null;
+      const experience_level=jobExperienceLevel.value || null;
+      const min_experience=jobMinExperience.value.trim() || null;
+      const education=jobEducation.value.trim() || null;
+      const languages=jobLanguages.value.trim() || null;
+      const short_desc=jobShortDesc.value.trim() || null;
+      const responsibilities=jobResponsibilities.value.trim() || null;
+      const requirements_detailed=jobReqDetails.value.trim() || null;
+      const benefits=jobBenefits.value.trim() || null;
+      const category=jobCategory.value.trim() || null;
+      const tagsRaw=jobTags.value.trim();
+      const tags=tagsRaw ? tagsRaw.split(',').map(t=>t.trim()).filter(Boolean) : [];
+      const priorityRaw=jobPriority.value.trim();
+      let priority=0;
+      if(priorityRaw){
+        const p=parseInt(priorityRaw,10);
+        if(!Number.isNaN(p)) priority=p;
+      }
+      const featured=jobFeatured.value==='true';
+      const admin_note=jobAdminNote.value.trim() || null;
+
+      return {
+        job_type,
+        gallery_images,
+        salary,
+        salary_amount,
+        pay_frequency,
+        contract_length,
+        company,
+        currency,
+        experience_level,
+        min_experience,
+        education,
+        languages,
+        short_desc,
+        responsibilities,
+        requirements_detailed,
+        benefits,
+        category,
+        tags,
+        priority,
+        featured,
+        admin_note
+      };
+    }
+
+    async function buildPayloadWithSlugAndUploads(){
+      const title=jobTitle.value.trim();
+      if(!title){
+        showToast('Job title is required.',3000);
+        return null;
+      }
+
+      let metadata=buildMetadataPayloadBase();
+      metadata=await prepareImagesInMetadata(metadata);
+
+      const baseSlug=slugify(title);
+      const slug=await generateUniqueSlug(baseSlug);
+
+      const payload={
+        title,
+        slug,
+        country:jobCountry.value.trim() || null,
+        city:jobCity.value.trim() || null,
+        plan:jobPlan.value || null,
+        status:jobStatus.value || 'draft',
+        description:jobShortDesc.value.trim() || null,
+        metadata
+      };
+
+      return payload;
+    }
+
+    jobSaveBtn.addEventListener('click',async()=>{
+      const payload=await buildPayloadWithSlugAndUploads();
+      if(!payload) return;
+
+      jobSaveBtn.disabled=true;
+      setJobStatus(editingId?'Updating job...':'Saving job...','muted');
+
+      try{
+        if(editingId){
+          const { error }=await sb.from('jobs').update(payload).eq('id',editingId);
+          if(error) throw error;
+          showToast('Job updated.');
+          setJobStatus('Job updated successfully.','success');
+        }else{
+          const { error,data:newRows }=await sb.from('jobs').insert(payload).select('id').single();
+          if(error) throw error;
+          editingId=newRows.id;
+          history.replaceState(null,'',`?id=${editingId}`);
+          crumbMode.textContent='Edit job';
+          pageTitle.textContent='Edit job';
+          modeBadge.innerHTML='<i class="fa fa-pen"></i> Edit';
+          saveLabel.textContent='Update job';
+          showToast('Job created.');
+          setJobStatus('Job created successfully.','success');
+        }
+      }catch(e){
+        console.error(e);
+        setJobStatus(e.message || 'Failed to save job.','danger');
+        showToast('Failed to save job.',3000);
+      }finally{
+        jobSaveBtn.disabled=false;
+      }
+    });
+  </script>
+</body>
+</html>

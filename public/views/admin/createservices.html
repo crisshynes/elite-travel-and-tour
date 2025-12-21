@@ -1,0 +1,1111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — Service builder | Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Create and edit rich, image-ready services for Work & Pay, Express, visas, flights, and tours with full metadata and preview."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <style>
+    :root{
+      --brand:#0077cc;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --light:#fff;
+      --muted:#64748b;
+      --bg:#020617;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.7);
+      --radius:14px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --info:#0ea5e9;
+      --chip-bg:#0b1220;
+    }
+
+    *{ box-sizing:border-box; }
+
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(59,130,246,.26) 0, transparent 45%),
+        #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      min-height:0;
+    }
+    @media(max-width:900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(31,41,55,.9);
+      background:radial-gradient(circle at top left, #020c28 0, #020617 60%);
+      padding:.8rem .7rem;
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      box-shadow:0 0 0 1px rgba(15,23,42,.9);
+      overflow-y:auto;
+      max-height:100vh;
+    }
+    .sidebar-header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.2rem .1rem .4rem;
+    }
+    .sidebar-header .logo{
+      display:flex; align-items:center; gap:.4rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; font-size:.98rem;
+    }
+    .sidebar-header .logo i{ color:#38bdf8; }
+    .side-toggle{
+      display:none; border:none; background:rgba(15,23,42,.8);
+      color:#cbd5f5; padding:.35rem .5rem; border-radius:999px; cursor:pointer;
+    }
+    .side-toggle i{ font-size:.9rem; }
+    @media(max-width:900px){
+      .sidebar{
+        position:fixed; inset:0 auto 0 0; width:260px;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:60;
+      }
+      .sidebar.open{ transform:translateX(0); }
+      .side-toggle{ display:inline-flex; }
+    }
+
+    .nav-section{ margin-top:.4rem; }
+    .nav-label{
+      font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+      color:#64748b; margin:.4rem 0 .2rem; padding:0 .2rem;
+    }
+    .nav-list{ list-style:none; padding:0; margin:0; }
+    .nav-link{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.45rem .55rem; border-radius:10px;
+      color:#cbd5f5; text-decoration:none; font-size:.9rem;
+      border:1px solid transparent; cursor:pointer;
+      background:transparent;
+    }
+    .nav-link:hover{
+      background:rgba(30,64,175,.45);
+      border-color:rgba(37,99,235,.6);
+    }
+    .nav-link.active{
+      background:rgba(37,99,235,.9);
+      border-color:rgba(37,99,235,1);
+      color:#e5e7eb;
+      box-shadow:0 10px 28px rgba(37,99,235,.6);
+    }
+
+    .sidebar-footer{
+      margin-top:auto; padding-top:.5rem;
+      border-top:1px solid rgba(30,64,175,.7);
+      font-size:.8rem; color:#64748b;
+    }
+    .sidebar-footer .chip{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.22rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(37,99,235,.7);
+      margin-top:.35rem; font-size:.78rem;
+    }
+    .sidebar-footer .chip i{ color:#22c55e; }
+
+    /* Main */
+    .main{
+      display:flex; flex-direction:column;
+      min-height:0;
+    }
+    .main-header{
+      padding:.55rem 1rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 16px 50px rgba(15,23,42,.8);
+      position:sticky; top:0; z-index:40;
+    }
+    .breadcrumbs{
+      display:flex; align-items:center; gap:.35rem; font-size:.85rem; color:#9ca3af;
+    }
+    .breadcrumbs span.current{ color:#e5e7eb; font-weight:500; }
+
+    .main-body{
+      padding:1rem;
+      overflow:auto;
+      min-height:0;
+    }
+
+    .card{
+      background:#020617;
+      border-radius:var(--radius);
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:var(--shadow);
+      padding:1rem;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+    @media(min-width:901px){
+      .card{
+        height:calc(100vh - 72px - 2rem);
+      }
+    }
+
+    .section-title{ font-size:1.15rem; margin-bottom:.4rem; }
+    .muted{ color:var(--muted); }
+
+    .toolbar{ display:flex; gap:.5rem; flex-wrap:wrap; margin:.6rem 0; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{ background:var(--brand); color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4); }
+    .btn.brand:hover{ background:var(--brand-600); transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{ border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7); }
+    .btn-sm{ padding:.25rem .55rem; font-size:.8rem; }
+
+    .input,select,textarea{
+      width:100%; box-sizing:border-box;
+      padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.9rem; color:#e5e7eb;
+      transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#6b7280; }
+    .input:focus,select:focus,textarea:focus{
+      outline:none; border-color:#38bdf8;
+      box-shadow:0 0 0 2px rgba(56,189,248,.35);
+      background:#020617;
+    }
+    .textarea{ min-height:90px; resize:vertical; }
+
+    .grid-main{
+      display:grid; gap:.9rem; grid-template-columns:2.1fr 1.35fr;
+      flex:1;
+      min-height:0;
+    }
+    @media(max-width:1100px){
+      .grid-main{
+        grid-template-columns:1fr;
+        height:auto;
+      }
+    }
+
+    .form-scroll-wrap{
+      overflow-y:auto;
+      padding-right:.4rem;
+      min-width:0;
+    }
+
+    .preview-wrap{
+      position:sticky;
+      top:0.5rem;
+      align-self:flex-start;
+      min-width:0;
+    }
+
+    .grid-2{ display:grid; gap:.7rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .grid-3{ display:grid; gap:.7rem; grid-template-columns:repeat(3,minmax(0,1fr)); }
+    @media(max-width:1100px){
+      .form-scroll-wrap{ max-height:none; }
+      .preview-wrap{
+        position:static;
+        margin-top:1rem;
+      }
+    }
+    @media(max-width:900px){
+      .grid-2,.grid-3{ grid-template-columns:1fr; }
+    }
+
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.78rem; color:#e5e7eb;
+    }
+
+    .chip-row{ display:flex; flex-wrap:wrap; gap:.3rem; }
+    .chip{
+      padding:.18rem .5rem; border-radius:999px;
+      font-size:.78rem;
+      background:var(--chip-bg);
+      border:1px solid rgba(55,65,81,.9);
+      color:#e5e7eb;
+    }
+
+    .preview-card{
+      background:
+        radial-gradient(circle at top left, rgba(37,99,235,.35), transparent 55%),
+        radial-gradient(circle at bottom, rgba(16,185,129,.16), transparent 60%),
+        #020617;
+      border-radius:14px;
+      border:1px solid rgba(31,41,55,.9);
+      padding:.9rem .9rem 1rem;
+      box-shadow:0 18px 50px rgba(15,23,42,.9);
+    }
+    .preview-header{
+      display:flex; justify-content:space-between; align-items:center; gap:.6rem;
+    }
+    .preview-logo{
+      width:44px; height:44px;
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid rgba(148,163,184,.7);
+      background:#020617;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.1rem;
+    }
+    .preview-logo img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .preview-title{ font-size:.98rem; font-weight:600; }
+    .preview-sub{ font-size:.84rem; color:#9ca3af; }
+
+    .preview-cover{
+      margin-top:.7rem;
+      border-radius:12px;
+      overflow:hidden;
+      border:1px solid rgba(31,41,55,.9);
+      background:#020617;
+      height:140px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:#64748b;
+      font-size:.86rem;
+    }
+    .preview-cover img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    .preview-meta{
+      display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.6rem;
+    }
+
+    .preview-body{
+      margin-top:.55rem;
+      font-size:.86rem;
+      color:#cbd5f5;
+    }
+
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.1rem .5rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020c28; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+    .badge.success{ background:rgba(22,163,74,.2); border-color:rgba(22,163,74,.7); color:#bbf7d0; }
+    .badge.warning{ background:rgba(234,179,8,.18); border-color:rgba(234,179,8,.7); color:#facc15; }
+
+    .file-subtext{
+      font-size:.78rem;
+      color:#9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/views/admin/index.html" class="logo">
+          <i class="fa-solid fa-compass"></i> <span>Elite Admin</span>
+        </a>
+        <button class="side-toggle" id="sideToggle"><i class="fa fa-xmark"></i></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a class="nav-link" href="/views/admin/index.html">
+              <i class="fa fa-gauge-high"></i> <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/views/admin/analytics.html">
+              <i class="fa fa-chart-line"></i> <span>Analytics</span>
+              <span class="badge">beta</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Jobs & Services</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/createjobs.html"><i class="fa fa-plus"></i> <span>Create Job</span></a></li>
+          <li><a class="nav-link" href="/views/admin/jobs.html"><i class="fa fa-briefcase"></i> <span>Jobs</span></a></li>
+          <li><button class="nav-link active"><i class="fa fa-suitcase"></i> <span>Create Service</span></button></li>
+          <li><a class="nav-link" href="/views/admin/services.html"><i class="fa fa-list"></i> <span>Services list</span></a></li>
+          <li><a class="nav-link" href="/views/admin/activeprocess.html"><i class="fa fa-spinner"></i> <span>Active processes</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Users & Activity</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/users.html"><i class="fa fa-users"></i> <span>Users</span></a></li>
+          <li><a class="nav-link" href="/views/admin/user-details.html"><i class="fa fa-id-card"></i> <span>User details</span></a></li>
+          <li><a class="nav-link" href="/views/admin/activeusers.html"><i class="fa fa-user-check"></i> <span>Active users</span></a></li>
+          <li><a class="nav-link" href="/views/admin/tracking.html"><i class="fa fa-location-crosshairs"></i> <span>Tracking</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Transactions</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/payments.html"><i class="fa fa-credit-card"></i> <span>Payments</span></a></li>
+          <li><a class="nav-link" href="/views/admin/appointments.html"><i class="fa fa-calendar"></i> <span>Appointments</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Content & Feedback</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/notifications.html"><i class="fa fa-bell"></i> <span>Notifications</span></a></li>
+          <li><a class="nav-link" href="/views/admin/testimonials.html"><i class="fa fa-star"></i> <span>Testimonials</span></a></li>
+          <li><a class="nav-link" href="/views/admin/contacts.html"><i class="fa fa-envelope-open-text"></i> <span>Contact messages</span></a></li>
+          <li><a class="nav-link" href="/views/admin/applications.html"><i class="fa fa-file-signature"></i> <span>Applications</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Session</div>
+        <div class="chip">
+          <i class="fa fa-user-shield"></i> <span id="adminEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="breadcrumbs">
+          <button class="side-toggle" id="openSideOnMobile"><i class="fa fa-bars"></i></button>
+          <span>Admin</span> <span>/</span>
+          <span class="current" id="crumbMode">Create service</span>
+        </div>
+        <div class="main-header-right">
+          <span class="pill-soft" id="modeBadge"><i class="fa fa-circle-plus"></i> Create</span>
+          <button class="btn outline" id="adminLogout"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="main-body">
+        <article class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h2 class="section-title" id="pageTitle">Service builder</h2>
+              <p class="muted" id="pageSubtitle">
+                Create a new service for Work & Pay, Express, visas, flights, or tours. Use images and metadata to match the public site.
+              </p>
+            </div>
+            <div class="chip-row">
+              <span class="chip"><i class="fa fa-database"></i> services + metadata</span>
+              <span class="chip"><i class="fa fa-image"></i> icon & banner uploads</span>
+            </div>
+          </div>
+
+          <div class="grid-main" style="margin-top:.9rem;">
+            <!-- LEFT: FORM -->
+            <div class="form-scroll-wrap">
+              <form id="svcForm" style="display:flex;flex-direction:column;gap:.9rem;">
+                <!-- Core -->
+                <section>
+                  <h3 class="section-title" style="font-size:1rem;">Core details</h3>
+                  <div class="grid-3">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Service title</label>
+                      <input id="svcTitle" class="input" placeholder="Canada Work & Pay Visa" required>
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Category</label>
+                      <select id="svcCategory" class="input">
+                        <option value="">Not set</option>
+                        <option value="visa">Visa</option>
+                        <option value="flights">Flights</option>
+                        <option value="tours">Tours</option>
+                        <option value="work">Work & Pay</option>
+                        <option value="express">Express</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Status</label>
+                      <select id="svcStatus" class="input">
+                        <option value="active">Active</option>
+                        <option value="draft">Draft</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="grid-3" style="margin-top:.6rem;">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Plan (optional)</label>
+                      <select id="svcPlan" class="input">
+                        <option value="">No specific plan</option>
+                        <option value="work">Work & Pay</option>
+                        <option value="express">Express</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Price label (text)</label>
+                      <input id="svcPriceLabel" class="input" placeholder="From 500 GHS or $50 fee">
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Base price amount</label>
+                      <input id="svcPriceAmount" class="input" type="number" placeholder="500">
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Media -->
+                <section>
+                  <h3 class="section-title" style="font-size:1rem;">Media</h3>
+                  <div class="grid-2">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Upload banner image</label>
+                      <input id="svcBannerFile" type="file" accept="image/*" class="input">
+                      <p class="file-subtext">
+                        Main banner / hero image for this service. Used on service detail pages or hero sections.
+                      </p>
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Upload icon image</label>
+                      <input id="svcIconFile" type="file" accept="image/*" class="input">
+                      <p class="file-subtext">
+                        Optional icon. If provided, it replaces the default suitcase icon in previews.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="grid-2" style="margin-top:.6rem;">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Banner URL (optional)</label>
+                      <input id="svcBannerUrl" class="input" placeholder="/assets/banners/workpay.jpg">
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Icon URL (optional)</label>
+                      <input id="svcIconUrl" class="input" placeholder="/assets/icons/visa.svg">
+                    </div>
+                  </div>
+                </section>
+
+                <!-- Descriptions -->
+                <section>
+                  <h3 class="section-title" style="font-size:1rem;">Descriptions</h3>
+                  <div style="margin-bottom:.6rem;">
+                    <label class="muted" style="font-size:.85rem;">Short description</label>
+                    <textarea id="svcShortDesc" class="textarea" placeholder="2–3 lines used on cards and highlights."></textarea>
+                  </div>
+                  <div style="margin-bottom:.6rem;">
+                    <label class="muted" style="font-size:.85rem;">Full description</label>
+                    <textarea id="svcFullDesc" class="textarea" placeholder="Full details explaining what’s included, requirements, and process."></textarea>
+                  </div>
+                </section>
+
+                <!-- Requirements & details -->
+                <section>
+                  <h3 class="section-title" style="font-size:1rem;">Requirements & details</h3>
+                  <div class="grid-2">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Key requirements</label>
+                      <textarea id="svcRequirements" class="textarea" placeholder="- Valid passport&#10;- Proof of funds&#10;- Police report"></textarea>
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">What is included</label>
+                      <textarea id="svcIncludes" class="textarea" placeholder="- Application support&#10;- Document review&#10;- Appointment booking"></textarea>
+                    </div>
+                  </div>
+                  <div style="margin-top:.6rem;">
+                    <label class="muted" style="font-size:.85rem;">Additional notes</label>
+                    <textarea id="svcNotes" class="textarea" placeholder="Internal hints or extra details."></textarea>
+                  </div>
+                </section>
+
+                <!-- Meta & admin -->
+                <section>
+                  <h3 class="section-title" style="font-size:1rem;">Meta & admin</h3>
+                  <div class="grid-3">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Tags (comma separated)</label>
+                      <input id="svcTags" class="input" placeholder="canada, visa, work">
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Priority</label>
+                      <input id="svcPriority" type="number" class="input" value="0">
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Featured</label>
+                      <select id="svcFeatured" class="input">
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="grid-2" style="margin-top:.6rem;">
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Admin note (internal only)</label>
+                      <textarea id="svcAdminNote" class="textarea" placeholder="Internal note — partner agency, promo campaigns, etc."></textarea>
+                    </div>
+                    <div>
+                      <label class="muted" style="font-size:.85rem;">Metadata JSON (advanced)</label>
+                      <textarea id="svcMetadataJson" class="textarea" placeholder='Optional extra config, e.g. {"country":"Canada","slugHint":"canada-work-pay"}'></textarea>
+                    </div>
+                  </div>
+                </section>
+
+                <div class="toolbar" style="margin-top:.7rem;">
+                  <button class="btn brand" id="svcSaveBtn" type="button">
+                    <i class="fa fa-save"></i> <span id="svcSaveLabel">Save service</span>
+                  </button>
+                  <button class="btn outline" id="svcResetBtn" type="button">
+                    <i class="fa fa-rotate-left"></i> Reset
+                  </button>
+                  <a href="/views/admin/services.html" class="btn outline">
+                    <i class="fa fa-list"></i> Back to services
+                  </a>
+                </div>
+
+                <p id="svcStatusText" class="muted" style="margin-top:.4rem;"></p>
+              </form>
+            </div>
+
+            <!-- RIGHT: PREVIEW -->
+            <div class="preview-wrap">
+              <section class="preview-card" id="svcPreview">
+                <div class="preview-header">
+                  <div style="display:flex;gap:.6rem;align-items:center;">
+                    <div class="preview-logo" id="svcPrevLogoWrap">
+                      <span id="svcPrevLogoText"><i class="fa fa-suitcase"></i></span>
+                    </div>
+                    <div>
+                      <div class="preview-title" id="svcPrevTitle">Service title</div>
+                      <div class="preview-sub" id="svcPrevCategory">Category · Plan</div>
+                      <div class="preview-sub" id="svcPrevStatus">Status: Draft</div>
+                    </div>
+                  </div>
+                  <span class="badge" id="svcPrevBadge">Draft</span>
+                </div>
+
+                <div class="preview-cover" id="svcPrevBanner">
+                  <span id="svcPrevBannerText">Banner image preview</span>
+                </div>
+
+                <div class="preview-meta">
+                  <span class="chip" id="svcPrevTagPlan">Plan</span>
+                  <span class="chip" id="svcPrevTagCategory">Category</span>
+                  <span class="chip" id="svcPrevTagPrice">Price</span>
+                  <span class="chip" id="svcPrevTagPriority">Priority</span>
+                </div>
+
+                <div class="preview-body" id="svcPrevShort">
+                  Short description will appear here as users see it on the services page.
+                </div>
+              </section>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><i class="fa fa-info-circle"></i><span id="toastText"></span></div>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(msg,ms=2500){
+      toastText.textContent=msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),ms);
+    }
+
+    /* Sidebar / header menu toggle */
+    const sidebar=document.getElementById('sidebar');
+    const sideToggle=document.getElementById('sideToggle');
+    const openSideOnMobile=document.getElementById('openSideOnMobile');
+
+    sideToggle?.addEventListener('click',()=> sidebar.classList.remove('open'));
+    openSideOnMobile?.addEventListener('click',()=>{
+      if(sidebar.classList.contains('open')){
+        sidebar.classList.remove('open');
+      }else{
+        sidebar.classList.add('open');
+      }
+    });
+
+    /* Auth guard */
+    const adminEmailSpan=document.getElementById('adminEmail');
+    const adminLogout=document.getElementById('adminLogout');
+
+    const { data } = await sb.auth.getSession();
+    const session=data.session;
+    const admin=session?.user;
+
+    if(!admin){
+      showToast('Admin session required.');
+      window.location.href='/views/pages/login.html';
+    }else{
+      adminEmailSpan.textContent=admin.email;
+    }
+
+    adminLogout?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Form refs */
+    const svcForm=document.getElementById('svcForm');
+    const svcSaveBtn=document.getElementById('svcSaveBtn');
+    const svcResetBtn=document.getElementById('svcResetBtn');
+    const svcSaveLabel=document.getElementById('svcSaveLabel');
+    const svcStatusText=document.getElementById('svcStatusText');
+
+    const svcTitle=document.getElementById('svcTitle');
+    const svcCategory=document.getElementById('svcCategory');
+    const svcStatus=document.getElementById('svcStatus');
+    const svcPlan=document.getElementById('svcPlan');
+    const svcPriceLabel=document.getElementById('svcPriceLabel');
+    const svcPriceAmount=document.getElementById('svcPriceAmount');
+
+    const svcBannerFile=document.getElementById('svcBannerFile');
+    const svcIconFile=document.getElementById('svcIconFile');
+    const svcBannerUrl=document.getElementById('svcBannerUrl');
+    const svcIconUrl=document.getElementById('svcIconUrl');
+
+    const svcShortDesc=document.getElementById('svcShortDesc');
+    const svcFullDesc=document.getElementById('svcFullDesc');
+
+    const svcRequirements=document.getElementById('svcRequirements');
+    const svcIncludes=document.getElementById('svcIncludes');
+    const svcNotes=document.getElementById('svcNotes');
+
+    const svcTags=document.getElementById('svcTags');
+    const svcPriority=document.getElementById('svcPriority');
+    const svcFeatured=document.getElementById('svcFeatured');
+    const svcAdminNote=document.getElementById('svcAdminNote');
+    const svcMetadataJson=document.getElementById('svcMetadataJson');
+
+    const svcPrevLogoText=document.getElementById('svcPrevLogoText');
+    const svcPrevTitle=document.getElementById('svcPrevTitle');
+    const svcPrevCategory=document.getElementById('svcPrevCategory');
+    const svcPrevStatus=document.getElementById('svcPrevStatus');
+    const svcPrevBadge=document.getElementById('svcPrevBadge');
+    const svcPrevBanner=document.getElementById('svcPrevBanner');
+    const svcPrevBannerText=document.getElementById('svcPrevBannerText');
+    const svcPrevTagPlan=document.getElementById('svcPrevTagPlan');
+    const svcPrevTagCategory=document.getElementById('svcPrevTagCategory');
+    const svcPrevTagPrice=document.getElementById('svcPrevTagPrice');
+    const svcPrevTagPriority=document.getElementById('svcPrevTagPriority');
+    const svcPrevShort=document.getElementById('svcPrevShort');
+
+    const crumbMode=document.getElementById('crumbMode');
+    const pageTitle=document.getElementById('pageTitle');
+    const modeBadge=document.getElementById('modeBadge');
+
+    let editingId=null;
+    let currentBannerUrl=null;
+    let currentIconUrl=null;
+
+    function setSvcStatus(msg,type='muted'){
+      svcStatusText.textContent=msg||'';
+      svcStatusText.style.color=
+        type==='success'? '#4ade80' :
+        type==='danger'? '#fecaca' :
+        type==='warning'? '#fbbf24' :
+        '#9ca3af';
+    }
+
+    function slugify(text){
+      return text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g,'-')
+        .replace(/(^-|-$)+/g,'');
+    }
+
+    async function generateUniqueServiceSlug(baseSlug){
+      let slug=baseSlug || 'service';
+      let counter=1;
+
+      while(true){
+        const { data: existing, error } = await sb
+          .from('services')
+          .select('id')
+          .eq('slug', slug)
+          .maybeSingle();
+
+        if(error){
+          console.error('Service slug check error:', error);
+          return slug;
+        }
+
+        if(!existing || (editingId && existing.id === editingId)){
+          return slug;
+        }
+
+        counter++;
+        slug = `${baseSlug}-${counter}`;
+      }
+    }
+
+    function updatePreview(){
+      const title=svcTitle.value.trim() || 'Service title';
+      const category=svcCategory.value || '—';
+      const plan=svcPlan.value || '';
+      const status=svcStatus.value || 'draft';
+
+      const priceLabelRaw=svcPriceLabel.value.trim();
+      const priceAmountRaw=svcPriceAmount.value.trim();
+      let priceLabel='Price';
+      if(priceLabelRaw){
+        priceLabel=priceLabelRaw;
+      }else if(priceAmountRaw){
+        priceLabel=`From ${priceAmountRaw}`;
+      }
+
+      const priorityRaw=svcPriority.value.trim();
+      const priority = priorityRaw && !Number.isNaN(parseInt(priorityRaw,10)) ? parseInt(priorityRaw,10) : 0;
+
+      svcPrevTitle.textContent=title;
+      svcPrevCategory.textContent = plan
+        ? `${category} · ${plan === 'work' ? 'Work & Pay' : plan === 'express' ? 'Express' : plan}`
+        : `${category} · —`;
+
+      const statusLabel =
+        status==='active' ? 'Active' :
+        status==='inactive' ? 'Inactive' :
+        'Draft';
+
+      svcPrevStatus.textContent=`Status: ${statusLabel}`;
+      svcPrevBadge.textContent=statusLabel;
+
+      svcPrevTagPlan.textContent=plan || 'Plan';
+      svcPrevTagCategory.textContent=category || 'Category';
+      svcPrevTagPrice.textContent=priceLabel;
+      svcPrevTagPriority.textContent=`Priority ${priority}`;
+
+      svcPrevShort.textContent = svcShortDesc.value.trim()
+        || 'Short description will appear here as users see it on the services page.';
+
+      if(currentIconUrl){
+        svcPrevLogoText.innerHTML=`<img src="${currentIconUrl}" alt="icon">`;
+      }else{
+        svcPrevLogoText.innerHTML='<i class="fa fa-suitcase"></i>';
+      }
+
+      if(currentBannerUrl){
+        svcPrevBanner.innerHTML=`<img src="${currentBannerUrl}" alt="banner">`;
+      }else{
+        svcPrevBanner.innerHTML='<span id="svcPrevBannerText">Banner image preview</span>';
+      }
+    }
+
+    [
+      svcTitle,svcCategory,svcStatus,svcPlan,
+      svcPriceLabel,svcPriceAmount,
+      svcShortDesc,svcFullDesc,
+      svcRequirements,svcIncludes,svcNotes,
+      svcTags,svcPriority,svcFeatured,svcAdminNote,svcMetadataJson
+    ].forEach(el=>{
+      el?.addEventListener('input',updatePreview);
+      el?.addEventListener('change',updatePreview);
+    });
+
+    svcBannerFile.addEventListener('change',()=>{
+      const file=svcBannerFile.files?.[0];
+      if(file){
+        const tmpUrl=URL.createObjectURL(file);
+        currentBannerUrl=tmpUrl;
+        updatePreview();
+      }
+    });
+
+    svcIconFile.addEventListener('change',()=>{
+      const file=svcIconFile.files?.[0];
+      if(file){
+        const tmpUrl=URL.createObjectURL(file);
+        currentIconUrl=tmpUrl;
+        updatePreview();
+      }
+    });
+
+    updatePreview();
+
+    svcResetBtn.addEventListener('click',()=>{
+      svcForm.reset();
+      editingId=null;
+      currentBannerUrl=null;
+      currentIconUrl=null;
+
+      const url=new URL(window.location.href);
+      url.searchParams.delete('id');
+      history.replaceState(null,'',url.toString());
+
+      crumbMode.textContent='Create service';
+      pageTitle.textContent='Service builder';
+      modeBadge.innerHTML='<i class="fa fa-circle-plus"></i> Create';
+      svcSaveLabel.textContent='Save service';
+      setSvcStatus('');
+      updatePreview();
+    });
+
+    const urlParams=new URLSearchParams(window.location.search);
+    const existingId=urlParams.get('id');
+    if(existingId){
+      editingId=existingId;
+      crumbMode.textContent='Edit service';
+      pageTitle.textContent='Edit service';
+      modeBadge.innerHTML='<i class="fa fa-pen"></i> Edit';
+      svcSaveLabel.textContent='Update service';
+      loadExistingService(existingId);
+    }
+
+    async function loadExistingService(id){
+      setSvcStatus('Loading service...','muted');
+      try{
+        const { data:row, error } = await sb
+          .from('services')
+          .select('id,title,slug,category,status,plan,description,metadata')
+          .eq('id',id)
+          .single();
+        if(error) throw error;
+        if(!row){ setSvcStatus('Service not found.','danger'); return; }
+
+        svcTitle.value=row.title || '';
+        svcCategory.value=row.category || '';
+        svcStatus.value=row.status || 'draft';
+        svcPlan.value=row.plan || '';
+        svcShortDesc.value=row.description || '';
+
+        const m=row.metadata || {};
+
+        svcPriceLabel.value=m.price_label || '';
+        svcPriceAmount.value=m.price_amount != null ? String(m.price_amount) : '';
+
+        currentBannerUrl = m.banner || null;
+        currentIconUrl = m.icon || null;
+        svcBannerUrl.value = m.banner || '';
+        svcIconUrl.value = m.icon || '';
+
+        svcFullDesc.value=m.full_desc || '';
+        svcRequirements.value=m.requirements || '';
+        svcIncludes.value=m.includes || '';
+        svcNotes.value=m.notes || '';
+
+        svcTags.value=(m.tags || []).join(', ');
+        svcPriority.value=String(m.priority ?? 0);
+        svcFeatured.value=m.featured ? 'true' : 'false';
+        svcAdminNote.value=m.admin_note || '';
+
+        if(m.extra_json){
+          try{
+            svcMetadataJson.value=JSON.stringify(m.extra_json,null,2);
+          }catch{
+            svcMetadataJson.value='';
+          }
+        }
+
+        updatePreview();
+        setSvcStatus('Loaded service for editing.','success');
+      }catch(e){
+        console.error(e);
+        setSvcStatus('Failed to load service.','danger');
+      }
+    }
+
+    async function uploadSvcFileToBucket(file,folder){
+      if(!file) return null;
+      const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_')}`;
+      const path = `${folder}/${safeName}`;
+      try{
+        const { error: uploadError } = await sb.storage
+          .from('public-assets')
+          .upload(path,file,{ cacheControl:'3600', upsert:false });
+        if(uploadError){
+          console.error(uploadError);
+          showToast('Failed to upload image.',3000);
+          return null;
+        }
+        const { data: urlData } = sb.storage.from('public-assets').getPublicUrl(path);
+        return urlData.publicUrl || null;
+      }catch(e){
+        console.error(e);
+        showToast('Failed to upload image.',3000);
+        return null;
+      }
+    }
+
+    async function prepareServiceImagesInMetadata(metadata){
+      let bannerUrl=currentBannerUrl || (svcBannerUrl.value.trim() || null);
+      let iconUrl=currentIconUrl || (svcIconUrl.value.trim() || null);
+
+      const bannerFile=svcBannerFile.files?.[0];
+      const iconFile=svcIconFile.files?.[0];
+
+      if(bannerFile){
+        const uploadedBanner=await uploadSvcFileToBucket(bannerFile,'services/banners');
+        if(uploadedBanner){
+          bannerUrl=uploadedBanner;
+        }
+      }
+
+      if(iconFile){
+        const uploadedIcon=await uploadSvcFileToBucket(iconFile,'services/icons');
+        if(uploadedIcon){
+          iconUrl=uploadedIcon;
+        }
+      }
+
+      metadata.banner=bannerUrl || null;
+      metadata.icon=iconUrl || null;
+
+      currentBannerUrl=bannerUrl;
+      currentIconUrl=iconUrl;
+      updatePreview();
+
+      return metadata;
+    }
+
+    function buildServiceMetadataBase(){
+      const price_label=svcPriceLabel.value.trim() || null;
+      const price_amount_raw=svcPriceAmount.value.trim();
+      const price_amount=price_amount_raw ? Number(price_amount_raw) : null;
+
+      const requirements=svcRequirements.value.trim() || null;
+      const includes=svcIncludes.value.trim() || null;
+      const notes=svcNotes.value.trim() || null;
+      const full_desc=svcFullDesc.value.trim() || null;
+
+      const tagsRaw=svcTags.value.trim();
+      const tags=tagsRaw ? tagsRaw.split(',').map(t=>t.trim()).filter(Boolean) : [];
+
+      const priorityRaw=svcPriority.value.trim();
+      let priority=0;
+      if(priorityRaw){
+        const p=parseInt(priorityRaw,10);
+        if(!Number.isNaN(p)) priority=p;
+      }
+      const featured=svcFeatured.value==='true';
+      const admin_note=svcAdminNote.value.trim() || null;
+
+      let extra_json=null;
+      const metaRaw=svcMetadataJson.value.trim();
+      if(metaRaw){
+        try{
+          extra_json=JSON.parse(metaRaw);
+        }catch(e){
+          console.warn('Invalid metadata JSON, ignoring:', e);
+        }
+      }
+
+      return {
+        price_label,
+        price_amount,
+        requirements,
+        includes,
+        notes,
+        full_desc,
+        tags,
+        priority,
+        featured,
+        admin_note,
+        extra_json
+      };
+    }
+
+    async function buildServicePayloadWithSlugAndUploads(){
+      const title=svcTitle.value.trim();
+      if(!title){
+        showToast('Service title is required.',3000);
+        return null;
+      }
+
+      let metadata=buildServiceMetadataBase();
+      metadata=await prepareServiceImagesInMetadata(metadata);
+
+      const baseSlug=slugify(title);
+      const slug=await generateUniqueServiceSlug(baseSlug);
+
+      const payload={
+        title,
+        slug,
+        category:svcCategory.value || null,
+        status:svcStatus.value || 'draft',
+        plan:svcPlan.value || null,
+        description:svcShortDesc.value.trim() || null,
+        metadata
+      };
+
+      return payload;
+    }
+
+    svcSaveBtn.addEventListener('click',async()=>{
+      const payload=await buildServicePayloadWithSlugAndUploads();
+      if(!payload) return;
+
+      svcSaveBtn.disabled=true;
+      setSvcStatus(editingId?'Updating service...':'Saving service...','muted');
+
+      try{
+        if(editingId){
+          const { error }=await sb.from('services').update(payload).eq('id',editingId);
+          if(error) throw error;
+          showToast('Service updated.');
+          setSvcStatus('Service updated successfully.','success');
+        }else{
+          const { error,data:newRows }=await sb.from('services').insert(payload).select('id').single();
+          if(error) throw error;
+          editingId=newRows.id;
+          history.replaceState(null,'',`?id=${editingId}`);
+          crumbMode.textContent='Edit service';
+          pageTitle.textContent='Edit service';
+          modeBadge.innerHTML='<i class="fa fa-pen"></i> Edit';
+          svcSaveLabel.textContent='Update service';
+          showToast('Service created.');
+          setSvcStatus('Service created successfully.','success');
+        }
+      }catch(e){
+        console.error(e);
+        setSvcStatus(e.message || 'Failed to save service.','danger');
+        showToast('Failed to save service.',3000);
+      }finally{
+        svcSaveBtn.disabled=false;
+      }
+    });
+  </script>
+</body>
+</html>

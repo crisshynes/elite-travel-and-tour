@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — Testimonials | Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Admin testimonials management for Elite Travel & Tour — collect, curate, and control user testimonials for marketing and trust."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <style>
+    :root{
+      --brand:#0077cc;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --light:#fff;
+      --muted:#64748b;
+      --bg:#020617;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.7);
+      --radius:14px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --info:#0ea5e9;
+      --chip-bg:#0b1220;
+    }
+
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(59,130,246,.26) 0, transparent 45%),
+        #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      min-height:0;
+    }
+    @media(max-width:900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(31,41,55,.9);
+      background:radial-gradient(circle at top left, #020c28 0, #020617 60%);
+      padding:.8rem .7rem;
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      box-shadow:0 0 0 1px rgba(15,23,42,.9);
+    }
+    .sidebar-header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.2rem .1rem .4rem;
+    }
+    .sidebar-header .logo{
+      display:flex; align-items:center; gap:.4rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; font-size:.98rem;
+    }
+    .sidebar-header .logo i{ color:#38bdf8; }
+    .side-toggle{
+      display:none; border:none; background:rgba(15,23,42,.8);
+      color:#cbd5f5; padding:.35rem .5rem; border-radius:999px; cursor:pointer;
+    }
+    .side-toggle i{ font-size:.9rem; }
+    @media(max-width:900px){
+      .sidebar{
+        position:fixed; inset:0 auto 0 0; width:260px;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:60;
+      }
+      .sidebar.open{ transform:translateX(0); }
+      .side-toggle{ display:inline-flex; }
+    }
+
+    .nav-section{ margin-top:.4rem; }
+    .nav-label{
+      font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+      color:#64748b; margin:.4rem 0 .2rem; padding:0 .2rem;
+    }
+    .nav-list{ list-style:none; padding:0; margin:0; }
+    .nav-link{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.45rem .55rem; border-radius:10px;
+      color:#cbd5f5; text-decoration:none; font-size:.9rem;
+      border:1px solid transparent; cursor:pointer;
+      background:transparent;
+    }
+    .nav-link i{ font-size:.9rem; }
+    .nav-link:hover{
+      background:rgba(30,64,175,.45);
+      border-color:rgba(37,99,235,.6);
+    }
+    .nav-link.active{
+      background:rgba(37,99,235,.9);
+      border-color:rgba(37,99,235,1);
+      color:#e5e7eb;
+      box-shadow:0 10px 28px rgba(37,99,235,.6);
+    }
+
+    .sidebar-footer{
+      margin-top:auto; padding-top:.5rem;
+      border-top:1px solid rgba(30,64,175,.7);
+      font-size:.8rem; color:#64748b;
+    }
+    .sidebar-footer .chip{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.22rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(37,99,235,.7);
+      margin-top:.35rem; font-size:.78rem;
+    }
+    .sidebar-footer .chip i{ color:#22c55e; }
+
+    /* Main */
+    .main{
+      display:flex; flex-direction:column;
+      min-height:0;
+    }
+    .main-header{
+      padding:.55rem 1rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 16px 50px rgba(15,23,42,.8);
+      position:sticky; top:0; z-index:40;
+    }
+    .breadcrumbs{
+      display:flex; align-items:center; gap:.35rem; font-size:.85rem; color:#9ca3af;
+    }
+    .breadcrumbs span.current{ color:#e5e7eb; font-weight:500; }
+    .main-header-right{ display:flex; align-items:center; gap:.5rem; }
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.78rem; color:#e5e7eb;
+    }
+
+    .main-body{
+      padding:1rem;
+      overflow:auto;
+    }
+    .card{
+      background:#020617;
+      border-radius:var(--radius);
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:var(--shadow);
+      padding:1rem;
+    }
+    .section-title{ font-size:1.15rem; margin-bottom:.4rem; }
+    .muted{ color:var(--muted); }
+
+    .toolbar{ display:flex; gap:.5rem; flex-wrap:wrap; margin:.6rem 0; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{ background:var(--brand); color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4); }
+    .btn.brand:hover{ background:var(--brand-600); transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{ border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7); }
+    .btn-sm{ padding:.25rem .55rem; font-size:.8rem; }
+
+    .input,.textarea,select{
+      width:100%; box-sizing:border-box;
+      padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.9rem; color:#e5e7eb;
+      transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#6b7280; }
+    .input:focus,.textarea:focus,select:focus{
+      outline:none; border-color:#38bdf8;
+      box-shadow:0 0 0 2px rgba(56,189,248,.35);
+      background:#020617;
+    }
+    .textarea{ min-height:80px; resize:vertical; }
+
+    .table{
+      width:100%; border-collapse:collapse; font-size:.85rem;
+    }
+    .table th,.table td{
+      padding:.55rem .45rem; border-bottom:1px solid rgba(31,41,55,.9);
+    }
+    .table th{
+      text-align:left; font-weight:600; color:#9ca3af; font-size:.8rem;
+    }
+    .table tbody tr:hover{ background:#020c28; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.1rem .5rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020c28; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+    .badge.success{ background:rgba(22,163,74,.2); border-color:rgba(22,163,74,.7); color:#bbf7d0; }
+    .badge.warning{ background:rgba(234,179,8,.18); border-color:rgba(234,179,8,.7); color:#facc15; }
+
+    .chip-row{ display:flex; flex-wrap:wrap; gap:.3rem; }
+    .chip{
+      padding:.18rem .5rem; border-radius:999px;
+      font-size:.78rem;
+      background:var(--chip-bg);
+      border:1px solid rgba(55,65,81,.9);
+      color:#e5e7eb;
+    }
+
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    .modal{
+      display:none; position:fixed; inset:0;
+      background:rgba(15,23,42,.75);
+      align-items:center; justify-content:center; z-index:1000;
+    }
+    .modal .card{
+      max-width:520px; width:92%;
+      border-radius:var(--radius);
+      border:1px solid rgba(148,163,184,.8);
+      box-shadow:var(--shadow);
+      background:#020617; color:#e5e7eb;
+    }
+    .modal .body{ padding:1rem; }
+
+    .grid-2{ display:grid; gap:.7rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    @media(max-width:900px){ .grid-2{ grid-template-columns:1fr; } }
+
+    .pill-label{
+      font-size:.8rem;
+      padding:.14rem .45rem;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      background:#020617;
+      color:#e5e7eb;
+      display:inline-flex;
+      align-items:center;
+      gap:.3rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/views/admin/index.html" class="logo">
+          <i class="fa-solid fa-compass"></i> <span>Elite Admin</span>
+        </a>
+        <button class="side-toggle" id="sideToggle"><i class="fa fa-xmark"></i></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/index.html"><i class="fa fa-gauge-high"></i> Dashboard</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Jobs & Services</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/jobs.html"><i class="fa fa-briefcase"></i> Jobs</a></li>
+          <li><a class="nav-link" href="/views/admin/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Users & Activity</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/users.html"><i class="fa fa-users"></i> Users</a></li>
+          <li><a class="nav-link" href="/views/admin/tracking.html"><i class="fa fa-location-crosshairs"></i> Tracking</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Transactions</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/payments.html"><i class="fa fa-credit-card"></i> Payments</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Content</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/notifications.html"><i class="fa fa-bell"></i> Notifications</a></li>
+          <li><button class="nav-link active"><i class="fa fa-star"></i> Testimonials</button></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Session</div>
+        <div class="chip">
+          <i class="fa fa-user-shield"></i> <span id="adminEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="breadcrumbs">
+          <button class="side-toggle" id="openSideOnMobile"><i class="fa fa-bars"></i></button>
+          <span>Admin</span> <span>/</span> <span class="current">Testimonials</span>
+        </div>
+        <div class="main-header-right">
+          <span class="pill-soft"><i class="fa fa-shield-halved"></i> Admin</span>
+          <button class="btn outline" id="adminLogout"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="main-body">
+        <!-- Create/edit testimonial -->
+        <article class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h2 class="section-title">Testimonials</h2>
+              <p class="muted">
+                Collect and curate real success stories to show on the homepage, Work & Pay pages, and marketing blocks.
+                Keep them honest, specific, and human.
+              </p>
+            </div>
+            <div class="chip-row">
+              <span class="chip"><i class="fa fa-database"></i> testimonials table</span>
+              <span class="chip"><i class="fa fa-pen"></i> curated content</span>
+            </div>
+          </div>
+
+          <div class="toolbar" style="margin-top:.8rem;">
+            <span class="pill-label"><i class="fa fa-plus"></i> Create / edit testimonial</span>
+          </div>
+
+          <form id="testForm" class="grid-2" style="margin-top:.5rem;gap:.7rem;">
+            <div>
+              <label class="muted" style="font-size:.85rem;">Name</label>
+              <input id="testName" class="input" placeholder="e.g., Ama, Kwesi, Sarah">
+            </div>
+            <div>
+              <label class="muted" style="font-size:.85rem;">Location</label>
+              <input id="testLocation" class="input" placeholder="e.g., Tema, Accra / Toronto, Canada">
+            </div>
+
+            <div>
+              <label class="muted" style="font-size:.85rem;">Program / Service</label>
+              <input id="testProgram" class="input" placeholder="e.g., Canada Work & Pay, Express Visa, Dubai Tour">
+            </div>
+            <div>
+              <label class="muted" style="font-size:.85rem;">Rating (1–5)</label>
+              <input id="testRating" type="number" min="1" max="5" class="input" placeholder="5">
+            </div>
+
+            <div>
+              <label class="muted" style="font-size:.85rem;">Avatar URL (optional)</label>
+              <input id="testAvatar" class="input" placeholder="/assets/testimonials/ama.jpg">
+            </div>
+            <div>
+              <label class="muted" style="font-size:.85rem;">Highlight tag (optional)</label>
+              <input id="testTag" class="input" placeholder="e.g., Canada, Work & Pay, Student Visa">
+            </div>
+
+            <div style="grid-column:1/-1;">
+              <label class="muted" style="font-size:.85rem;">Quote</label>
+              <textarea id="testQuote" class="textarea" placeholder="Their story in their own words."></textarea>
+            </div>
+
+            <div>
+              <label class="muted" style="font-size:.85rem;">Priority</label>
+              <input id="testPriority" type="number" class="input" value="0">
+            </div>
+            <div>
+              <label class="muted" style="font-size:.85rem;">Active</label>
+              <select id="testActive" class="input">
+                <option value="true">Active (show on site)</option>
+                <option value="false">Inactive (keep hidden)</option>
+              </select>
+            </div>
+          </form>
+
+          <div class="toolbar" style="margin-top:.6rem;justify-content:flex-end;">
+            <button class="btn outline" id="testReset"><i class="fa fa-rotate-left"></i> Reset</button>
+            <button class="btn brand" id="testSave"><i class="fa fa-save"></i> Save testimonial</button>
+          </div>
+
+          <p id="testFormStatus" class="muted" style="margin-top:.5rem;"></p>
+        </article>
+
+        <!-- List testimonials -->
+        <article class="card" style="margin-top:1rem;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h3 class="section-title">Existing testimonials</h3>
+              <p class="muted">Click “Edit” to load into the form above. Use Active + Priority to control what appears first on the site.</p>
+            </div>
+            <div class="chip-row">
+              <span class="chip"><i class="fa fa-clock"></i> latest updated first</span>
+            </div>
+          </div>
+
+          <div class="toolbar" style="margin-top:.5rem;">
+            <input class="input" id="testSearch" placeholder="Search by name, location, program" style="max-width:260px;">
+            <select class="input" id="testActiveFilter" style="max-width:200px;">
+              <option value="">All</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+            <button class="btn outline" id="testRefresh"><i class="fa fa-rotate"></i> Refresh</button>
+          </div>
+
+          <table class="table" id="testTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Program</th>
+                <th>Rating</th>
+                <th>Tag</th>
+                <th>Priority</th>
+                <th>Active</th>
+                <th>Updated</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="9" class="muted">Loading testimonials...</td></tr>
+            </tbody>
+          </table>
+
+          <p id="testListStatus" class="muted" style="margin-top:.5rem;"></p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><i class="fa fa-info-circle"></i><span id="toastText"></span></div>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(msg,ms=2500){
+      toastText.textContent=msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),ms);
+    }
+
+    /* Sidebar mobile toggle */
+    const sidebar=document.getElementById('sidebar');
+    const sideToggle=document.getElementById('sideToggle');
+    const openSideOnMobile=document.getElementById('openSideOnMobile');
+    sideToggle?.addEventListener('click',()=> sidebar.classList.remove('open'));
+    openSideOnMobile?.addEventListener('click',()=> sidebar.classList.add('open'));
+
+    /* Auth guard */
+    const adminEmailSpan=document.getElementById('adminEmail');
+    const adminLogout=document.getElementById('adminLogout');
+
+    const { data } = await sb.auth.getSession();
+    const session=data.session;
+    const user=session?.user;
+
+    if(!user){
+      showToast('Admin session required.');
+      window.location.href='/views/pages/login.html';
+    }else{
+      adminEmailSpan.textContent=user.email;
+    }
+
+    adminLogout?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Elements for form */
+    const testName=document.getElementById('testName');
+    const testLocation=document.getElementById('testLocation');
+    const testProgram=document.getElementById('testProgram');
+    const testRating=document.getElementById('testRating');
+    const testAvatar=document.getElementById('testAvatar');
+    const testTag=document.getElementById('testTag');
+    const testQuote=document.getElementById('testQuote');
+    const testPriority=document.getElementById('testPriority');
+    const testActive=document.getElementById('testActive');
+    const testFormStatus=document.getElementById('testFormStatus');
+    const testSaveBtn=document.getElementById('testSave');
+    const testResetBtn=document.getElementById('testReset');
+
+    const testSearch=document.getElementById('testSearch');
+    const testActiveFilter=document.getElementById('testActiveFilter');
+    const testRefreshBtn=document.getElementById('testRefresh');
+    const testTableBody=document.querySelector('#testTable tbody');
+    const testListStatus=document.getElementById('testListStatus');
+
+    let testCache=[];
+    let editingId=null;
+
+    function setTestFormStatus(msg,type='muted'){
+      testFormStatus.textContent=msg||'';
+      testFormStatus.className=type;
+    }
+
+    function setTestListStatus(msg,type='muted'){
+      testListStatus.textContent=msg||'';
+      testListStatus.className=type;
+    }
+
+    function resetForm(){
+      testName.value='';
+      testLocation.value='';
+      testProgram.value='';
+      testRating.value='';
+      testAvatar.value='';
+      testTag.value='';
+      testQuote.value='';
+      testPriority.value='0';
+      testActive.value='true';
+      editingId=null;
+      setTestFormStatus('');
+    }
+
+    testResetBtn.addEventListener('click',resetForm);
+
+    testSaveBtn.addEventListener('click',async()=>{
+      const name=testName.value.trim();
+      const location=testLocation.value.trim();
+      const program=testProgram.value.trim();
+      const ratingRaw=testRating.value.trim();
+      const avatar=testAvatar.value.trim() || null;
+      const tag=testTag.value.trim() || null;
+      const quote=testQuote.value.trim();
+      const priorityRaw=testPriority.value.trim();
+      const isActive=testActive.value==='true';
+
+      if(!name || !quote){
+        setTestFormStatus('Name and quote are required.','danger');
+        return;
+      }
+
+      let rating=null;
+      if(ratingRaw){
+        const r=parseInt(ratingRaw,10);
+        if(!Number.isNaN(r) && r>=1 && r<=5) rating=r;
+      }
+
+      let priority=0;
+      if(priorityRaw){
+        const p=parseInt(priorityRaw,10);
+        if(!Number.isNaN(p)) priority=p;
+      }
+
+      const payload={
+        name,
+        location: location || null,
+        program: program || null,
+        rating,
+        avatar,
+        tag,
+        quote,
+        priority,
+        is_active:isActive
+      };
+
+      setTestFormStatus('Saving testimonial...','muted');
+      testSaveBtn.disabled=true;
+
+      try{
+        if(editingId){
+          const { error }=await sb.from('testimonials').update(payload).eq('id',editingId);
+          if(error) throw error;
+          showToast('Testimonial updated.');
+        }else{
+          const { error }=await sb.from('testimonials').insert(payload);
+          if(error) throw error;
+          showToast('Testimonial created.');
+        }
+        setTestFormStatus('Saved successfully.','success');
+        await loadTestimonials();
+        setTimeout(()=> setTestFormStatus('', 'muted'), 1200);
+      }catch(e){
+        console.error(e);
+        setTestFormStatus(e.message || 'Failed to save testimonial.','danger');
+        showToast('Failed to save testimonial.',3000);
+      }finally{
+        testSaveBtn.disabled=false;
+      }
+    });
+
+    async function loadTestimonials(){
+      testTableBody.innerHTML='<tr><td colspan="9" class="muted">Loading testimonials...</td></tr>';
+      setTestListStatus('');
+      try{
+        const { data:rows,error }=await sb.from('testimonials')
+          .select('id,name,location,program,rating,avatar,tag,quote,priority,is_active,updated_at')
+          .order('updated_at',{ ascending:false }).limit(200);
+        if(error) throw error;
+        testCache=rows || [];
+        applyTestFilters();
+      }catch(e){
+        console.error(e);
+        testTableBody.innerHTML='<tr><td colspan="9" class="muted">Failed to load testimonials.</td></tr>';
+        setTestListStatus('Failed to load testimonials from database.','danger');
+      }
+    }
+
+    function applyTestFilters(){
+      const q=testSearch.value.trim().toLowerCase();
+      const filter=testActiveFilter.value;
+
+      const list=testCache.filter(t=>{
+        if(filter==='active' && !t.is_active) return false;
+        if(filter==='inactive' && t.is_active) return false;
+        if(q){
+          const hay=((t.name||'')+' '+(t.location||'')+' '+(t.program||'')).toLowerCase();
+          if(!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if(!list.length){
+        testTableBody.innerHTML='<tr><td colspan="9" class="muted">No testimonials match the filters.</td></tr>';
+        setTestListStatus('No testimonials match the search/filter.','muted');
+        return;
+      }
+
+      testTableBody.innerHTML=list.map(t=>{
+        const dt=t.updated_at ? new Date(t.updated_at).toLocaleDateString() : '—';
+        const rating=t.rating != null ? `${t.rating}/5` : '—';
+        const activeClass=t.is_active?'success':'warning';
+        const quoteShort=(t.quote||'').length>70 ? (t.quote||'').slice(0,67)+'…' : (t.quote||'');
+        return `
+          <tr data-id="${t.id}">
+            <td>${t.name}</td>
+            <td>${t.location || '—'}</td>
+            <td>${t.program || '—'}</td>
+            <td>${rating}</td>
+            <td>${t.tag || '—'}</td>
+            <td>${t.priority ?? 0}</td>
+            <td><span class="badge ${activeClass}">${t.is_active?'Active':'Hidden'}</span></td>
+            <td>${dt}</td>
+            <td>
+              <button class="btn outline btn-sm" data-action="edit"><i class="fa fa-pen"></i></button>
+            </td>
+          </tr>
+          <tr data-id="${t.id}-quote">
+            <td colspan="9" class="muted" style="font-size:.82rem;border-bottom:1px solid rgba(31,41,55,.9);">
+              “${quoteShort}”
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      setTestListStatus(`${list.length} testimonial${list.length===1?'':'s'} shown.`,'muted');
+    }
+
+    testSearch.addEventListener('input',applyTestFilters);
+    testActiveFilter.addEventListener('change',applyTestFilters);
+    testRefreshBtn.addEventListener('click',loadTestimonials);
+
+    testTableBody.addEventListener('click',(e)=>{
+      const btn=e.target.closest('button[data-action="edit"]');
+      if(!btn) return;
+      const tr=btn.closest('tr');
+      const id=tr.dataset.id;
+      const t=testCache.find(x=>String(x.id)===String(id));
+      if(!t) return;
+
+      editingId=t.id;
+      testName.value=t.name || '';
+      testLocation.value=t.location || '';
+      testProgram.value=t.program || '';
+      testRating.value=t.rating != null ? String(t.rating) : '';
+      testAvatar.value=t.avatar || '';
+      testTag.value=t.tag || '';
+      testQuote.value=t.quote || '';
+      testPriority.value=t.priority != null ? String(t.priority) : '0';
+      testActive.value=t.is_active ? 'true' : 'false';
+      setTestFormStatus(`Loaded "${t.name}" for editing.`, 'muted');
+      window.scrollTo({ top:0, behavior:'smooth' });
+    });
+
+    // Initial load
+    await loadTestimonials();
+  </script>
+</body>
+</html>

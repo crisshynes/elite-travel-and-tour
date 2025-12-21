@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Work Application — Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Apply for Work & Pay, Express, visa, flight routing, or orientation programs with Elite Travel & Tour."/>
+  <link rel="stylesheet" href="/icons/fontawesome.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Standard ICO -->
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+<!-- Or PNG -->
+<link rel="icon" href="/favicon.png" type="image/png">
+
+<!-- Optional: SVG -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+  <style>
+    
+    .grid-2 { display:grid; gap:1rem; grid-template-columns:1.6fr 1.1fr; }
+    @media(max-width:1000px){ .grid-2{ grid-template-columns:1fr; } }
+
+    .pill { display:inline-flex; align-items:center; gap:.35rem; padding:.25rem .6rem; border-radius:999px; border:1px solid var(--gray-200); background:var(--bg); font-size:.85rem; }
+
+    .field-group { display:grid; gap:.6rem; margin-top:.75rem; }
+    .field-row { display:grid; gap:.6rem; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); }
+
+    .section-title { font-size:1.2rem; margin-top:1rem; text-transform:capitalize; }
+    .hint { font-size:.85rem; color:var(--muted); margin-top:.25rem; }
+
+    .plan-box { display:flex; gap:.75rem; flex-wrap:wrap; margin-top:.5rem; }
+    .plan-card { flex:1 1 220px; border:1px solid var(--gray-200); border-radius:10px; padding:.7rem; cursor:pointer; background:var(--bg); }
+    .plan-card input { margin-right:.35rem; }
+    .plan-card.active { border-color:var(--brand); box-shadow:0 0 0 2px rgba(0,119,204,.18); background:#f4f8ff; color:var(--brand); }
+
+    .status-box { margin-top:.75rem; padding:.7rem; border-radius:8px; border:1px solid var(--gray-200); background:var(--bg); font-size:.9rem; }
+    .status-box strong { display:flex; align-items:center; gap:.4rem; }
+
+    .danger { color:var(--danger); }
+    .success { color:var(--success); }
+   
+   
+  </style>
+</head>
+<body>
+  <nav aria-label="Primary">
+    <div class="wrap">
+      <a class="logo" href="/"><img src="/assets/logo/logo.png" alt="Elite Travel & Tour"></a>
+      <ul class="primary">
+        <li><a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a></li>
+        <li><a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+        <li><a href="/views/pages/work-and-pay.html" class="active"><i class="fa fa-briefcase"></i> Work & Pay</a></li>
+        <li><a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a></li>
+        <li><a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a></li>
+        <li><a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a></li>
+      </ul>
+      <div class="nav-right">
+        <button id="bellBtn" class="btn outline bell" aria-label="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span id="bellCount" class="count hidden">0</span>
+        </button>
+        <span id="authStatus" class="auth-pill" style="display:none;">
+          <i class="fa fa-user-check"></i><span class="auth-text">Guest</span>
+        </span>
+        <button id="loginBtn" class="btn outline"><i class="fa fa-right-to-bracket"></i> Login</button>
+        <button id="profileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i></button>
+        <button id="logoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i></button>
+        <button id="menuToggle" class="menu-toggle" aria-expanded="false"><i class="fa fa-bars"></i></button>
+      </div>
+    </div>
+
+    <!-- Mobile panel -->
+    <div id="mobilePanel" class="mobile-panel">
+      <div class="block">
+        <a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a>
+        <a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a>
+        <a href="/views/pages/work-and-pay.html" class="active"><i class="fa fa-briefcase"></i> Work & Pay</a>
+        <a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a>
+        <a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a>
+        <a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a>
+      </div>
+      <div class="block">
+        <span class="auth-pill"><i class="fa fa-user"></i><span id="mobileAuthText">Guest</span></span>
+        <div class="toolbar">
+          <button id="mobileLoginBtn" class="btn brand"><i class="fa fa-right-to-bracket"></i> Login</button>
+          <button id="mobileProfileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> Profile</button>
+          <button id="mobileLogoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div id="notifFeed" class="feed hidden">
+    <div class="feed-toolbar">
+      <span class="muted small-text">Notifications</span>
+      <div style="color:var(--brand);display:flex;gap:.25rem;">
+        <button id="markAllReadBtn" class="btn"><i class="fa fa-check-double"></i> Mark as Read</button>
+        <button id="clearAllNotifBtn" class="btn"><i class="fa fa-trash"></i> Clear</button>
+      </div>
+    </div>
+    <div id="notifList" class="list"></div>
+  </div>
+  <script type="module" src="/js/notifications.js"></script>
+
+  <main class="container">
+    <section class="card">
+      <div class="body">
+        <h2 class="page-title">Work Application</h2>
+        <p class="muted">
+          Apply once for <strong>Work & Pay</strong>, <strong>Express</strong>, or our premium <strong>Visa</strong>, <strong>Flight</strong> and <strong>Orientation</strong> programs.
+          This form is a general intake for your journey. After admin verification and payment confirmation, they’ll assign you to a specific
+          service or job and create a tracking ID in the main applications system.
+        </p>
+
+        <div class="grid-2">
+          <!-- Left: Form -->
+          <div>
+            <h3 class="section-title">1. personal details</h3>
+            <form id="workForm" class="field-group" novalidate>
+              <div class="field-row">
+                <div>
+                  <label for="fullname">Full name</label>
+                  <input id="fullname" class="input" placeholder="As on passport" required>
+                </div>
+                <div>
+                  <label for="email">Email</label>
+                  <input id="email" type="email" class="input" placeholder="you@example.com" required>
+                </div>
+              </div>
+              <div class="field-row">
+                <div>
+                  <label for="phone">Phone number</label>
+                  <input id="phone" type="tel" class="input" placeholder="+233..." required>
+                </div>
+                <div>
+                  <label for="dob">Date of birth</label>
+                  <input id="dob" type="date" class="input" required>
+                </div>
+              </div>
+
+              <h3 class="section-title">2. program & destination</h3>
+
+              <!-- Program type -->
+              <div class="plan-box" id="programBox">
+                <label class="plan-card">
+                  <input type="radio" name="program_type" value="work" required>
+                  <div>
+                    <strong>Work & Pay / Express (Jobs)</strong>
+                    <p class="muted" style="font-size:.85rem;margin:.2rem 0 0;">
+                      Job-linked programs abroad: drivers, warehouse, construction, care and similar roles.
+                    </p>
+                  </div>
+                </label>
+                <label class="plan-card">
+                  <input type="radio" name="program_type" value="visa">
+                  <div>
+                    <strong>Visa & Requirements</strong>
+                    <p class="muted" style="font-size:.85rem;margin:.2rem 0 0;">
+                      Visa support only — full requirements and documentation for UK, Canada and Luxembourg.
+                    </p>
+                  </div>
+                </label>
+                <label class="plan-card">
+                  <input type="radio" name="program_type" value="flights">
+                  <div>
+                    <strong>Flights & Routing</strong>
+                    <p class="muted" style="font-size:.85rem;margin:.2rem 0 0;">
+                      One-way, return or multi-leg routing from Ghana to your chosen country.
+                    </p>
+                  </div>
+                </label>
+                <label class="plan-card">
+                  <input type="radio" name="program_type" value="orientation">
+                  <div>
+                    <strong>Orientation & Soft Landing</strong>
+                    <p class="muted" style="font-size:.85rem;margin:.2rem 0 0;">
+                      First-time arrival guidance and soft-landing planning — not a visa or job.
+                    </p>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Work program plan (Work & Pay vs Express) -->
+              <div id="workPlanWrap" class="plan-box" style="margin-top:.6rem;display:none;">
+                <label class="plan-card">
+                  <input type="radio" name="plan" value="work">
+                  <div>
+                    <strong>Work & Pay</strong>
+                    <p class="muted" style="font-size:.85rem;margin:.2rem 0 0;">
+                      Company covers visa, accommodation, work transport and food. You repay from salary via clear deductions.
+                    </p>
+                  </div>
+                </label>
+                <label class="plan-card">
+                  <input type="radio" name="plan" value="express">
+                  <div>
+                    <strong>Express</strong>
+                    <p class="muted" style="font-size:.85rem;margin:.2rem 0 0;">
+                      You fund all costs yourself. Priority handling, more control and no salary deductions.
+                    </p>
+                  </div>
+                </label>
+              </div>
+
+              <div class="field-row" style="margin-top:.6rem;">
+                <div>
+                  <label for="country">Preferred country</label>
+                  <select id="country" class="input" required>
+                    <option value="">Select country</option>
+                    <option value="uk">United Kingdom</option>
+                    <option value="canada">Canada</option>
+                    <option value="luxembourg">Luxembourg</option>
+                    <option value="eu">Other Europe (e.g., Czech, Poland)</option>
+                    <option value="sa">South Africa</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="role">Desired role / focus</label>
+                  <select id="role" class="input" required>
+                    <option value="">Select role / focus</option>
+                    <option value="hotel">Hotel / Hospitality</option>
+                    <option value="airport">Airport / Ground Staff</option>
+                    <option value="warehouse">Warehouse / Logistics</option>
+                    <option value="care">Caregiver / Healthcare Support</option>
+                    <option value="construction">Construction / General Labour</option>
+                    <option value="driver">Driver / Delivery / Transport</option>
+                    <option value="visa_only">Visa support only (no job placement)</option>
+                    <option value="flights_only">Flights & routing only</option>
+                    <option value="orientation_only">Orientation / Soft landing only</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <h3 class="section-title">3. mandatory documents (summary)</h3>
+              <p class="hint">You’ll be asked to provide proof later. Tick what you already have ready.</p>
+              <div class="field-row">
+                <label><input type="checkbox" id="hasNationalId"> National ID</label>
+                <label><input type="checkbox" id="hasPassport"> Passport</label>
+                <label><input type="checkbox" id="hasMedicals"> Medicals</label>
+                <label><input type="checkbox" id="hasPolice"> Police report</label>
+                <label><input type="checkbox" id="hasBirthCert"> Birth certificate</label>
+                <label><input type="checkbox" id="hasGuarantor"> Guarantor(s)</label>
+              </div>
+
+              <h3 class="section-title">4. additional info</h3>
+              <div>
+                <label for="motivation">Tell us about your plan</label>
+                <textarea id="motivation" class="textarea" placeholder="Explain your goals, timelines, and any relevant experience." required></textarea>
+              </div>
+
+              <div>
+                <label for="notes">Anything we should know? (optional)</label>
+                <textarea id="notes" class="textarea" placeholder="E.g., preferred start date, medical considerations, family situation."></textarea>
+              </div>
+
+              <div class="toolbar">
+                <button id="submitBtn" class="btn brand" type="submit">
+                  <i class="fa fa-paper-plane"></i> Submit application
+                </button>
+                <button id="viewTrackingBtn" class="btn outline" type="button">
+                  <i class="fa fa-location-crosshairs"></i> I already have a tracking ID
+                </button>
+              </div>
+              <p id="formStatus" class="muted" style="margin-top:.4rem;"></p>
+              <p class="hint">
+                You can’t submit multiple applications in a short period. If something changes, contact support or use your existing tracking ID.
+              </p>
+            </form>
+          </div>
+
+          <!-- Right: Info / rules -->
+          <aside>
+            <h3 class="section-title">Application rules</h3>
+            <div class="status-box">
+              <strong><i class="fa fa-ban"></i> One active application</strong>
+              <p class="muted" style="margin-top:.25rem;">
+                You can’t apply twice within a short period. This helps us manage your journey properly and avoid conflicting entries.
+              </p>
+            </div>
+
+            <div class="status-box" style="margin-top:.75rem;">
+              <strong><i class="fa fa-credit-card"></i> Payment & tracking ID</strong>
+              <p class="muted" style="margin-top:.25rem;">
+                After admin reviews your application, you’ll be asked to pay (online or physical). When payment is confirmed and a specific job or
+                service is assigned, an application will be created in the main system with a tracking ID.
+              </p>
+            </div>
+
+            <h3 class="section-title" style="margin-top:1rem;">What happens next?</h3>
+            <ul class="list">
+              <li><strong>1.</strong> Submit your general Work & Pay, Express, Visa, Flight or Orientation application here.</li>
+              <li><strong>2.</strong> Admin reviews your details and may contact you for clarification.</li>
+              <li><strong>3.</strong> Admin confirms your program (type + plan + role + country) and takes payment.</li>
+              <li><strong>4.</strong> Admin assigns you to a specific job or service and creates a tracked application (with tracking_id).</li>
+              <li><strong>5.</strong> You track everything on the <a href="/views/pages/tracking.html">Tracking page</a>.</li>
+            </ul>
+
+            <h3 class="section-title" style="margin-top:1rem;">Plan comparison</h3>
+            <ul class="list">
+              <li><strong>Work & Pay:</strong> Company covers visa, accommodation, work transport and food. You repay from your earnings via a clear plan.</li>
+              <li><strong>Express:</strong> You bear all costs fully but get priority handling, more control and no salary deductions.</li>
+            </ul>
+
+            <h3 class="section-title" style="margin-top:1rem;">Program highlights</h3>
+            <ul class="list" id="programHighlights">
+              <li class="muted">Select a program type (Work, Visa, Flights or Orientation) to see a quick summary here.</li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Confirmation Modal -->
+  <div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmText">
+    <section class="card"><div class="body">
+      <h3>Application submitted</h3>
+      <p id="confirmText"></p>
+      <p class="hint" id="confirmHint"></p>
+      <div class="toolbar">
+        <button class="btn brand" id="confirmOk"><i class="fa fa-check"></i> OK</button>
+        <button class="btn outline" id="goTracking"><i class="fa fa-location-crosshairs"></i> Go to tracking</button>
+      </div>
+    </div></section>
+  </div>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="grid">
+      <div>
+        <h4>Elite Travel & Tour</h4>
+        <p>Trusted partner for seamless journeys worldwide.</p>
+        <p class="muted">Visa assistance, Work & Pay programs, and flight bookings with premium support.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/views/pages/services.html">Services</a></li>
+          <li><a href="/views/pages/work-and-pay.html">Work & Pay</a></li>
+          <li><a href="/views/pages/appointment.html">Book Appointment</a></li>
+          <li><a href="/views/pages/contact.html">Contact</a></li>
+          <li><a href="/views/pages/about.html">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><i class="fa fa-phone"></i> +233 59 911 7007</p>
+        <p><i class="fa fa-envelope"></i> info@elitetravel.com</p>
+        <p><i class="fa fa-map-marker-alt"></i> Adabraka Akasanoma rd, Greater Accra, Ghana</p>
+        <div class="newsletter">
+          <label for="newsletterEmail" class="muted">Subscribe to our newsletter:</label><br>
+          <input id="newsletterEmail" type="email" placeholder="Your email">
+          <button id="subscribeBtn"><i class="fa fa-paper-plane"></i> Subscribe</button>
+        </div>
+        <div id="subscribeMsg" class="muted" style="margin-top:.5rem;"></div>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul class="list">
+          <li><a href="/views/pages/profile.html">Profile</a></li>
+          <li><a href="/views/pages/tracking.html">Tracking</a></li>
+          <li><a href="/views/pages/privacy.html">Privacy Policy</a></li>
+          <li><a href="/views/pages/terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="social">
+        <h4>Follow Us</h4>
+        <div class="toolbar">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© <span id="year"></span> Elite Travel & Tour. All rights reserved.</div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"><i class="fa fa-info-circle"></i><span id="toastText">Notice</span></div>
+
+  <!-- Scripts -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/js/supabase.js"></script>
+  <script type="module">
+    import { sb } from '/js/supabase.js';
+
+    let currentUser = null;
+
+    // Footer year + newsletter
+    document.getElementById('year').textContent=new Date().getFullYear();
+    const subscribeBtn=document.getElementById('subscribeBtn');
+    const eemailInput=document.getElementById('newsletterEmail');
+    const subscribeMsg=document.getElementById('subscribeMsg');
+    subscribeBtn?.addEventListener('click',()=>{
+      const eemail=eemailInput.value.trim();
+      if(!eemail){
+        subscribeMsg.textContent="Please enter your email.";
+        subscribeMsg.style.color="red";
+        return;
+      }
+      subscribeMsg.textContent=`Thank you for subscribing, ${eemail}!`;
+      subscribeMsg.style.color="lightgreen";
+      eemailInput.value="";
+    });
+
+    // Toast
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+    function showToast(message, ms=2500){
+      if(!toast || !toastText) return;
+      toastText.textContent = message;
+      toast.classList.add('show');
+      setTimeout(()=> toast.classList.remove('show'), ms);
+    }
+
+    // Notification feed toggle
+    document.addEventListener('click',(e)=>{
+      const feed=document.getElementById('notifFeed');
+      if(!feed) return;
+      if(e.target.closest('#bellBtn')){
+        feed.classList.toggle('hidden');
+      }else if(!e.target.closest('#notifFeed')){
+        feed.classList.add('hidden');
+      }
+    });
+
+    // Supabase notifications subscription
+    function renderNotification(n){
+      const list=document.getElementById('notifList');
+      const bellCount=document.getElementById('bellCount');
+      if(list){
+        const el=document.createElement('div');
+        el.className='item';
+        el.textContent=n.message || n.text;
+        list.prepend(el);
+      }
+      if(bellCount){
+        const count=parseInt(bellCount.textContent||'0',10)+1;
+        bellCount.textContent=String(count);
+        bellCount.classList.remove('hidden');
+      }
+    }
+    let notifChannel;
+    async function subscribeNotifications(userId){
+      if(notifChannel){
+        await sb.removeChannel(notifChannel);
+        notifChannel=null;
+      }
+      notifChannel=sb.channel(`header-notifs-${userId}`)
+        .on('postgres_changes',{
+          event:'INSERT',
+          schema:'public',
+          table:'notifications',
+          filter:`user_id=eq.${userId}`
+        },payload=>{
+          renderNotification(payload.new);
+        })
+        .subscribe();
+    }
+
+    // Auth buttons
+    const loginBtn=document.getElementById('loginBtn');
+    const logoutBtn=document.getElementById('logoutBtn');
+    const profileBtn=document.getElementById('profileBtn');
+    const mobileLoginBtn=document.getElementById('mobileLoginBtn');
+    const mobileLogoutBtn=document.getElementById('mobileLogoutBtn');
+    const mobileProfileBtn=document.getElementById('mobileProfileBtn');
+    const authText=document.querySelector('#authStatus .auth-text');
+    const mobileAuthText=document.getElementById('mobileAuthText');
+
+    function updateAuthUI(session){
+      const user=session?.user;
+      currentUser = user || null;
+
+      if(user){
+        if(authText) authText.textContent=user.email;
+        document.getElementById('authStatus')?.style.setProperty('display','none');
+        if(mobileAuthText) mobileAuthText.textContent=user.email;
+
+        loginBtn?.style.setProperty('display','none');
+        logoutBtn?.style.setProperty('display','inline-flex');
+        profileBtn?.style.setProperty('display','inline-flex');
+
+        mobileLoginBtn?.style.setProperty('display','none');
+        mobileLogoutBtn?.style.setProperty('display','inline-flex');
+        mobileProfileBtn?.style.setProperty('display','inline-flex');
+
+        profileBtn?.addEventListener('click',()=>window.location.href=`/views/pages/user/profile.html?id=${user.id}`);
+        mobileProfileBtn?.addEventListener('click',()=>window.location.href=`/views/pages/user/profile.html?id=${user.id}`);
+
+        subscribeNotifications(user.id);
+      } else {
+        if(authText) authText.textContent='Guest';
+        document.getElementById('authStatus')?.style.setProperty('display','none');
+        if(mobileAuthText) mobileAuthText.textContent='Guest';
+
+        loginBtn?.style.setProperty('display','inline-flex');
+        logoutBtn?.style.setProperty('display','none');
+        profileBtn?.style.setProperty('display','none');
+
+        mobileLoginBtn?.style.setProperty('display','inline-flex');
+        mobileLogoutBtn?.style.setProperty('display','none');
+        mobileProfileBtn?.style.setProperty('display','none');
+      }
+    }
+
+    // Initial session
+    {
+      const { data } = await sb.auth.getSession();
+      updateAuthUI(data.session);
+    }
+    sb.auth.onAuthStateChange((_event, session)=> updateAuthUI(session));
+
+    loginBtn?.addEventListener('click', ()=> window.location.href='/views/pages/login.html');
+    mobileLoginBtn?.addEventListener('click', ()=> window.location.href='/views/pages/login.html');
+    logoutBtn?.addEventListener('click', async ()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+    mobileLogoutBtn?.addEventListener('click', async ()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+
+    // Mobile menu
+    const menuToggle = document.getElementById('menuToggle');
+    const mobilePanel = document.getElementById('mobilePanel');
+    menuToggle?.addEventListener('click', ()=>{
+      const isOpen = mobilePanel.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    mobilePanel?.addEventListener('click', (e)=>{
+      if(e.target.matches('a')){
+        mobilePanel.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded','false');
+      }
+    });
+
+    /* =========================================
+       Work + Visa + Flights + Orientation application logic
+    ========================================== */
+    const workForm = document.getElementById('workForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const formStatus = document.getElementById('formStatus');
+    const viewTrackingBtn = document.getElementById('viewTrackingBtn');
+
+    const programBox = document.getElementById('programBox');
+    const workPlanWrap = document.getElementById('workPlanWrap');
+    const programHighlights = document.getElementById('programHighlights');
+
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmText = document.getElementById('confirmText');
+    const confirmHint = document.getElementById('confirmHint');
+    const confirmOk = document.getElementById('confirmOk');
+    const goTracking = document.getElementById('goTracking');
+
+    function setStatus(text, cls='muted'){
+      formStatus.textContent = text;
+      formStatus.className = cls;
+    }
+
+    // Program highlights configuration
+    const PROGRAM_HIGHLIGHTS = {
+      work: {
+        title: 'Work programs (Work & Pay / Express)',
+        bullets: [
+          'You are applying for job-linked programs abroad (drivers, warehouse, construction, care, etc.).',
+          'Work & Pay: company covers visa, accommodation, work transport and food; you repay through salary deductions.',
+          'Express: you or your sponsor fund all costs; you get faster internal handling and more control.',
+          'Admin will match you to a specific job and create a tracked application after verification and payment.'
+        ]
+      },
+      visa: {
+        title: 'Visa & requirements support',
+        bullets: [
+          'You are applying for visa documentation and requirements support, not a job placement.',
+          'We map out every requirement for your chosen country (UK, Canada, Luxembourg or others).',
+          'We do not fabricate bank statements, employment letters or other documents.',
+          'You remain responsible for embassy/VAC fees, flights, hotels and insurance.'
+        ]
+      },
+      flights: {
+        title: 'Flights & routing planning',
+        bullets: [
+          'You are applying for routing and flight planning from Ghana to your chosen destination.',
+          'We focus on safe, visa-aware routes with realistic layovers and baggage considerations.',
+          'You pay ticket costs directly to airlines or agents; we charge a separate planning fee.',
+          'This supports both Work & Pay and Express journeys and can be ordered by itself.'
+        ]
+      },
+      orientation: {
+        title: 'Orientation & soft landing',
+        bullets: [
+          'You are applying for first-time arrival guidance and soft-landing planning.',
+          'We help you understand basic safety, transport, shopping and city movement in your destination.',
+          'This service does not include visa or job placement; it complements those steps.',
+          'Ideal for first-time travellers who don’t want to arrive and “figure it out” alone.'
+        ]
+      }
+    };
+
+    function renderProgramHighlights(programType){
+      if(!programHighlights) return;
+      programHighlights.innerHTML = '';
+      const cfg = PROGRAM_HIGHLIGHTS[programType];
+      if(!cfg){
+        const li = document.createElement('li');
+        li.className = 'muted';
+        li.textContent = 'Select a program type to see a quick summary here.';
+        programHighlights.appendChild(li);
+        return;
+      }
+      const titleLi = document.createElement('li');
+      titleLi.innerHTML = `<strong>${cfg.title}</strong>`;
+      programHighlights.appendChild(titleLi);
+      cfg.bullets.forEach((b, idx)=>{
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${idx+1}.</strong> ${b}`;
+        programHighlights.appendChild(li);
+      });
+    }
+
+    // Program type cards (work / visa / flights / orientation)
+    programBox.querySelectorAll('.plan-card input').forEach(radio=>{
+      radio.addEventListener('change', ()=>{
+        programBox.querySelectorAll('.plan-card').forEach(card=> card.classList.remove('active'));
+        radio.closest('.plan-card')?.classList.add('active');
+
+        const programType = radio.value;
+        if(programType === 'work'){
+          workPlanWrap.style.display = 'flex';
+        }else{
+          workPlanWrap.style.display = 'none';
+          workForm.querySelectorAll('input[name="plan"]').forEach(p=>{
+            p.checked = false;
+            p.closest('.plan-card')?.classList.remove('active');
+          });
+        }
+        renderProgramHighlights(programType);
+      });
+    });
+
+    // Work plan cards (Work & Pay vs Express)
+    workPlanWrap.querySelectorAll('.plan-card input').forEach(radio=>{
+      radio.addEventListener('change', ()=>{
+        workPlanWrap.querySelectorAll('.plan-card').forEach(card=> card.classList.remove('active'));
+        radio.closest('.plan-card')?.classList.add('active');
+      });
+    });
+
+    // Generate internal reference for admin (this is NOT tracking_id)
+    function generateInternalRef(planOrProgram){
+      const now = new Date();
+      const year = now.getFullYear();
+      const part = Math.floor(100000 + Math.random()*900000); // 6 digits
+      let prefix = 'ET-GEN';
+      if(planOrProgram === 'express') prefix = 'ET-EX';
+      else if(planOrProgram === 'work') prefix = 'ET-WP';
+      else if(planOrProgram === 'visa') prefix = 'ET-VS';
+      else if(planOrProgram === 'flights') prefix = 'ET-FL';
+      else if(planOrProgram === 'orientation') prefix = 'ET-OR';
+      return `${prefix}-${year}-${part}`;
+    }
+
+    // Map application choices to a predictable service slug
+    function buildServiceSlug(programType, plan, country, role){
+      const parts = [];
+
+      // programType first (work / visa / flights / orientation)
+      if(programType) parts.push(programType);
+
+      // plan only matters for work programs (work vs express)
+      if(programType === 'work' && plan){
+        parts.push(plan);
+      }
+
+      if(country) parts.push(country);
+      if(role) parts.push(role);
+
+      return parts
+        .filter(Boolean)
+        .map(x => String(x).trim().toLowerCase().replace(/\s+/g,'-'))
+        .join('-');
+    }
+
+    // Fetch service that best matches the applicant's choices
+    async function findMatchingService(programType, plan, country, role){
+      const slug = buildServiceSlug(programType, plan, country, role);
+      if(!slug){
+        return { service: null, serviceSlug: null };
+      }
+
+      // 1) direct slug match
+      const { data: exact, error: exactErr } = await sb
+        .from('services')
+        .select('id, title, price, category, slug, plan')
+        .eq('slug', slug)
+        .limit(1)
+        .maybeSingle();
+
+      if(!exactErr && exact){
+        return { service: exact, serviceSlug: exact.slug };
+      }
+
+      // 2) softer search: match by plan, category, and country hint in slug/title
+      const { data: all, error: allErr } = await sb
+        .from('services')
+        .select('id, title, price, category, slug, plan');
+
+      if(allErr || !all || !all.length){
+        console.warn('No services found or error', allErr);
+        return { service: null, serviceSlug: slug };
+      }
+
+      const normCountry = country ? country.toLowerCase() : '';
+      const normRole = role ? role.toLowerCase() : '';
+
+      // Filter down to likely candidates
+      const candidates = all.filter(s => {
+        const sSlug = (s.slug || '').toLowerCase();
+        const sTitle = (s.title || '').toLowerCase();
+        const sPlan = (s.plan || '').toLowerCase();
+        const sCategory = (s.category || '').toLowerCase();
+
+        const planMatch = !plan || sPlan === plan.toLowerCase();
+        const progMatch = !programType || sCategory === programType.toLowerCase();
+        const countryHint = !normCountry || sSlug.includes(normCountry) || sTitle.includes(normCountry);
+        const roleHint = !normRole || sSlug.includes(normRole) || sTitle.includes(normRole);
+
+        return planMatch && progMatch && countryHint && roleHint;
+      });
+
+      if(candidates.length){
+        return { service: candidates[0], serviceSlug: candidates[0].slug };
+      }
+
+      // No strong candidate, but keep the synthetic slug
+      return { service: null, serviceSlug: slug };
+    }
+
+    // Cooldown check (1-hour window across all programs)
+    async function hasRecentWorkApplication(userId){
+      try{
+        const { data, error } = await sb
+          .from('applications')
+          .select('id,created_at,status')
+          .eq('user_id', userId)
+          .order('created_at', { ascending:false })
+          .limit(1);
+        if(error){
+          console.error('recent work_app error', error);
+          return false;
+        }
+        if(!data || !data.length) return false;
+        const last = data[0];
+        const lastTime = new Date(last.created_at).getTime();
+        const now = Date.now();
+        const diffMinutes = (now - lastTime)/(1000*60);
+        return diffMinutes < 60;
+      }catch(e){
+        console.error(e);
+        return false;
+      }
+    }
+
+    async function handleSubmit(e){
+      e.preventDefault();
+      if(!currentUser){
+        setStatus('Please log in before applying.','danger');
+        showToast('Please log in before applying.');
+        window.location.href='/views/pages/login.html';
+        return;
+      }
+
+      const fullname = document.getElementById('fullname').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const dob = document.getElementById('dob').value;
+      const programType = workForm.querySelector('input[name="program_type"]:checked')?.value;
+      const plan = workForm.querySelector('input[name="plan"]:checked')?.value;
+      const country = document.getElementById('country').value;
+      const role = document.getElementById('role').value;
+      const motivation = document.getElementById('motivation').value.trim();
+      const notes = document.getElementById('notes').value.trim();
+
+      if(!fullname || !email || !phone || !dob || !programType || !country || !role || !motivation){
+        setStatus('Please complete all required fields.','danger');
+        return;
+      }
+      if(programType === 'work' && !plan){
+        setStatus('Please choose Work & Pay or Express for work programs.','danger');
+        return;
+      }
+      if(!email.includes('@')){
+        setStatus('Please enter a valid email.','danger');
+        return;
+      }
+
+      setStatus('Checking existing applications...','muted');
+      const recent = await hasRecentWorkApplication(currentUser.id);
+      if(recent){
+        setStatus('You already submitted an application recently. Please wait before applying again.','danger');
+        showToast('You already have a recent application.');
+        return;
+      }
+
+      // Find matching service and price BEFORE inserting application
+      setStatus('Resolving program price...','muted');
+      const { service, serviceSlug } = await findMatchingService(programType, plan, country, role);
+
+      const price = service && service.price != null ? Number(service.price) : null;
+      const priceLabel = service?.title || 'Program fee';
+
+      // Build details including payment info for tracking page
+      const details = {
+        fullname,
+        email,
+        phone,
+        dob,
+        program_type: programType,
+        plan: plan || null,
+        country,
+        role,
+        motivation,
+        notes,
+        documents_summary:{
+          national_id: !!document.getElementById('hasNationalId').checked,
+          passport: !!document.getElementById('hasPassport').checked,
+          medicals: !!document.getElementById('hasMedicals').checked,
+          police_report: !!document.getElementById('hasPolice').checked,
+          birth_cert: !!document.getElementById('hasBirthCert').checked,
+          guarantor: !!document.getElementById('hasGuarantor').checked
+        },
+        created_from:'work-application-page',
+        service_slug: serviceSlug || null,
+        price_amount: price ?? null,
+        service_price: price ?? null,
+        price_label: priceLabel,
+        payment: {
+          label: priceLabel,
+          amount: price,
+          source: 'service',
+          status: price != null ? 'pending' : 'not_initiated',
+          currency: 'GHS',
+          service_id: service?.id || null,
+          service_slug: serviceSlug || null,
+          initiated_at: new Date().toISOString(),
+          note: price != null
+            ? 'Price resolved from services table at time of application.'
+            : 'Price not configured for this combination yet; admin must set amount before payment.'
+        }
+      };
+
+      const progress = [
+        { step:'submitted', at:new Date().toISOString() }
+      ];
+
+      const topLevelPlan = programType === 'work' ? plan : programType;
+      const payload = {
+        user_id: currentUser.id,
+        application_type: 'work-and-pay', // generic funnel label
+        plan: topLevelPlan,
+        country,
+        role,
+        status:'submitted',
+        details,
+        progress,
+        internal_ref: generateInternalRef(topLevelPlan),
+        service_slug: serviceSlug || null
+      };
+
+      try{
+        submitBtn.setAttribute('disabled','true');
+        setStatus('Submitting application...','muted');
+
+        const { error } = await sb.from('applications').insert(payload);
+        if(error) throw error;
+
+        const programLabel = programType === 'work'
+          ? (plan === 'express' ? 'Express (work program)' : 'Work & Pay')
+          : programType === 'visa'
+            ? 'Visa & Requirements'
+            : programType === 'flights'
+              ? 'Flights & Routing'
+              : 'Orientation & Soft Landing';
+
+        await sb.from('notifications').insert({
+          user_id:currentUser.id,
+          user_email:currentUser.email,
+          title:'Program application submitted',
+          category:'applications',
+          message:`Your ${programLabel} application has been submitted.`,
+          link:'/views/pages/tracking.html',
+          importance:'normal',
+          email_ready:false
+        });
+
+        setStatus('Application submitted successfully.','success');
+        showToast('Application submitted.');
+
+        confirmText.textContent = `Thank you ${fullname}. Your ${programLabel} application has been received.`;
+        if(price != null){
+          confirmHint.textContent =
+            `An admin will review your details and confirm your payment of GHS ${price.toLocaleString()} for "${priceLabel}". ` +
+            'Once payment is confirmed and a specific job or service is assigned, a tracked application will be created for you.';
+        } else {
+          confirmHint.textContent =
+            'An admin will review your details and configure the program price for you before payment. ' +
+            'Once the amount is set and payment is confirmed, a tracked application will be created for you.';
+        }
+
+        confirmModal.style.display='flex';
+        trapFocus(confirmModal);
+        workForm.reset();
+        programBox.querySelectorAll('.plan-card').forEach(card=> card.classList.remove('active'));
+        workPlanWrap.style.display='none';
+        renderProgramHighlights(null);
+      }catch(err){
+        console.error(err);
+        setStatus('Failed to submit application. Please try again.','danger');
+        showToast('Failed to submit application.');
+      }finally{
+        submitBtn.removeAttribute('disabled');
+      }
+    }
+
+    workForm.addEventListener('submit',handleSubmit);
+
+    // Tracking shortcut
+    viewTrackingBtn.addEventListener('click',()=>{
+      window.location.href='/views/pages/tracking.html';
+    });
+
+    // Modal actions
+    confirmOk.addEventListener('click',()=>{ confirmModal.style.display='none'; });
+    goTracking.addEventListener('click',()=>{
+      confirmModal.style.display='none';
+      window.location.href='/views/pages/tracking.html';
+    });
+    confirmModal.addEventListener('click',(e)=>{ if(e.target===confirmModal) confirmModal.style.display='none'; });
+
+    // Focus trap
+    function trapFocus(modal){
+      const focusable = modal.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])');
+      const first = focusable[0];
+      const last  = focusable[focusable.length-1];
+      function keyHandler(e){
+        if(e.key !== 'Tab') return;
+        if(e.shiftKey){
+          if(document.activeElement === first){ e.preventDefault(); last.focus(); }
+        } else {
+          if(document.activeElement === last){ e.preventDefault(); first.focus(); }
+        }
+      }
+      modal.addEventListener('keydown', keyHandler);
+      first && first.focus();
+    }
+
+    // Pre-select program + plan from query (?program=&plan=)
+    (function hydrateFromQuery(){
+      const url = new URL(window.location.href);
+      const qpProgram = url.searchParams.get('program'); // work / visa / flights / orientation
+      const qpPlan = url.searchParams.get('plan');       // work / express
+
+      if(qpProgram && ['work','visa','flights','orientation'].includes(qpProgram)){
+        const radio = programBox.querySelector(`input[name="program_type"][value="${qpProgram}"]`);
+        if(radio){
+          radio.checked = true;
+          radio.dispatchEvent(new Event('change'));
+        }
+      }
+
+      if(qpPlan && (qpPlan === 'work' || qpPlan === 'express')){
+        const programRadio = programBox.querySelector('input[name="program_type"][value="work"]');
+        if(programRadio){
+          programRadio.checked = true;
+          programRadio.dispatchEvent(new Event('change'));
+          const planRadio = workForm.querySelector(`input[name="plan"][value="${qpPlan}"]`);
+          if(planRadio){
+            planRadio.checked = true;
+            planRadio.dispatchEvent(new Event('change'));
+          }
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

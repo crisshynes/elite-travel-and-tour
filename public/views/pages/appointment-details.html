@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Appointment — Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="View your Elite Travel & Tour consultation appointment, status, and payment steps."/>
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Standard ICO -->
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+<!-- Or PNG -->
+<link rel="icon" href="/favicon.png" type="image/png">
+
+<!-- Optional: SVG -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+  <style>
+  
+    .notif-item{ padding:.4rem 0; border-bottom:1px solid #edf2f7; }
+    .notif-item:last-child{ border-bottom:none; }
+    .notif-item .title{ font-weight:600; }
+    .notif-meta{ display:flex; justify-content:space-between; font-size:.75rem; color:#6b7280; }
+    .notif-chip{
+      display:inline-flex; align-items:center; gap:.2rem;
+      padding:.07rem .4rem; border-radius:999px;
+      background:#eef2ff; color:#4f46e5; font-size:.7rem;
+    }
+
+   
+    /* Page layout */
+    .page-grid{
+      margin-top:1rem;
+      display:grid; gap:1rem;
+      grid-template-columns:minmax(0,1.7fr) minmax(0,1.1fr);
+    }
+    @media(max-width:900px){
+      .page-grid{ grid-template-columns:1fr; }
+    }
+
+    .card{
+      background:var(--bg); border:1px solid var(--gray-200);
+      border-radius:14px; box-shadow:var(--shadow);
+      padding:1rem;
+    }
+   
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.1rem .5rem; border-radius:999px;
+      font-size:.78rem; border:1px solid var(--gray-300);
+      background:#f9fafb; color:#111827;
+    }
+    .badge.success{ border-color:#22c55e; background:#dcfce7; color:#166534; }
+    .badge.warning{ border-color:#fbbf24; background:#fef9c3; color:#92400e; }
+    .badge.danger{ border-color:#ef4444; background:#fee2e2; color:#991b1b; }
+    .badge.info{ border-color:#3b82f6; background:#eff6ff; color:#1d4ed8; }
+
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      border:1px solid #e5e7eb; background:#f9fafb;
+      font-size:.8rem; color:#92400e;
+    }
+
+    .grid-2{ display:grid; gap:.6rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    @media(max-width:700px){
+      .grid-2{ grid-template-columns:1fr; }
+    }
+
+    .list-simple{ list-style:none; padding:0; margin:0; }
+    .list-simple li{
+      padding:.45rem 0; border-bottom:1px solid #edf1f7; font-size:.9rem;
+      display:flex; justify-content:space-between; gap:.5rem;
+    }
+    .list-simple li:last-child{ border-bottom:none; }
+
+    .highlight{
+      border-radius:10px; padding:.7rem .8rem; margin-top:.6rem;
+      background:#fef9c3; border:1px solid #fbbf24; font-size:.9rem;
+    }
+    .highlight h4{ margin:.1rem 0 .25rem; font-size:1rem; color:#92400e; }
+
+    .timeline{
+      border-left:2px solid #e5e7eb; padding-left:.75rem; margin-top:.5rem;
+    }
+    .timeline-item{
+      margin-bottom:.4rem;
+    }
+    .timeline-item strong{ display:block; font-size:.9rem; }
+    .timeline-item span{ font-size:.8rem; color:#6b7280; }
+    .small-text{ font-size:.85rem; }
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav aria-label="Primary">
+    <div class="wrap">
+      <a class="logo" href="/"><img src="/assets/logo/logo.png" alt="Elite Travel & Tour"></a>
+      <ul class="primary">
+        <li><a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a></li>
+        <li><a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+        <li><a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a></li>
+        <li><a href="/views/pages/appointment.html" class="active"><i class="fa fa-calendar"></i> Book</a></li>
+        <li><a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a></li>
+        <li><a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a></li>
+      </ul>
+      <div class="nav-right actions">
+        <button id="bellBtn" class="btn outline bell" aria-label="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span id="bellCount" class="count hidden">0</span>
+        </button>
+        <span id="authStatus" class="auth-pill" style="display:none;">
+          <i class="fa fa-user-check"></i><span class="auth-text">Guest</span>
+        </span>
+        <button id="loginBtn" class="btn outline"><i class="fa fa-right-to-bracket"></i> Login</button>
+        <button id="profileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i></button>
+        <button id="logoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> </button>
+        <button id="menuToggle" class="menu-toggle" aria-expanded="false"><i class="fa fa-bars"></i></button>
+      </div>
+    </div>
+
+    <!-- Mobile panel -->
+    <div id="mobilePanel" class="mobile-panel">
+      <div class="block">
+        <a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a>
+        <a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a>
+        <a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a>
+        <a href="/views/pages/appointment.html" class="active"><i class="fa fa-calendar"></i> Book</a>
+        <a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a>
+        <a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a>
+      </div>
+      <div class="block">
+        <span class="auth-pill"><i class="fa fa-user"></i><span id="mobileAuthText">Guest</span></span>
+        <div class="toolbar" style="margin-top:.35rem;display:flex;flex-wrap:wrap;gap:.4rem;">
+          <button id="mobileLoginBtn" class="btn brand"><i class="fa fa-right-to-bracket"></i> Login</button>
+          <button id="mobileProfileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> Profile</button>
+          <button id="mobileLogoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Notification feed -->
+  <div id="notifFeed" class="feed hidden">
+    <div class="feed-toolbar">
+      <span class="muted small-text">Notifications</span>
+      <div style="display:flex;gap:.25rem;">
+        <button id="markAllReadBtn"><i class="fa fa-check-double"></i> Read</button>
+        <button id="clearAllNotifBtn"><i class="fa fa-trash"></i> Clear</button>
+      </div>
+    </div>
+    <div id="notifList" class="list"></div>
+  </div>
+
+  <!-- Global notifications logic -->
+  <script type="module" src="/src/js/notifications.js"></script>
+
+  <main class="container">
+    <section class="page-grid">
+      <!-- Left: Appointment details -->
+      <article class="card" id="apptCard">
+        <h1 class="page-title">Appointment</h1>
+        <p class="muted" id="apptIntro">Loading your appointment details...</p>
+
+        <div id="apptStatusBanner" style="margin-top:.4rem;"></div>
+
+        <div id="apptDetails" style="margin-top:.6rem;display:none;">
+          <div class="grid-2">
+            <div>
+              <h3 style="margin-bottom:.25rem;">Summary</h3>
+              <ul class="list-simple" id="apptSummaryList"></ul>
+            </div>
+            <div>
+              <h3 style="margin-bottom:.25rem;">Notes</h3>
+              <p id="apptUserNotes" class="muted small-text">—</p>
+              <h4 style="margin-top:.6rem;margin-bottom:.25rem;">Admin notes</h4>
+              <p id="apptAdminNotesView" class="muted small-text">No admin notes yet.</p>
+            </div>
+          </div>
+
+          <div id="apptFeeSection" class="highlight" style="display:none;">
+            <h4><i class="fa fa-credit-card"></i> Consultation fee — GHS 150.00</h4>
+            <p class="muted small-text">
+              Your consultation has been <strong>accepted</strong>. To confirm and secure your slot, please pay the consultation fee of
+              <strong>GHS 150.00</strong>. Once payment is complete, our team will be ready to assist you.
+            </p>
+            <div class="toolbar" style="margin-top:.4rem;flex-wrap:wrap;gap:.4rem;">
+              <button id="payConsultBtn" class="btn brand">
+                <i class="fa fa-credit-card"></i> Pay consultation fee (GHS 150.00)
+              </button>
+              <button id="refreshApptBtn" class="btn outline sm"><i class="fa fa-rotate"></i> Refresh status</button>
+            </div>
+            <p id="feeHint" class="muted small-text" style="margin-top:.25rem;"></p>
+          </div>
+
+          <div style="margin-top:1rem;">
+            <h3 style="margin-bottom:.25rem;">Timeline</h3>
+            <div class="timeline" id="apptTimeline">
+              <div class="muted small-text">Timeline will appear here.</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Right: Quick actions / help -->
+      <aside class="card">
+        <h3>Quick actions</h3>
+        <div class="toolbar" style="flex-wrap:wrap;gap:.4rem;margin-top:.4rem;">
+          <a href="/views/pages/profile.html" class="btn outline sm"><i class="fa fa-user"></i> Go to profile</a>
+          <a href="/views/pages/work-and-pay.html" class="btn outline sm"><i class="fa fa-briefcase"></i> Work & Pay</a>
+          <a href="/views/pages/services.html" class="btn outline sm"><i class="fa fa-suitcase"></i> Services</a>
+          <a href="/views/pages/contact.html" class="btn outline sm"><i class="fa fa-envelope"></i> Contact us</a>
+        </div>
+        <div style="margin-top:1rem;">
+          <h4>How consultation fee works</h4>
+          <p class="muted small-text">
+            Once your appointment is <strong>confirmed</strong> by an admin, we create a secure payment entry for the
+            consultation fee of <strong>GHS 150.00</strong>. You only pay when your session has been accepted.
+          </p>
+          <p class="muted small-text">
+            After payment, your appointment will move to <strong>paid/confirmed</strong> on the admin side and you can proceed with your consultation.
+          </p>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="grid">
+      <div>
+        <h4>Elite Travel & Tour</h4>
+        <p>Trusted partner for seamless journeys worldwide.</p>
+        <p class="muted">Visa assistance, Work & Pay programs, and flight bookings with premium support.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/views/pages/services.html">Services</a></li>
+          <li><a href="/views/pages/work-and-pay.html">Work & Pay</a></li>
+          <li><a href="/views/pages/appointment.html">Book Appointment</a></li>
+          <li><a href="/views/pages/contact.html">Contact</a></li>
+          <li><a href="/views/pages/about.html">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><i class="fa fa-phone"></i> +233 59 911 7007</p>
+        <p><i class="fa fa-envelope"></i> info@elitetravel.com</p>
+        <p><i class="fa fa-map-marker-alt"></i> Adabraka Akasanoma rd, Greater Accra, Ghana</p>
+        <div class="newsletter">
+          <label for="newsletterEmail" class="muted">Subscribe to our newsletter:</label><br>
+          <input id="newsletterEmail" type="email" placeholder="Your email">
+          <button id="subscribeBtn"><i class="fa fa-paper-plane"></i> Subscribe</button>
+        </div>
+        <div id="subscribeMsg" class="muted" style="margin-top:.5rem;"></div>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul class="list">
+          <li><a href="/views/pages/profile.html">Profile</a></li>
+          <li><a href="/views/pages/tracking.html">Tracking</a></li>
+          <li><a href="/views/pages/privacy.html">Privacy Policy</a></li>
+          <li><a href="/views/pages/terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="social">
+        <h4>Follow Us</h4>
+        <div class="toolbar">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© <span id="year"></span> Elite Travel & Tour. All rights reserved.</div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent=new Date().getFullYear();
+    const subscribeBtn=document.getElementById('subscribeBtn');
+    const eemailInput=document.getElementById('newsletterEmail');
+    const subscribeMsg=document.getElementById('subscribeMsg');
+    subscribeBtn?.addEventListener('click',()=>{
+      const eemail=eemailInput.value.trim();
+      if(!eemail){ subscribeMsg.textContent="Please enter your email."; subscribeMsg.style.color="red"; return; }
+      subscribeMsg.textContent=`Thank you for subscribing, ${eemail}!`;
+      subscribeMsg.style.color="lightgreen";
+      eemailInput.value="";
+    });
+  </script>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <i class="fa fa-info-circle"></i><span id="toastText">Notice</span>
+  </div>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Toast helper */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(message,ms=2500){
+      if(!toast || !toastText) return;
+      toastText.textContent=message;
+      toast.classList.add('show');
+      setTimeout(()=> toast.classList.remove('show'), ms);
+    }
+
+    /* Auth + nav */
+    const loginBtn=document.getElementById('loginBtn');
+    const logoutBtn=document.getElementById('logoutBtn');
+    const profileBtn=document.getElementById('profileBtn');
+    const mobileLoginBtn=document.getElementById('mobileLoginBtn');
+    const mobileLogoutBtn=document.getElementById('mobileLogoutBtn');
+    const mobileProfileBtn=document.getElementById('mobileProfileBtn');
+    const authText=document.querySelector('#authStatus .auth-text');
+    const authPill=document.getElementById('authStatus');
+    const mobileAuthText=document.getElementById('mobileAuthText');
+
+    const menuToggle=document.getElementById('menuToggle');
+    const mobilePanel=document.getElementById('mobilePanel');
+    menuToggle?.addEventListener('click',()=>{
+      const isOpen=mobilePanel.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded',String(isOpen));
+    });
+    mobilePanel?.addEventListener('click',(e)=>{
+      if(e.target.matches('a')){
+        mobilePanel.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded','false');
+      }
+    });
+
+    function updateAuthUI(session){
+      const user=session?.user;
+      if(user){
+        authPill.style.display='none';
+        authText.textContent=user.email || 'User';
+        mobileAuthText.textContent=user.email || 'User';
+
+        loginBtn.style.display='none';
+        logoutBtn.style.display='inline-flex';
+        profileBtn.style.display='inline-flex';
+
+        mobileLoginBtn.style.display='none';
+        mobileLogoutBtn.style.display='inline-flex';
+        mobileProfileBtn.style.display='inline-flex';
+
+        const goProfile = () => window.location.href='/views/pages/profile.html';
+        profileBtn.onclick = goProfile;
+        mobileProfileBtn.onclick = goProfile;
+      }else{
+        authPill.style.display='none';
+        authText.textContent='Guest';
+        mobileAuthText.textContent='Guest';
+
+        loginBtn.style.display='inline-flex';
+        logoutBtn.style.display='none';
+        profileBtn.style.display='none';
+
+        mobileLoginBtn.style.display='inline-flex';
+        mobileLogoutBtn.style.display='none';
+        mobileProfileBtn.style.display='none';
+      }
+    }
+
+    const { data:sessionData } = await sb.auth.getSession();
+    updateAuthUI(sessionData.session);
+    sb.auth.onAuthStateChange((_event,session)=> updateAuthUI(session));
+
+    loginBtn?.addEventListener('click',()=> window.location.href='/views/pages/login.html');
+    mobileLoginBtn?.addEventListener('click',()=> window.location.href='/views/pages/login.html');
+
+    logoutBtn?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+    mobileLogoutBtn?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Appointment logic */
+    const apptIntro=document.getElementById('apptIntro');
+    const apptStatusBanner=document.getElementById('apptStatusBanner');
+    const apptDetails=document.getElementById('apptDetails');
+    const apptSummaryList=document.getElementById('apptSummaryList');
+    const apptUserNotes=document.getElementById('apptUserNotes');
+    const apptAdminNotesView=document.getElementById('apptAdminNotesView');
+    const apptFeeSection=document.getElementById('apptFeeSection');
+    const payConsultBtn=document.getElementById('payConsultBtn');
+    const refreshApptBtn=document.getElementById('refreshApptBtn');
+    const apptTimeline=document.getElementById('apptTimeline');
+    const feeHint=document.getElementById('feeHint');
+
+    const params = new URLSearchParams(location.search);
+    const appointmentIdParam = params.get('appointment_id');
+
+    function formatDateTimeFromColumns(row){
+      const d = row.date ? new Date(row.date) : null;
+      const t = row.time ? new Date(row.time) : null;
+      if(!d && !t) return '—';
+      const datePart = d ? d.toLocaleDateString() : (t ? t.toLocaleDateString() : '');
+      const timePart = t ? t.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : '';
+      return `${datePart} ${timePart}`.trim() || '—';
+    }
+
+    function statusBadgeHTML(status){
+      const s = status || 'pending';
+      const label =
+        s==='confirmed' ? 'Confirmed' :
+        s==='completed' ? 'Completed' :
+        s==='cancelled' ? 'Cancelled' :
+        'Pending';
+      const cls =
+        s==='confirmed' ? 'success' :
+        s==='completed' ? 'info' :
+        s==='cancelled' ? 'danger' :
+        'warning';
+      return `<span class="badge ${cls}">${label}</span>`;
+    }
+
+    function serviceLabel(type, service){
+      if(service){
+        switch(service){
+          case 'visa': return 'Visa consultation';
+          case 'work': return 'Work & Pay consultation';
+          case 'flight': return 'Flight booking consultation';
+          case 'express': return 'Express travel service';
+          default: break;
+        }
+      }
+      switch(type){
+        case 'visa': return 'Visa consultation';
+        case 'work': return 'Work & Pay consultation';
+        case 'consultation': return 'Consultation';
+        default: return 'Consultation';
+      }
+    }
+
+    async function maybeLoadConsultPayment(appt){
+      apptFeeSection.style.display='none';
+      feeHint.textContent='';
+
+      if(appt.status !== 'confirmed'){
+        return;
+      }
+
+      try{
+        const { data:payments, error } = await sb
+          .from('payments')
+          .select('id,ref,status,amount,currency,metadata')
+          .eq('application_id', appt.id)
+          .order('created_at',{ ascending:false })
+          .limit(1);
+        if(error) throw error;
+
+        const payment = payments && payments[0];
+        if(!payment){
+          apptFeeSection.style.display='block';
+          payConsultBtn.disabled=true;
+          feeHint.textContent='Your consultation is accepted. Payment option will be prepared shortly. If this persists, contact support.';
+          return;
+        }
+
+        if(payment.status === 'success'){
+          apptFeeSection.style.display='block';
+          payConsultBtn.disabled=true;
+          feeHint.textContent='Consultation fee has been paid. If status does not update yet, please refresh later.';
+          return;
+        }
+
+        if(payment.status === 'pending'){
+          apptFeeSection.style.display='block';
+          payConsultBtn.disabled=false;
+          feeHint.textContent='You will be taken to our secure payment page to complete the consultation fee.';
+          payConsultBtn.onclick = () =>{
+            const qs = new URLSearchParams({
+              ref: payment.ref,
+              from: 'appointment',
+              appointment_id: appt.id
+            });
+            window.location.href = `/views/pages/payments.html?${qs.toString()}`;
+          };
+          return;
+        }
+
+        apptFeeSection.style.display='block';
+        payConsultBtn.disabled=true;
+        feeHint.textContent='A previous payment attempt exists. If unsure, contact support before retrying.';
+      }catch(e){
+        console.error(e);
+        apptFeeSection.style.display='block';
+        payConsultBtn.disabled=true;
+        feeHint.textContent='Unable to check payment status right now. Please try again later.';
+      }
+    }
+
+    function renderAppointment(appt){
+      apptDetails.style.display='block';
+
+      const label = serviceLabel(appt.type, appt.service);
+      const dt = formatDateTimeFromColumns(appt);
+      const created = appt.created_at ? new Date(appt.created_at).toLocaleString() : '—';
+
+      apptIntro.textContent = `${label} — ${dt}`;
+
+      apptStatusBanner.innerHTML = `
+        <div class="pill-soft">
+          <i class="fa fa-circle-info"></i>
+          Status: ${statusBadgeHTML(appt.status)}
+        </div>
+      `;
+
+      apptSummaryList.innerHTML = `
+        <li><span>Appointment ID</span><span class="muted small-text" style="max-width:220px;overflow:hidden;text-overflow:ellipsis;">${appt.id}</span></li>
+        <li><span>Service</span><span>${label}</span></li>
+        <li><span>Status</span><span>${statusBadgeHTML(appt.status)}</span></li>
+        <li><span>Date & time</span><span>${dt}</span></li>
+        ${appt.job ? `<li><span>Job reference</span><span class="muted">${appt.job}</span></li>` : ''}
+        <li><span>Created</span><span class="muted small-text">${created}</span></li>
+      `;
+
+      apptUserNotes.textContent = appt.notes || 'No additional notes were provided.';
+      apptAdminNotesView.textContent = appt.admin_notes || 'No admin notes yet.';
+
+      const events = [];
+      if(appt.created_at){
+        events.push({ label:'Appointment requested', at:new Date(appt.created_at).toLocaleString() });
+      }
+      if(appt.status === 'confirmed'){
+        events.push({ label:'Consultation accepted', at: dt || '' });
+      }else if(appt.status === 'completed'){
+        events.push({ label:'Consultation completed', at: dt || '' });
+      }else if(appt.status === 'cancelled'){
+        events.push({ label:'Appointment cancelled', at: dt || '' });
+      }else{
+        events.push({ label:'Awaiting admin review', at: dt || '' });
+      }
+
+      apptTimeline.innerHTML = events.map(ev=>`
+        <div class="timeline-item">
+          <strong>${ev.label}</strong>
+          <span>${ev.at}</span>
+        </div>
+      `).join('');
+    }
+
+    async function loadAppointment({ force=false } = {}){
+      const { data:sessionNow } = await sb.auth.getSession();
+      const user = sessionNow?.session?.user;
+      if(!user){
+        apptIntro.textContent='Please log in to view your appointment.';
+        showToast('Please log in to view this appointment.');
+        window.location.href='/views/pages/login.html';
+        return;
+      }
+
+      try{
+        apptIntro.textContent='Loading your appointment details...';
+
+        let appt = null;
+
+        if(appointmentIdParam){
+          const { data, error } = await sb
+            .from('appointments')
+            .select('id,user_id,name,email,type,status,date,time,notes,admin_notes,job,created_at,service')
+            .eq('id', appointmentIdParam)
+            .maybeSingle();
+          if(error) throw error;
+          if(!data){
+            apptIntro.textContent='Appointment not found.';
+            return;
+          }
+          if(data.user_id !== user.id){
+            apptIntro.textContent='You are not allowed to view this appointment.';
+            showToast('This appointment does not belong to your account.');
+            return;
+          }
+          appt = data;
+        }else{
+          // If no appointment_id provided, show latest appointment for user (if any)
+          const { data:list, error:listErr } = await sb
+            .from('appointments')
+            .select('id,user_id,name,email,type,status,date,time,notes,admin_notes,job,created_at,service')
+            .eq('user_id', user.id)
+            .order('created_at',{ ascending:false })
+            .limit(1);
+          if(listErr) throw listErr;
+
+          appt = list && list[0];
+          if(!appt){
+            apptIntro.textContent='You do not have any appointments yet. You can book one from the Book Appointment page.';
+            return;
+          }
+        }
+
+        renderAppointment(appt);
+        await maybeLoadConsultPayment(appt);
+      }catch(e){
+        console.error(e);
+        apptIntro.textContent='Failed to load appointment.';
+        showToast('Failed to load appointment.');
+      }
+    }
+
+    refreshApptBtn?.addEventListener('click', async ()=>{
+      await loadAppointment({ force:true });
+      showToast('Appointment refreshed.');
+    });
+
+    await loadAppointment();
+  </script>
+</body>
+</html>

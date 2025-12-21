@@ -1,0 +1,1042 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — User details | Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Admin view of user details, applications, documents, and activity for Elite Travel & Tour."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <style>
+    :root{
+      --brand:#0077cc;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --light:#f9fafb;
+      --muted:#64748b;
+      --bg:#020617;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.7);
+      --radius:14px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --info:#0ea5e9;
+    }
+
+    html,body{
+      height:100%;
+    }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(59,130,246,.26) 0, transparent 45%),
+        #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+      overflow:auto;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      min-height:0;
+    }
+    @media(max-width:900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    /* Sidebar (reuse tracking style) */
+    .sidebar{
+      border-right:1px solid rgba(31,41,55,.9);
+      background:radial-gradient(circle at top left, #020c28 0, #020617 60%);
+      padding:.8rem .7rem;
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      box-shadow:0 0 0 1px rgba(15,23,42,.9);
+    }
+    .sidebar-header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.2rem .1rem .4rem;
+    }
+    .sidebar-header .logo{
+      display:flex; align-items:center; gap:.4rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; font-size:.98rem;
+    }
+    .sidebar-header .logo i{ color:#38bdf8; }
+    .side-toggle{
+      display:none; border:none; background:rgba(15,23,42,.8);
+      color:#cbd5f5; padding:.35rem .5rem; border-radius:999px; cursor:pointer;
+    }
+    .side-toggle i{ font-size:.9rem; }
+    @media(max-width:900px){
+      .sidebar{
+        position:fixed; inset:0 auto 0 0; width:260px;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:60;
+      }
+      .sidebar.open{ transform:translateX(0); }
+      .side-toggle{ display:inline-flex; }
+    }
+
+    .nav-section{ margin-top:.4rem; }
+    .nav-label{
+      font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+      color:#64748b; margin:.4rem 0 .2rem; padding:0 .2rem;
+    }
+    .nav-list{ list-style:none; padding:0; margin:0; }
+    .nav-link{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.45rem .55rem; border-radius:10px;
+      color:#cbd5f5; text-decoration:none; font-size:.9rem;
+      border:1px solid transparent; cursor:pointer;
+      background:transparent;
+    }
+    .nav-link i{ font-size:.9rem; }
+    .nav-link:hover{
+      background:rgba(30,64,175,.45);
+      border-color:rgba(37,99,235,.6);
+    }
+    .nav-link.active{
+      background:rgba(37,99,235,.9);
+      border-color:rgba(37,99,235,1);
+      color:#e5e7eb;
+      box-shadow:0 10px 28px rgba(37,99,235,.6);
+    }
+
+    .sidebar-footer{
+      margin-top:auto; padding-top:.5rem;
+      border-top:1px solid rgba(30,64,175,.7);
+      font-size:.8rem; color:#64748b;
+    }
+    .sidebar-footer .chip{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.22rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(37,99,235,.7);
+      margin-top:.35rem; font-size:.78rem;
+    }
+    .sidebar-footer .chip i{ color:#22c55e; }
+
+    /* Main */
+    .main{
+      display:flex; flex-direction:column;
+      min-height:0;
+    }
+    .main-header{
+      padding:.55rem 1rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 16px 50px rgba(15,23,42,.8);
+    }
+    .breadcrumbs{
+      display:flex; align-items:center; gap:.35rem; font-size:.85rem; color:#9ca3af;
+    }
+    .breadcrumbs span.current{ color:#e5e7eb; font-weight:500; }
+    .main-header-right{ display:flex; align-items:center; gap:.5rem; }
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.78rem; color:#e5e7eb;
+    }
+
+    .main-body{
+      padding:1rem;
+    }
+
+    .card{
+      background:#020617;
+      border-radius:14px;
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:0 24px 60px rgba(15,23,42,.7);
+      padding:1rem;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+    }
+    .section-title{ font-size:1.15rem; margin-bottom:.4rem; }
+    .muted{ color:var(--muted); }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{ background:var(--brand); color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4); }
+    .btn.brand:hover{ background:var(--brand-600); transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{ border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7); }
+    .btn-sm{ padding:.25rem .55rem; font-size:.8rem; }
+    .btn[disabled]{ opacity:.5; cursor:not-allowed; }
+
+    .input,select{
+      width:100%; box-sizing:border-box;
+      padding:.45rem .6rem; border-radius:999px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.85rem; color:#e5e7eb;
+    }
+    .input::placeholder{ color:#6b7280; }
+
+    .split-users{
+      display:grid;
+      grid-template-columns:minmax(0,1.2fr) minmax(0,2fr);
+      gap:1rem;
+      align-items:flex-start;
+    }
+    @media(max-width:1100px){
+      .split-users{ grid-template-columns:1fr; }
+    }
+
+    .user-list-wrap{
+      border-radius:12px;
+      border:1px solid rgba(31,41,55,.9);
+      background:#020617;
+      max-height:520px;
+      overflow:auto;
+    }
+    .user-list-header{
+      padding:.55rem .7rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; gap:.4rem; align-items:center;
+    }
+    .user-list{
+      list-style:none;
+      margin:0;
+      padding:0;
+    }
+    .user-row{
+      padding:.45rem .7rem;
+      display:flex; justify-content:space-between; align-items:center; gap:.5rem;
+      cursor:pointer;
+      border-bottom:1px solid rgba(31,41,55,.7);
+    }
+    .user-row:hover{ background:#020c28; }
+    .user-row.active{ background:rgba(37,99,235,.25); }
+    .user-row-main{
+      display:flex; flex-direction:column; gap:.12rem;
+    }
+    .user-row-name{ font-size:.9rem; font-weight:500; }
+    .user-row-email{ font-size:.76rem; color:#9ca3af; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.1rem .5rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020c28; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+    .badge.success{ background:rgba(22,163,74,.2); border-color:rgba(22,163,74,.7); color:#bbf7d0; }
+    .badge.danger{ background:rgba(220,38,38,.2); border-color:rgba(220,38,38,.7); color:#fecaca; }
+    .badge.warning{ background:rgba(234,179,8,.18); border-color:rgba(234,179,8,.7); color:#facc15; }
+
+    .user-header{
+      display:flex; justify-content:space-between; align-items:flex-start; gap:.8rem;
+      flex-wrap:wrap;
+    }
+    .user-header-main{
+      display:flex; gap:.7rem; align-items:center;
+    }
+    .avatar{
+      width:48px; height:48px; border-radius:50%;
+      background:#020617;
+      border:2px solid rgba(148,163,184,.7);
+      overflow:hidden;
+    }
+    .avatar img{ width:100%; height:100%; object-fit:cover; }
+    .user-header-meta h2{
+      margin:0; font-size:1.05rem;
+    }
+    .user-header-meta p{
+      margin:.15rem 0; font-size:.82rem; color:#9ca3af;
+    }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:.75rem;
+    }
+    @media(max-width:900px){
+      .grid-2{ grid-template-columns:1fr; }
+    }
+
+    .subcard{
+      border-radius:12px;
+      border:1px solid rgba(31,41,55,.9);
+      background:#020617;
+      padding:.6rem .7rem;
+      font-size:.85rem;
+    }
+    .subcard h4{
+      margin:0 0 .25rem;
+      font-size:.9rem;
+    }
+
+    .apps-list{
+      max-height:200px;
+      overflow:auto;
+      margin-top:.3rem;
+    }
+    .apps-item{
+      padding:.35rem 0;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:.4rem;
+    }
+    .apps-item:last-child{ border-bottom:none; }
+    .apps-item-main{
+      display:flex; flex-direction:column; gap:.1rem;
+    }
+    .apps-item-meta{
+      font-size:.76rem; color:#9ca3af;
+    }
+
+    .docs-list{
+      max-height:200px;
+      overflow:auto;
+      margin-top:.3rem;
+    }
+    .docs-item{
+      padding:.35rem 0;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:.4rem;
+      font-size:.8rem;
+    }
+    .docs-item:last-child{ border-bottom:none; }
+    .docs-item-main{
+      display:flex; flex-direction:column; gap:.1rem;
+    }
+    .docs-item-meta{
+      font-size:.75rem; color:#9ca3af;
+    }
+
+    .timeline{
+      list-style:none;
+      padding:0;
+      margin:.45rem 0 0;
+      border-left:1px solid rgba(51,65,85,.9);
+      font-size:.8rem;
+    }
+    .timeline-item{
+      padding:.35rem 0 .35rem .7rem;
+      position:relative;
+    }
+    .timeline-item::before{
+      content:"";
+      position:absolute;
+      left:-5px; top:.6rem;
+      width:8px; height:8px;
+      border-radius:50%;
+      background:#38bdf8;
+      box-shadow:0 0 0 3px rgba(56,189,248,.3);
+    }
+    .timeline-item-title{ font-weight:500; }
+    .timeline-item-meta{ color:#9ca3af; }
+
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+      font-size:.85rem;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    .status-text.muted{ color:#9ca3af; font-size:.8rem; }
+    .status-text.success{ color:#4ade80; font-size:.8rem; }
+    .status-text.danger{ color:#fecaca; font-size:.8rem; }
+    .status-text.warning{ color:#facc15; font-size:.8rem; }
+
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/views/admin/index.html" class="logo">
+          <i class="fa-solid fa-compass"></i> <span>Elite Admin</span>
+        </a>
+        <button class="side-toggle" id="sideToggle"><i class="fa fa-xmark"></i></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/index.html"><i class="fa fa-gauge-high"></i> Dashboard</a></li>
+          <li><a class="nav-link" href="/views/admin/analytics.html"><i class="fa fa-chart-line"></i> Analytics</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Users & Activity</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/users.html"><i class="fa fa-users"></i> Users</a></li>
+          <li><a class="nav-link active" href="/views/admin/user-details.html"><i class="fa fa-id-card"></i> User details</a></li>
+          <li><a class="nav-link" href="/views/admin/activeusers.html"><i class="fa fa-user-check"></i> Active users</a></li>
+          <li><a class="nav-link" href="/views/admin/tracking.html"><i class="fa fa-location-crosshairs"></i> Tracking</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Jobs & Services</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/createjobs.html"><i class="fa fa-plus"></i> Create Job</a></li>
+          <li><a class="nav-link" href="/views/admin/jobs.html"><i class="fa fa-briefcase"></i> Jobs</a></li>
+          <li><a class="nav-link" href="/views/admin/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+          <li><a class="nav-link" href="/views/admin/activeprocess.html"><i class="fa fa-spinner"></i> Active processes</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Transactions</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/payments.html"><i class="fa fa-credit-card"></i> Payments</a></li>
+          <li><a class="nav-link" href="/views/admin/appointments.html"><i class="fa fa-calendar"></i> Appointments</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Content & Feedback</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/notifications.html"><i class="fa fa-bell"></i> Notifications</a></li>
+          <li><a class="nav-link" href="/views/admin/testimonials.html"><i class="fa fa-star"></i> Testimonials</a></li>
+          <li><a class="nav-link" href="/views/admin/contacts.html"><i class="fa fa-envelope-open-text"></i> Contact messages</a></li>
+          <li><a class="nav-link" href="/views/admin/applications.html"><i class="fa fa-file-signature"></i> Applications</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Session</div>
+        <div class="chip">
+          <i class="fa fa-user-shield"></i> <span id="adminEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="breadcrumbs">
+          <button class="side-toggle" id="openSideOnMobile"><i class="fa fa-bars"></i></button>
+          <span>Admin</span> <span>/</span>
+          <span class="current">User details</span>
+        </div>
+        <div class="main-header-right">
+          <span class="pill-soft"><i class="fa fa-id-card"></i> Full user footprint</span>
+          <button class="btn outline btn-sm" id="adminLogout"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="main-body">
+        <article class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h2 class="section-title">User details & journey</h2>
+              <p class="muted" style="font-size:.85rem;">
+                Inspect user profile, applications, documents, payments, and notifications in one place — ordered by real activity, not just tables.
+              </p>
+            </div>
+            <div class="pill-soft">
+              <i class="fa fa-database"></i> users · applications · documents · payments · notifications
+            </div>
+          </div>
+
+          <div class="split-users" style="margin-top:.8rem;">
+            <!-- LEFT: Users list -->
+            <section>
+              <div class="user-list-wrap">
+                <div class="user-list-header">
+                  <input id="userSearch" class="input" placeholder="Search name or email">
+                  <select id="userFilterStatus" class="input" style="max-width:120px;">
+                    <option value="">All</option>
+                    <option value="active">Active</option>
+                    <option value="pending">Pending</option>
+                    <option value="blocked">Blocked</option>
+                  </select>
+                  <button class="btn outline btn-sm" id="userReload"><i class="fa fa-rotate-right"></i></button>
+                </div>
+                <ul id="userList" class="user-list">
+                  <li class="muted" style="padding:.6rem .7rem;font-size:.85rem;">Loading users…</li>
+                </ul>
+              </div>
+              <p id="userListStatus" class="status-text muted" style="margin-top:.4rem;">—</p>
+            </section>
+
+            <!-- RIGHT: Selected user detail -->
+            <section>
+              <div class="card" style="padding:.7rem .8rem;">
+                <div id="userEmpty">
+                  <p class="muted" style="font-size:.85rem;">Select a user from the left to view full details.</p>
+                </div>
+
+                <div id="userContent" style="display:none;">
+                  <div class="user-header">
+                    <div class="user-header-main">
+                      <div class="avatar">
+                        <img id="detailAvatarImg" src="/assets/profile/avatar.jpg" alt="Avatar">
+                      </div>
+                      <div class="user-header-meta">
+                        <h2 id="detailName">User name</h2>
+                        <p id="detailEmail">email@example.com</p>
+                        <div style="display:flex;gap:.4rem;flex-wrap:wrap;font-size:.78rem;">
+                          <span id="detailStatusBadge" class="badge">active</span>
+                          <span id="detailCountryBadge" class="badge" style="display:none;"><i class="fa fa-location-dot"></i> <span id="detailCountryText"></span></span>
+                          <span id="detailJoinedBadge" class="badge"><i class="fa fa-calendar"></i> <span id="detailJoinedText"></span></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div style="text-align:right;font-size:.78rem;" id="detailStatsSummary">
+                      <!-- filled by JS -->
+                    </div>
+                  </div>
+
+                  <div class="grid-2" style="margin-top:.75rem;">
+                    <!-- Profile details -->
+                    <section class="subcard">
+                      <h4>Profile details</h4>
+                      <ul style="list-style:none;padding:0;margin:.2rem 0;">
+                        <li style="display:flex;justify-content:space-between;gap:.4rem;margin-bottom:.25rem;">
+                          <span class="muted">Phone</span><span id="detailPhoneText">—</span>
+                        </li>
+                        <li style="display:flex;justify-content:space-between;gap:.4rem;margin-bottom:.25rem;">
+                          <span class="muted">Country</span><span id="detailCountryLine">—</span>
+                        </li>
+                        <li style="display:flex;justify-content:space-between;gap:.4rem;margin-bottom:.25rem;">
+                          <span class="muted">User ID</span><span id="detailUserId" style="font-size:.75rem;max-width:220px;overflow:hidden;text-overflow:ellipsis;">—</span>
+                        </li>
+                      </ul>
+                    </section>
+
+                    <!-- Latest notifications -->
+                    <section class="subcard">
+                      <h4>Latest notifications</h4>
+                      <div id="detailNotifs" style="max-height:150px;overflow:auto;">
+                        <div class="muted" style="font-size:.8rem;">No notifications yet.</div>
+                      </div>
+                    </section>
+                  </div>
+
+                  <div class="grid-2" style="margin-top:.75rem;">
+                    <!-- Applications -->
+                    <section class="subcard">
+                      <h4>Applications</h4>
+                      <div id="detailApps" class="apps-list">
+                        <div class="muted" style="font-size:.8rem;">No applications.</div>
+                      </div>
+                    </section>
+
+                    <!-- Documents -->
+                    <section class="subcard">
+                      <h4>Documents</h4>
+                      <div id="detailDocs" class="docs-list">
+                        <div class="muted" style="font-size:.8rem;">No documents uploaded.</div>
+                      </div>
+                    </section>
+                  </div>
+
+                  <section class="subcard" style="margin-top:.75rem;">
+                    <h4>Activity timeline</h4>
+                    <p class="muted" style="font-size:.78rem;margin-bottom:.2rem;">Combined view of applications, documents, payments, and notifications.</p>
+                    <ul id="detailTimeline" class="timeline">
+                      <li class="timeline-item"><div class="timeline-item-title">No activity yet</div></li>
+                    </ul>
+                  </section>
+
+                  <p id="detailStatus" class="status-text muted" style="margin-top:.4rem;">—</p>
+                </div>
+              </div>
+            </section>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><i class="fa fa-info-circle"></i><span id="toastText">Notice</span></div>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Toast */
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+    function showToast(msg, ms=2500){
+      if(!toast || !toastText) return;
+      toastText.textContent=msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),ms);
+    }
+
+    /* Sidebar */
+    const sidebar = document.getElementById('sidebar');
+    const sideToggle = document.getElementById('sideToggle');
+    const openSideOnMobile = document.getElementById('openSideOnMobile');
+    sideToggle?.addEventListener('click',()=> sidebar.classList.remove('open'));
+    openSideOnMobile?.addEventListener('click',()=> sidebar.classList.add('open'));
+
+    /* Auth guard */
+    const adminEmailSpan=document.getElementById('adminEmail');
+    const adminLogout=document.getElementById('adminLogout');
+
+    const { data:sessionData } = await sb.auth.getSession();
+    const session=sessionData.session;
+    const admin=session?.user;
+
+    if(!admin){
+      showToast('Admin session required.');
+      window.location.href='/views/pages/login.html';
+    }else{
+      adminEmailSpan.textContent=admin.email;
+    }
+
+    adminLogout?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Elements */
+    const userSearch=document.getElementById('userSearch');
+    const userFilterStatus=document.getElementById('userFilterStatus');
+    const userReload=document.getElementById('userReload');
+    const userList=document.getElementById('userList');
+    const userListStatus=document.getElementById('userListStatus');
+
+    const userEmpty=document.getElementById('userEmpty');
+    const userContent=document.getElementById('userContent');
+
+    const detailAvatarImg=document.getElementById('detailAvatarImg');
+    const detailName=document.getElementById('detailName');
+    const detailEmail=document.getElementById('detailEmail');
+    const detailStatusBadge=document.getElementById('detailStatusBadge');
+    const detailCountryBadge=document.getElementById('detailCountryBadge');
+    const detailCountryText=document.getElementById('detailCountryText');
+    const detailJoinedBadge=document.getElementById('detailJoinedBadge');
+    const detailJoinedText=document.getElementById('detailJoinedText');
+    const detailStatsSummary=document.getElementById('detailStatsSummary');
+
+    const detailPhoneText=document.getElementById('detailPhoneText');
+    const detailCountryLine=document.getElementById('detailCountryLine');
+    const detailUserId=document.getElementById('detailUserId');
+
+    const detailNotifs=document.getElementById('detailNotifs');
+    const detailApps=document.getElementById('detailApps');
+    const detailDocs=document.getElementById('detailDocs');
+    const detailTimeline=document.getElementById('detailTimeline');
+    const detailStatus=document.getElementById('detailStatus');
+
+    let usersCache=[];
+    let filteredUsers=[];
+    let currentUser=null;
+    let currentUserApps=[];
+    let currentUserDocs=[];
+    let currentUserPays=[];
+    let currentUserNotifs=[];
+
+    function setListStatus(msg,type='muted'){
+      userListStatus.textContent=msg||'';
+      userListStatus.className='status-text '+type;
+    }
+
+    function mapAppStage(app){
+      const status = app.status || 'submitted';
+      const steps = Array.isArray(app.progress) ? app.progress : [];
+      const keys=new Set(steps.map(s=>(s.step || s.status || '').toLowerCase()));
+      if(status==='completed' || keys.has('completed') || keys.has('departure')) return 'completed';
+      if(keys.has('visa_submitted') || keys.has('visa_approved') || keys.has('process_handling')) return 'visa_processing';
+      if(keys.has('documents_submitted') || keys.has('docs_submitted') || keys.has('documents')) return 'documents';
+      if(status==='accepted') return 'accepted';
+      return 'application';
+    }
+
+    function stageLabel(stage){
+      switch(stage){
+        case 'accepted': return 'Accepted (awaiting payment)';
+        case 'documents': return 'Documents stage';
+        case 'visa_processing': return 'Visa processing';
+        case 'completed': return 'Completed';
+        default: return 'Application';
+      }
+    }
+
+    async function loadUsers(){
+      userList.innerHTML='<li class="muted" style="padding:.6rem .7rem;font-size:.85rem;">Loading users…</li>';
+      setListStatus('Loading users…','muted');
+      try{
+        const { data, error }=await sb
+          .from('users')
+          .select('id,email,fullname,phone,country,status,avatar_url,created_at')
+          .order('created_at',{ ascending:false })
+          .limit(300);
+        if(error) throw error;
+        usersCache=data || [];
+        applyUserFilter();
+      }catch(e){
+        console.error(e);
+        userList.innerHTML='<li class="muted" style="padding:.6rem .7rem;font-size:.85rem;">Failed to load users.</li>';
+        setListStatus('Failed to load users from database.','danger');
+      }
+    }
+
+    function applyUserFilter(){
+      const q=userSearch.value.trim().toLowerCase();
+      const statusF=userFilterStatus.value;
+
+      filteredUsers = usersCache.filter(u=>{
+        if(statusF && (u.status || 'active')!==statusF) return false;
+        if(q){
+          const name = (u.fullname || u.name || '').toLowerCase();
+          const email = (u.email || '').toLowerCase();
+          if(!name.includes(q) && !email.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if(!filteredUsers.length){
+        userList.innerHTML='<li class="muted" style="padding:.6rem .7rem;font-size:.85rem;">No users match the filter.</li>';
+        setListStatus('No users match the current search/filter.','muted');
+        return;
+      }
+
+      userList.innerHTML=filteredUsers.map(u=>{
+        const name = u.fullname || u.name || u.email || '(no name)';
+        const status = u.status || 'active';
+        const badgeClass = status==='blocked'?'danger':status==='pending'?'warning':'success';
+        return `
+          <li class="user-row" data-id="${u.id}">
+            <div class="user-row-main">
+              <div class="user-row-name">${name}</div>
+              <div class="user-row-email">${u.email}</div>
+            </div>
+            <span class="badge ${badgeClass}">${status}</span>
+          </li>
+        `;
+      }).join('');
+
+      setListStatus(`${filteredUsers.length} user${filteredUsers.length===1?'':'s'} shown.`,'muted');
+    }
+
+    userSearch.addEventListener('input',()=>{
+      clearTimeout(applyUserFilter._t);
+      applyUserFilter._t=setTimeout(applyUserFilter,160);
+    });
+    userFilterStatus.addEventListener('change',applyUserFilter);
+    userReload.addEventListener('click',loadUsers);
+
+    userList.addEventListener('click',(e)=>{
+      const row=e.target.closest('.user-row');
+      if(!row) return;
+      const id=row.dataset.id;
+      const user=filteredUsers.find(u=>u.id===id) || usersCache.find(u=>u.id===id);
+      if(!user) return;
+
+      [...userList.querySelectorAll('.user-row')].forEach(r=>r.classList.remove('active'));
+      row.classList.add('active');
+      setSelectedUser(user);
+    });
+
+    function setSelectedUser(u){
+      currentUser=u;
+      userEmpty.style.display='none';
+      userContent.style.display='block';
+      detailStatus.textContent='Loading applications, documents, payments, and notifications…';
+      detailStatus.className='status-text muted';
+
+      const name = u.fullname || u.name || u.email || '(no name)';
+      detailName.textContent=name;
+      detailEmail.textContent=u.email;
+      detailUserId.textContent=u.id;
+
+      const status=u.status || 'active';
+      detailStatusBadge.textContent=status;
+      detailStatusBadge.className='badge '+(status==='blocked'?'danger':status==='pending'?'warning':'success');
+
+      if(u.country){
+        detailCountryBadge.style.display='inline-flex';
+        detailCountryText.textContent=u.country;
+        detailCountryLine.textContent=u.country;
+      }else{
+        detailCountryBadge.style.display='none';
+        detailCountryLine.textContent='—';
+      }
+
+      detailPhoneText.textContent=u.phone || '—';
+
+      if(u.avatar_url){
+        detailAvatarImg.src=u.avatar_url;
+      }else{
+        detailAvatarImg.src='/assets/profile/avatar.jpg';
+      }
+
+      if(u.created_at){
+        const created=new Date(u.created_at);
+        detailJoinedText.textContent=created.toLocaleDateString();
+      }else{
+        detailJoinedText.textContent='—';
+      }
+
+      detailStatsSummary.textContent='';
+
+      loadUserRelated(u.id);
+    }
+
+    async function loadUserRelated(userId){
+      try{
+        const [appsRes, docsRes, paysRes, notifsRes] = await Promise.all([
+          sb.from('applications')
+            .select('id,job_id,status,plan,application_type,tracking_id,progress,details,created_at,jobs:job_id(title,country,city)')
+            .eq('user_id',userId)
+            .order('created_at',{ ascending:false }),
+          sb.from('documents')
+            .select('id,application_id,file_name,file_url,file_type,category,size_bytes,created_at')
+            .eq('user_id',userId)
+            .order('created_at',{ ascending:false }),
+          sb.from('payments')
+            .select('id,application_id,ref,amount,currency,status,created_at')
+            .eq('user_id',userId)
+            .order('created_at',{ ascending:false }),
+          sb.from('notifications')
+            .select('id,title,category,message,read,created_at')
+            .eq('user_id',userId)
+            .order('created_at',{ ascending:false })
+            .limit(20)
+        ]);
+
+        if(appsRes.error) throw appsRes.error;
+        if(docsRes.error) throw docsRes.error;
+        if(paysRes.error) throw paysRes.error;
+        if(notifsRes.error) throw notifsRes.error;
+
+        currentUserApps = appsRes.data || [];
+        currentUserDocs = docsRes.data || [];
+        currentUserPays = paysRes.data || [];
+        currentUserNotifs = notifsRes.data || [];
+
+        renderUserRelated();
+        detailStatus.textContent='User data loaded.';
+        detailStatus.className='status-text success';
+      }catch(e){
+        console.error(e);
+        detailStatus.textContent=e.message || 'Failed to load full user details.';
+        detailStatus.className='status-text danger';
+      }
+    }
+
+    function renderUserRelated(){
+      const apps=currentUserApps;
+      const docs=currentUserDocs;
+      const pays=currentUserPays;
+      const notifs=currentUserNotifs;
+
+      const totalApps=apps.length;
+      const activeApps=apps.filter(a=>mapAppStage(a)!=='completed').length;
+      const completedApps=apps.filter(a=>mapAppStage(a)==='completed').length;
+      const docsCount=docs.length;
+      const paymentsCount=pays.length;
+
+      detailStatsSummary.innerHTML=`
+        <div>Apps: <strong>${totalApps}</strong> (Active: ${activeApps}, Completed: ${completedApps})</div>
+        <div>Documents: <strong>${docsCount}</strong> • Payments: <strong>${paymentsCount}</strong></div>
+      `;
+
+      // Applications list
+      if(!apps.length){
+        detailApps.innerHTML='<div class="muted" style="font-size:.8rem;">No applications yet.</div>';
+      }else{
+        detailApps.innerHTML=apps.map(app=>{
+          const job=app.jobs || {};
+          const jobTitle=job.title || '(Job removed)';
+          const stage=mapAppStage(app);
+          const created = app.created_at ? new Date(app.created_at).toLocaleString() : '';
+          const tracking = app.tracking_id || '—';
+          return `
+            <div class="apps-item">
+              <div class="apps-item-main">
+                <div>${jobTitle}</div>
+                <div class="apps-item-meta">
+                  <span>Stage: ${stageLabel(stage)}</span>
+                  <span>• Status: ${app.status || 'submitted'}</span>
+                  ${tracking!=='—'?`<span>• Tracking: ${tracking}</span>`:''}
+                </div>
+              </div>
+              <div class="apps-item-meta">${created}</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Documents list
+      if(!docs.length){
+        detailDocs.innerHTML='<div class="muted" style="font-size:.8rem;">No documents uploaded.</div>';
+      }else{
+        detailDocs.innerHTML=docs.map(d=>{
+          const created = d.created_at ? new Date(d.created_at).toLocaleString() : '';
+          const size = d.size_bytes ? Math.round(d.size_bytes/1024) + ' KB' : '';
+          const cat = d.category || (d.file_type || '').split('/')[0] || 'document';
+          return `
+            <div class="docs-item">
+              <div class="docs-item-main">
+                <div>${d.file_name}</div>
+                <div class="docs-item-meta">
+                  <span>${cat}</span>
+                  ${created ? ` • <span>${created}</span>` : ''}
+                  ${size ? ` • <span>${size}</span>` : ''}
+                </div>
+              </div>
+              <div>
+                <a href="${d.file_url}" target="_blank" rel="noopener" class="btn outline btn-sm">
+                  <i class="fa fa-arrow-up-right-from-square"></i>
+                </a>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Notifications (latest)
+      if(!notifs.length){
+        detailNotifs.innerHTML='<div class="muted" style="font-size:.8rem;">No notifications.</div>';
+      }else{
+        detailNotifs.innerHTML=notifs.map(n=>{
+          const created = n.created_at ? new Date(n.created_at).toLocaleString() : '';
+          const readBadge = n.read ? '' : '<span class="badge warning">new</span>';
+          return `
+            <div style="padding:.3rem 0;border-bottom:1px solid rgba(31,41,55,.9);font-size:.8rem;">
+              <div style="display:flex;justify-content:space-between;gap:.4rem;">
+                <strong>${n.title}</strong>
+                ${readBadge}
+              </div>
+              <div class="muted" style="font-size:.76rem;">${n.message}</div>
+              <div class="muted" style="font-size:.72rem;margin-top:.05rem;">${created} • ${n.category}</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Activity timeline: combine apps, docs, payments, notifications into one chronologically sorted list
+      const events=[];
+
+      apps.forEach(app=>{
+        const created = app.created_at ? new Date(app.created_at) : null;
+        if(created){
+          events.push({
+            at: created,
+            type: 'application_created',
+            title: 'Application submitted',
+            meta: app
+          });
+        }
+        const progress = Array.isArray(app.progress)?app.progress:[];
+        progress.forEach(p=>{
+          const at = p.at || p.time || null;
+          const atDate = at ? new Date(at) : null;
+          events.push({
+            at: atDate,
+            type: 'application_progress',
+            title: (p.step || p.status || 'update').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()),
+            meta: { app, progress:p }
+          });
+        });
+      });
+
+      docs.forEach(d=>{
+        const at=d.created_at ? new Date(d.created_at) : null;
+        events.push({
+          at,
+          type: 'document_uploaded',
+          title: 'Document uploaded',
+          meta: d
+        });
+      });
+
+      pays.forEach(p=>{
+        const at=p.created_at ? new Date(p.created_at) : null;
+        events.push({
+          at,
+          type: 'payment',
+          title: 'Payment '+(p.status || 'pending'),
+          meta: p
+        });
+      });
+
+      notifs.forEach(n=>{
+        const at=n.created_at ? new Date(n.created_at) : null;
+        events.push({
+          at,
+          type: 'notification',
+          title: n.title || 'Notification',
+          meta: n
+        });
+      });
+
+      events.sort((a,b)=>{
+        const aTime = a.at ? a.at.getTime() : 0;
+        const bTime = b.at ? b.at.getTime() : 0;
+        return bTime - aTime;
+      });
+
+      if(!events.length){
+        detailTimeline.innerHTML='<li class="timeline-item"><div class="timeline-item-title">No activity yet</div></li>';
+      }else{
+        detailTimeline.innerHTML=events.slice(0,60).map(ev=>{
+          const at = ev.at ? ev.at.toLocaleString() : '';
+          let body='';
+          if(ev.type==='application_created'){
+            const app=ev.meta;
+            const job=app.jobs || {};
+            const jobTitle=job.title || 'Application';
+            body=`${jobTitle} • Status: ${app.status || 'submitted'}`;
+          }else if(ev.type==='application_progress'){
+            const prog=ev.meta.progress;
+            const note=prog.note || prog.message || '';
+            const app=ev.meta.app;
+            const stage=mapAppStage(app);
+            body=`Stage: ${stageLabel(stage)}${note ? ' — '+note : ''}`;
+          }else if(ev.type==='document_uploaded'){
+            const d=ev.meta;
+            body=`${d.file_name} (${d.category || d.file_type || 'document'})`;
+          }else if(ev.type==='payment'){
+            const p=ev.meta;
+            body=`${p.currency || 'GHS'} ${p.amount} • Status: ${p.status}`;
+          }else if(ev.type==='notification'){
+            const n=ev.meta;
+            body=n.message || '';
+          }
+          return `
+            <li class="timeline-item">
+              <div class="timeline-item-title">${ev.title}</div>
+              <div class="timeline-item-meta">${at}</div>
+              ${body ? `<div class="timeline-item-meta" style="margin-top:.05rem;">${body}</div>` : ''}
+            </li>
+          `;
+        }).join('');
+      }
+    }
+
+    await loadUsers();
+  </script>
+</body>
+</html>

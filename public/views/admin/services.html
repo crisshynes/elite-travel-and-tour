@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — Services | Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Admin services management for Elite Travel & Tour — create, list, and manage services for Work & Pay, Express, visas, flights, and tours."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <style>
+    :root{
+      --brand:#0077cc;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --light:#fff;
+      --muted:#64748b;
+      --bg:#020617;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.7);
+      --radius:14px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --info:#0ea5e9;
+      --chip-bg:#0b1220;
+    }
+
+    html,body{
+      height:100%;
+    }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(59,130,246,.26) 0, transparent 45%),
+        #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      min-height:0;
+    }
+    @media(max-width:900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(31,41,55,.9);
+      background:radial-gradient(circle at top left, #020c28 0, #020617 60%);
+      padding:.8rem .7rem;
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      box-shadow:0 0 0 1px rgba(15,23,42,.9);
+      overflow-y:auto;
+      max-height:100vh;
+    }
+    .sidebar-header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.2rem .1rem .4rem;
+    }
+    .sidebar-header .logo{
+      display:flex; align-items:center; gap:.4rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; font-size:.98rem;
+    }
+    .sidebar-header .logo i{ color:#38bdf8; }
+    .side-toggle{
+      display:none; border:none; background:rgba(15,23,42,.8);
+      color:#cbd5f5; padding:.35rem .5rem; border-radius:999px; cursor:pointer;
+    }
+    .side-toggle i{ font-size:.9rem; }
+
+    @media(max-width:900px){
+      .sidebar{
+        position:fixed; inset:0 auto 0 0; width:260px;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:60;
+      }
+      .sidebar.open{ transform:translateX(0); }
+      .side-toggle{ display:inline-flex; }
+    }
+
+    .nav-section{ margin-top:.4rem; }
+    .nav-label{
+      font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+      color:#64748b; margin:.4rem 0 .2rem; padding:0 .2rem;
+    }
+    .nav-list{ list-style:none; padding:0; margin:0; }
+    .nav-item{ margin-bottom:.2rem; }
+    .nav-link{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.45rem .55rem; border-radius:10px;
+      color:#cbd5f5; text-decoration:none; font-size:.9rem;
+      border:1px solid transparent; cursor:pointer;
+      background:transparent;
+    }
+    .nav-link i{ font-size:.9rem; }
+    .nav-link span.badge{
+      margin-left:auto; font-size:.7rem;
+      background:#0b1220; padding:.05rem .4rem; border-radius:999px;
+      border:1px solid rgba(148,163,184,.7); color:#e2e8f0;
+    }
+    .nav-link:hover{
+      background:rgba(30,64,175,.45);
+      border-color:rgba(37,99,235,.6);
+    }
+    .nav-link.active{
+      background:rgba(37,99,235,.9);
+      border-color:rgba(37,99,235,1);
+      color:#e5e7eb;
+      box-shadow:0 10px 28px rgba(37,99,235,.6);
+    }
+
+    .sidebar-footer{
+      margin-top:auto; padding-top:.5rem;
+      border-top:1px solid rgba(30,64,175,.7);
+      font-size:.8rem; color:#64748b;
+    }
+    .sidebar-footer .chip{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.22rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(37,99,235,.7);
+      margin-top:.35rem; font-size:.78rem;
+    }
+    .sidebar-footer .chip i{ color:#22c55e; }
+
+    /* Main */
+    .main{
+      display:flex; flex-direction:column;
+      min-height:0;
+    }
+    .main-header{
+      padding:.55rem 1rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 16px 50px rgba(15,23,42,.8);
+      position:sticky; top:0; z-index:40;
+    }
+    .breadcrumbs{
+      display:flex; align-items:center; gap:.35rem; font-size:.85rem; color:#9ca3af;
+    }
+    .breadcrumbs span.current{ color:#e5e7eb; font-weight:500; }
+    .main-header-right{ display:flex; align-items:center; gap:.5rem; }
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.78rem; color:#e5e7eb;
+    }
+
+    .main-body{
+      padding:1rem;
+      overflow:auto;
+    }
+    .card{
+      background:#020617;
+      border-radius:var(--radius);
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:var(--shadow);
+      padding:1rem;
+    }
+    .section-title{ font-size:1.15rem; margin-bottom:.4rem; }
+    .muted{ color:var(--muted); }
+
+    .toolbar{ display:flex; gap:.5rem; flex-wrap:wrap; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{ background:var(--brand); color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4); }
+    .btn.brand:hover{ background:var(--brand-600); transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{ border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7); }
+    .btn-sm{ padding:.25rem .55rem; font-size:.8rem; }
+
+    .input,.textarea,select{
+      width:100%; box-sizing:border-box;
+      padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.9rem; color:#e5e7eb;
+      transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#6b7280; }
+    .input:focus,.textarea:focus,select:focus{
+      outline:none; border-color:#38bdf8;
+      box-shadow:0 0 0 2px rgba(56,189,248,.35);
+      background:#020617;
+    }
+    .textarea{ min-height:90px; resize:vertical; }
+
+    .subtabs{
+      display:flex; gap:.4rem; margin:.6rem 0 .4rem;
+      flex-wrap:wrap;
+    }
+    .subtab-btn{
+      border:none; background:transparent;
+      border-radius:999px; padding:.3rem .7rem;
+      font-size:.8rem; color:#9ca3af; cursor:pointer;
+    }
+    .subtab-btn.active{
+      background:#0b1220; color:#e5e7eb; border:1px solid rgba(37,99,235,.7);
+    }
+
+    .table{
+      width:100%; border-collapse:collapse; font-size:.85rem;
+    }
+    .table th,.table td{
+      padding:.55rem .45rem; border-bottom:1px solid rgba(31,41,55,.9);
+    }
+    .table th{
+      text-align:left; font-weight:600; color:#9ca3af; font-size:.8rem;
+    }
+    .table tbody tr:hover{ background:#020c28; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.1rem .5rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020c28; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+    .badge.success{ background:rgba(22,163,74,.2); border-color:rgba(22,163,74,.7); color:#bbf7d0; }
+    .badge.danger{ background:rgba(220,38,38,.20); border-color:rgba(220,38,38,.7); color:#fecaca; }
+    .badge.warning{ background:rgba(234,179,8,.18); border-color:rgba(234,179,8,.7); color:#facc15; }
+    .badge.deleted{ background:rgba(148,163,184,.18); border-color:rgba(148,163,184,.65); color:#e5e7eb; }
+
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    /* Drawer for create/edit service */
+    .drawer{
+      position:fixed; top:0; right:0; width:360px; max-width:100%;
+      height:100%; background:#020617;
+      border-left:1px solid rgba(31,41,55,.9);
+      box-shadow:-24px 0 60px rgba(15,23,42,.8);
+      transform:translateX(100%);
+      transition:transform .2s ease-out;
+      z-index:80;
+      display:flex; flex-direction:column;
+    }
+    .drawer.open{ transform:translateX(0); }
+    .drawer-header{
+      padding:.75rem .85rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+    }
+    .drawer-body{
+      padding:.8rem .85rem;
+      overflow:auto;
+      flex:1;
+    }
+    .drawer-footer{
+      padding:.7rem .85rem;
+      border-top:1px solid rgba(31,41,55,.9);
+      display:flex; justify-content:space-between; align-items:center; gap:.5rem;
+      flex-wrap:wrap;
+    }
+
+    .chip-row{ display:flex; flex-wrap:wrap; gap:.3rem; }
+    .chip{
+      padding:.18rem .5rem; border-radius:999px;
+      font-size:.78rem;
+      background:var(--chip-bg);
+      border:1px solid rgba(55,65,81,.9);
+      color:#e5e7eb;
+    }
+
+    .danger-text{
+      color:#fecaca;
+      font-size:.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/views/admin/index.html" class="logo">
+          <i class="fa-solid fa-compass"></i> <span>Elite Admin</span>
+        </a>
+        <button class="side-toggle" id="sideToggle"><i class="fa fa-xmark"></i></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a class="nav-link" href="/views/admin/index.html">
+              <i class="fa fa-gauge-high"></i> <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/views/admin/analytics.html">
+              <i class="fa fa-chart-line"></i> <span>Analytics</span>
+              <span class="badge">beta</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Jobs & Services</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/createjobs.html"><i class="fa fa-plus"></i> <span>Create Job</span></a></li>
+          <li><a class="nav-link" href="/views/admin/jobs.html"><i class="fa fa-briefcase"></i> <span>Jobs</span></a></li>
+           <li><a class="nav-link" href="/views/admin/createservices.html"><i class="fa fa-plus"></i> <span>Create Service</span></a></li>
+          <li><button class="nav-link active"><i class="fa fa-suitcase"></i> <span>Services</span></button></li>
+          <li><a class="nav-link" href="/views/admin/activeprocess.html"><i class="fa fa-spinner"></i> <span>Active processes</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Users & Activity</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/users.html"><i class="fa fa-users"></i> <span>Users</span></a></li>
+          <li><a class="nav-link" href="/views/admin/user-details.html"><i class="fa fa-id-card"></i> <span>User details</span></a></li>
+          <li><a class="nav-link" href="/views/admin/activeusers.html"><i class="fa fa-user-check"></i> <span>Active users</span></a></li>
+          <li><a class="nav-link" href="/views/admin/tracking.html"><i class="fa fa-location-crosshairs"></i> <span>Tracking</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Transactions</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/payments.html"><i class="fa fa-credit-card"></i> <span>Payments</span></a></li>
+          <li><a class="nav-link" href="/views/admin/appointments.html"><i class="fa fa-calendar"></i> <span>Appointments</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Content & Feedback</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/notifications.html"><i class="fa fa-bell"></i> <span>Notifications</span></a></li>
+          <li><a class="nav-link" href="/views/admin/testimonials.html"><i class="fa fa-star"></i> <span>Testimonials</span></a></li>
+          <li><a class="nav-link" href="/views/admin/contacts.html"><i class="fa fa-envelope-open-text"></i> <span>Contact messages</span></a></li>
+          <li><a class="nav-link" href="/views/admin/applications.html"><i class="fa fa-file-signature"></i> <span>Applications</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Session</div>
+        <div class="chip">
+          <i class="fa fa-user-shield"></i> <span id="adminEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="breadcrumbs">
+          <button class="side-toggle" id="openSideOnMobile"><i class="fa fa-bars"></i></button>
+          <span>Admin</span> <span>/</span> <span class="current">Services</span>
+        </div>
+        <div class="main-header-right">
+          <span class="pill-soft"><i class="fa fa-shield-halved"></i> Admin</span>
+          <button class="btn outline" id="adminLogout"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="main-body">
+        <article class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h2 class="section-title">Services</h2>
+              <p class="muted">
+                Manage core services for Work & Pay, Express, visas, flights, and tours. Use the Service Builder for full details, images, and metadata.
+              </p>
+            </div>
+            <div class="chip-row">
+              <span class="chip"><i class="fa fa-database"></i> Services table</span>
+              <span class="chip"><i class="fa fa-bolt"></i> Builder‑ready</span>
+              <span class="chip"><i class="fa fa-recycle"></i> Soft delete (hard purge after 30 days)</span>
+            </div>
+          </div>
+
+          <div class="toolbar" style="margin:.7rem 0 .5rem;">
+            <button class="btn brand" id="openCreateDrawer"><i class="fa fa-plus"></i> New service</button>
+            <button class="btn outline" id="refreshServices"><i class="fa fa-rotate"></i> Refresh</button>
+          </div>
+
+          <div class="subtabs">
+            <button class="subtab-btn active" data-filter="all">All (except deleted)</button>
+            <button class="subtab-btn" data-filter="active">Active</button>
+            <button class="subtab-btn" data-filter="draft">Draft</button>
+            <button class="subtab-btn" data-filter="inactive">Inactive</button>
+            <button class="subtab-btn" data-filter="deleted">Deleted</button>
+          </div>
+
+          <div class="toolbar" style="margin-bottom:.4rem;">
+            <input id="svcSearch" class="input" placeholder="Search by title or category" style="max-width:260px;">
+            <select id="svcCategoryFilter" class="input" style="max-width:200px;">
+              <option value="">All categories</option>
+              <option value="visa">Visa</option>
+              <option value="flights">Flights</option>
+              <option value="tours">Tours</option>
+              <option value="work">Work & Pay</option>
+              <option value="express">Express</option>
+            </select>
+          </div>
+
+          <table class="table" id="servicesTable">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Plan</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="6" class="muted">Loading services...</td></tr>
+            </tbody>
+          </table>
+
+          <p class="muted" id="svcStatus" style="margin-top:.5rem;"></p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Drawer for create/edit service -->
+  <aside class="drawer" id="svcDrawer" aria-modal="true" role="dialog">
+    <div class="drawer-header">
+      <h3 id="svcDrawerTitle">Create service</h3>
+      <button class="btn outline btn-sm" id="closeDrawer"><i class="fa fa-xmark"></i> Close</button>
+    </div>
+    <div class="drawer-body">
+      <form id="svcForm" class="grid" style="gap:.7rem;">
+        <div>
+          <label for="svcTitleInput" class="muted" style="font-size:.85rem;">Service title</label>
+          <input id="svcTitleInput" class="input" placeholder="e.g., Canada Work & Pay Visa" required>
+        </div>
+        <div class="grid" style="gap:.5rem;">
+          <div>
+            <label for="svcCategoryInput" class="muted" style="font-size:.85rem;">Category</label>
+            <select id="svcCategoryInput" class="input">
+              <option value="">Not set</option>
+              <option value="visa">Visa</option>
+              <option value="flights">Flights</option>
+              <option value="tours">Tours</option>
+              <option value="work">Work & Pay</option>
+              <option value="express">Express</option>
+            </select>
+          </div>
+          <div>
+            <label for="svcPlanInput" class="muted" style="font-size:.85rem;">Plan</label>
+            <select id="svcPlanInput" class="input">
+              <option value="">No specific plan</option>
+              <option value="work">Work & Pay</option>
+              <option value="express">Express</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid" style="gap:.5rem;">
+          <div>
+            <label for="svcStatusInput" class="muted" style="font-size:.85rem;">Status</label>
+            <select id="svcStatusInput" class="input">
+              <option value="active">Active</option>
+              <option value="draft">Draft</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label for="svcDescInput" class="muted" style="font-size:.85rem;">Description</label>
+          <textarea id="svcDescInput" class="textarea" placeholder="Short description (visible on listing pages)"></textarea>
+        </div>
+      </form>
+      <p class="muted" id="svcFormStatus" style="margin-top:.4rem;"></p>
+      <p class="muted" style="margin-top:.4rem;font-size:.8rem;">
+        For full details (images, price, requirements, metadata), open this service in the Service Builder.
+      </p>
+      <p class="danger-text" style="margin-top:.4rem;">
+        Deleting a service marks it as <strong>deleted</strong>. It can be hard‑deleted after 30 days.
+      </p>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn outline" id="svcFormCancel">Cancel</button>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button class="btn outline" id="svcFormDelete" style="display:none;">
+          <i class="fa fa-trash"></i> Delete
+        </button>
+        <button class="btn brand" id="svcFormSubmit">
+          <i class="fa fa-save"></i> Save
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><i class="fa fa-info-circle"></i><span id="toastText"></span></div>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(msg,ms=2500){
+      toastText.textContent=msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),ms);
+    }
+
+    /* Sidebar mobile toggle */
+    const sidebar=document.getElementById('sidebar');
+    const sideToggle=document.getElementById('sideToggle');
+    const openSideOnMobile=document.getElementById('openSideOnMobile');
+    sideToggle?.addEventListener('click',()=> sidebar.classList.remove('open'));
+    openSideOnMobile?.addEventListener('click',()=>{
+      if(sidebar.classList.contains('open')){
+        sidebar.classList.remove('open');
+      }else{
+        sidebar.classList.add('open');
+      }
+    });
+
+    /* Auth guard */
+    const adminEmailSpan=document.getElementById('adminEmail');
+    const adminLogout=document.getElementById('adminLogout');
+
+    const { data } = await sb.auth.getSession();
+    const session=data.session;
+    const user=session?.user;
+
+    if(!user){
+      showToast('Admin session required.');
+      window.location.href='/views/pages/login.html';
+    }else{
+      adminEmailSpan.textContent=user.email;
+      // hook for role enforcement if needed
+    }
+
+    adminLogout?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Services logic */
+    const servicesTableBody=document.querySelector('#servicesTable tbody');
+    const svcStatus=document.getElementById('svcStatus');
+    const refreshServicesBtn=document.getElementById('refreshServices');
+    const svcSearch=document.getElementById('svcSearch');
+    const svcCategoryFilter=document.getElementById('svcCategoryFilter');
+    const filterBtns=document.querySelectorAll('.subtab-btn');
+
+    const drawer=document.getElementById('svcDrawer');
+    const openCreateDrawerBtn=document.getElementById('openCreateDrawer');
+    const closeDrawerBtn=document.getElementById('closeDrawer');
+    const svcForm=document.getElementById('svcForm');
+    const svcFormStatus=document.getElementById('svcFormStatus');
+    const svcFormSubmit=document.getElementById('svcFormSubmit');
+    const svcFormCancel=document.getElementById('svcFormCancel');
+    const svcFormDelete=document.getElementById('svcFormDelete');
+    const svcDrawerTitle=document.getElementById('svcDrawerTitle');
+
+    const svcTitleInput=document.getElementById('svcTitleInput');
+    const svcCategoryInput=document.getElementById('svcCategoryInput');
+    const svcPlanInput=document.getElementById('svcPlanInput');
+    const svcStatusInput=document.getElementById('svcStatusInput');
+    const svcDescInput=document.getElementById('svcDescInput');
+
+    let servicesCache=[];
+    let editingServiceId=null;
+
+    function setSvcStatus(msg,type='muted'){
+      svcStatus.textContent=msg||'';
+      svcStatus.className=type;
+    }
+
+    function trapFocus(container){
+      const focusable=container.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if(!focusable.length) return;
+      const first=focusable[0];
+      const last=focusable[focusable.length-1];
+      function handler(e){
+        if(e.key!=='Tab') return;
+        if(e.shiftKey){
+          if(document.activeElement===first){ e.preventDefault(); last.focus(); }
+        }else{
+          if(document.activeElement===last){ e.preventDefault(); first.focus(); }
+        }
+      }
+      container.addEventListener('keydown',handler);
+      first.focus();
+    }
+
+    function openDrawer(mode='create',svc=null){
+      drawer.classList.add('open');
+      editingServiceId = mode==='edit' && svc ? svc.id : null;
+
+      if(mode==='edit' && svc){
+        svcDrawerTitle.textContent='Edit service';
+        svcTitleInput.value=svc.title || '';
+        svcCategoryInput.value=svc.category || '';
+        svcPlanInput.value=svc.plan || '';
+        svcStatusInput.value=svc.status || 'active';
+        svcDescInput.value=svc.description || '';
+        svcFormDelete.style.display='inline-flex';
+      }else{
+        svcDrawerTitle.textContent='Create service';
+        svcForm.reset();
+        svcStatusInput.value='active';
+        svcFormDelete.style.display='none';
+      }
+      svcFormStatus.textContent='';
+      svcFormStatus.className='muted';
+      trapFocus(drawer);
+    }
+
+    function closeDrawer(){
+      drawer.classList.remove('open');
+      editingServiceId=null;
+    }
+
+    openCreateDrawerBtn.addEventListener('click',()=> openDrawer('create'));
+    closeDrawerBtn.addEventListener('click',closeDrawer);
+    svcFormCancel.addEventListener('click',(e)=>{
+      e.preventDefault();
+      closeDrawer();
+    });
+    drawer.addEventListener('click',(e)=>{ if(e.target===drawer) closeDrawer(); });
+
+    async function loadServices(){
+      servicesTableBody.innerHTML='<tr><td colspan="6" class="muted">Loading services...</td></tr>';
+      setSvcStatus('');
+      try{
+        const { data:rows,error }=await sb.from('services')
+          .select('id,title,category,plan,status,description,created_at')
+          .order('created_at',{ ascending:false });
+        if(error) throw error;
+        servicesCache=rows || [];
+        applyFilters();
+      }catch(e){
+        console.error(e);
+        servicesTableBody.innerHTML='<tr><td colspan="6" class="muted">Failed to load services.</td></tr>';
+        setSvcStatus('Failed to load services from database.','danger');
+      }
+    }
+
+    function applyFilters(){
+      const statusFilter=document.querySelector('.subtab-btn.active')?.dataset.filter || 'all';
+      const categoryFilter=svcCategoryFilter.value;
+      const search=svcSearch.value.trim().toLowerCase();
+
+      const list=servicesCache.filter(s=>{
+        const st=s.status || 'draft';
+
+        if(statusFilter==='deleted'){
+          if(st!=='deleted') return false;
+        }else{
+          if(st==='deleted' && statusFilter!=='deleted') return false;
+          if(statusFilter==='active' && st!=='active') return false;
+          if(statusFilter==='draft' && st!=='draft') return false;
+          if(statusFilter==='inactive' && st!=='inactive') return false;
+        }
+
+        if(categoryFilter && s.category!==categoryFilter) return false;
+
+        if(search){
+          const hay=((s.title || '') + ' ' + (s.category || '')).toLowerCase();
+          if(!hay.includes(search)) return false;
+        }
+        return true;
+      });
+
+      if(!list.length){
+        servicesTableBody.innerHTML='<tr><td colspan="6" class="muted">No services match the filters.</td></tr>';
+        setSvcStatus('No services match the search/filter.','muted');
+        return;
+      }
+
+      servicesTableBody.innerHTML=list.map(s=>{
+        const created=s.created_at?new Date(s.created_at).toLocaleDateString():'—';
+        const st=s.status || 'draft';
+        const isDeleted=st==='deleted';
+
+        let statusClass='warning';
+        if(st==='active') statusClass='success';
+        else if(st==='inactive') statusClass='danger';
+        else if(st==='deleted') statusClass='deleted';
+
+        const statusLabel =
+          st==='active' ? 'Active' :
+          st==='inactive' ? 'Inactive' :
+          st==='deleted' ? 'Deleted' :
+          'Draft';
+
+        const planLabel = s.plan
+          ? (s.plan === 'work' ? 'Work & Pay' : s.plan === 'express' ? 'Express' : s.plan)
+          : '—';
+
+        const disabledAttrs = isDeleted ? 'disabled style="opacity:.4;cursor:not-allowed;"' : '';
+
+        return `
+          <tr data-id="${s.id}">
+            <td>${s.title || '—'}</td>
+            <td>${s.category || '—'}</td>
+            <td>${planLabel}</td>
+            <td><span class="badge ${statusClass}">${statusLabel}</span></td>
+            <td>${created}</td>
+            <td style="text-align:right;">
+              <button class="btn outline btn-sm" data-action="edit" title="Quick edit" ${disabledAttrs}>
+                <i class="fa fa-pen"></i>
+              </button>
+              <button class="btn outline btn-sm" data-action="toggle" title="Toggle active/inactive" ${disabledAttrs}>
+                <i class="fa fa-toggle-on"></i>
+              </button>
+              <button class="btn brand btn-sm" data-action="builder" title="Open in Service Builder" ${disabledAttrs}>
+                <i class="fa fa-up-right-from-square"></i>
+              </button>
+              <button class="btn outline btn-sm" data-action="delete" title="Soft delete service">
+                <i class="fa fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      setSvcStatus(`${list.length} service${list.length===1?'':'s'} shown.`,'muted');
+    }
+
+    filterBtns.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        filterBtns.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilters();
+      });
+    });
+
+    svcCategoryFilter.addEventListener('change',applyFilters);
+    svcSearch.addEventListener('input',applyFilters);
+    refreshServicesBtn.addEventListener('click',loadServices);
+
+    servicesTableBody.addEventListener('click',(e)=>{
+      const btn=e.target.closest('button[data-action]');
+      if(!btn) return;
+      const tr=btn.closest('tr');
+      const id=tr.dataset.id;
+      const svc=servicesCache.find(s=>String(s.id)===String(id));
+      if(!svc) return;
+
+      const action=btn.dataset.action;
+
+      if(action==='edit'){
+        if(svc.status==='deleted'){
+          showToast('Cannot edit a deleted service.',3000);
+          return;
+        }
+        openDrawer('edit',svc);
+      }
+
+      if(action==='toggle'){
+        if(svc.status==='deleted'){
+          showToast('Cannot toggle a deleted service.',3000);
+          return;
+        }
+        const nextStatus=svc.status==='active'?'inactive':'active';
+        const confirmMsg=`Mark "${svc.title}" as ${nextStatus}?`;
+        if(confirm(confirmMsg)){
+          toggleServiceStatus(svc.id,nextStatus);
+        }
+      }
+
+      if(action==='builder'){
+        if(svc.status==='deleted'){
+          showToast('Cannot open a deleted service in builder.',3000);
+          return;
+        }
+        window.location.href=`/views/admin/createservices.html?id=${svc.id}`;
+      }
+
+      if(action==='delete'){
+        if(svc.status==='deleted'){
+          showToast('Service already marked as deleted.',3000);
+          return;
+        }
+        const confirmMsg=`Soft delete "${svc.title}"?\n\nIt will be marked as deleted now and can be hard-deleted after 30 days.`;
+        if(confirm(confirmMsg)){
+          softDeleteService(svc.id);
+        }
+      }
+    });
+
+    async function toggleServiceStatus(id,nextStatus){
+      try{
+        const { error }=await sb.from('services').update({ status:nextStatus }).eq('id',id);
+        if(error) throw error;
+        showToast('Service status updated.');
+        await loadServices();
+      }catch(e){
+        console.error(e);
+        showToast('Failed to update service status.');
+      }
+    }
+
+    async function softDeleteService(id){
+      try{
+        const { error }=await sb.from('services').update({ status:'deleted' }).eq('id',id);
+        if(error) throw error;
+        showToast('Service soft-deleted.');
+        await loadServices();
+      }catch(e){
+        console.error(e);
+        showToast('Failed to delete service.',3000);
+      }
+    }
+
+    svcFormSubmit.addEventListener('click',async(e)=>{
+      e.preventDefault();
+      const title=svcTitleInput.value.trim();
+      const category=svcCategoryInput.value || null;
+      const plan=svcPlanInput.value || null;
+      const status=svcStatusInput.value || 'active';
+      const desc=svcDescInput.value.trim();
+
+      if(!title){
+        svcFormStatus.textContent='Service title is required.';
+        svcFormStatus.className='muted danger';
+        return;
+      }
+
+      svcFormStatus.textContent='Saving service...';
+      svcFormStatus.className='muted';
+
+      try{
+        if(editingServiceId){
+          const { error }=await sb.from('services').update({
+            title,
+            category,
+            plan,
+            status,
+            description:desc
+          }).eq('id',editingServiceId);
+          if(error) throw error;
+          showToast('Service updated.');
+        }else{
+          const { error }=await sb.from('services').insert({
+            title,
+            category,
+            plan,
+            status,
+            description:desc
+          });
+          if(error) throw error;
+          showToast('Service created.');
+        }
+        svcFormStatus.textContent='Saved.';
+        svcFormStatus.className='muted success';
+        await loadServices();
+        setTimeout(closeDrawer,800);
+      }catch(e){
+        console.error(e);
+        svcFormStatus.textContent=e.message || 'Failed to save service.';
+        svcFormStatus.className='muted danger';
+      }
+    });
+
+    svcFormDelete.addEventListener('click',async(e)=>{
+      e.preventDefault();
+      if(!editingServiceId) return;
+      const currentSvc=servicesCache.find(s=>String(s.id)===String(editingServiceId));
+      const name=currentSvc?.title || 'this service';
+      const confirmMsg=`Soft delete "${name}"?\n\nIt will be marked as deleted and can be hard-deleted after 30 days.`;
+      if(!confirm(confirmMsg)) return;
+
+      try{
+        const { error }=await sb.from('services').update({ status:'deleted' }).eq('id',editingServiceId);
+        if(error) throw error;
+        showToast('Service soft-deleted.');
+        await loadServices();
+        closeDrawer();
+      }catch(err){
+        console.error(err);
+        showToast('Failed to delete service.',3000);
+      }
+    });
+
+    svcForm.addEventListener('submit',(e)=> e.preventDefault());
+
+    // Initial load
+    await loadServices();
+  </script>
+</body>
+</html>

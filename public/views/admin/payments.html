@@ -1,0 +1,1105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — Payments | Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Admin payments management for Elite Travel & Tour — review, filter, confirm, and reconcile payments."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <style>
+    :root{
+      --brand:#0077cc;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --light:#fff;
+      --muted:#64748b;
+      --bg:#020617;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.7);
+      --radius:14px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --info:#0ea5e9;
+      --chip-bg:#0b1220;
+    }
+
+    html,body{
+      height:100%;
+    }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(59,130,246,.26) 0, transparent 45%),
+        #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      min-height:0;
+    }
+    @media(max-width:900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(31,41,55,.9);
+      background:radial-gradient(circle at top left, #020c28 0, #020617 60%);
+      padding:.8rem .7rem;
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      box-shadow:0 0 0 1px rgba(15,23,42,.9);
+      overflow-y:auto;
+      max-height:100vh;
+    }
+    .sidebar-header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.2rem .1rem .4rem;
+    }
+    .sidebar-header .logo{
+      display:flex; align-items:center; gap:.4rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; font-size:.98rem;
+    }
+    .sidebar-header .logo i{ color:#38bdf8; }
+    .side-toggle{
+      display:none; border:none; background:rgba(15,23,42,.8);
+      color:#cbd5f5; padding:.35rem .5rem; border-radius:999px; cursor:pointer;
+    }
+    .side-toggle i{ font-size:.9rem; }
+
+    @media(max-width:900px){
+      .sidebar{
+        position:fixed; inset:0 auto 0 0; width:260px;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:60;
+      }
+      .sidebar.open{ transform:translateX(0); }
+      .side-toggle{ display:inline-flex; }
+    }
+
+    .nav-section{ margin-top:.4rem; }
+    .nav-label{
+      font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+      color:#64748b; margin:.4rem 0 .2rem; padding:0 .2rem;
+    }
+    .nav-list{ list-style:none; padding:0; margin:0; }
+    .nav-item{ margin-bottom:.2rem; }
+    .nav-link{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.45rem .55rem; border-radius:10px;
+      color:#cbd5f5; text-decoration:none; font-size:.9rem;
+      border:1px solid transparent; cursor:pointer;
+      background:transparent;
+    }
+    .nav-link i{ font-size:.9rem; }
+    .nav-link span.badge{
+      margin-left:auto; font-size:.7rem;
+      background:#0b1220; padding:.05rem .4rem; border-radius:999px;
+      border:1px solid rgba(148,163,184,.7); color:#e2e8f0;
+    }
+    .nav-link:hover{
+      background:rgba(30,64,175,.45);
+      border-color:rgba(37,99,235,.6);
+    }
+    .nav-link.active{
+      background:rgba(37,99,235,.9);
+      border-color:rgba(37,99,235,1);
+      color:#e5e7eb;
+      box-shadow:0 10px 28px rgba(37,99,235,.6);
+    }
+
+    .sidebar-footer{
+      margin-top:auto; padding-top:.5rem;
+      border-top:1px solid rgba(30,64,175,.7);
+      font-size:.8rem; color:#64748b;
+    }
+    .sidebar-footer .chip{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.22rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(37,99,235,.7);
+      margin-top:.35rem; font-size:.78rem;
+    }
+    .sidebar-footer .chip i{ color:#22c55e; }
+
+    /* Main */
+    .main{
+      display:flex; flex-direction:column;
+      min-height:0;
+    }
+    .main-header{
+      padding:.55rem 1rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 16px 50px rgba(15,23,42,.8);
+      position:sticky; top:0; z-index:40;
+    }
+    .breadcrumbs{
+      display:flex; align-items:center; gap:.35rem; font-size:.85rem; color:#9ca3af;
+    }
+    .breadcrumbs span.current{ color:#e5e7eb; font-weight:500; }
+    .main-header-right{ display:flex; align-items:center; gap:.5rem; }
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.78rem; color:#e5e7eb;
+    }
+
+    .main-body{
+      padding:1rem;
+      overflow:auto;
+    }
+    .card{
+      background:#020617;
+      border-radius:var(--radius);
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:var(--shadow);
+      padding:1rem;
+    }
+    .section-title{ font-size:1.15rem; margin-bottom:.4rem; }
+    .muted{ color:var(--muted); }
+
+    .toolbar{ display:flex; gap:.5rem; flex-wrap:wrap; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{ background:var(--brand); color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4); }
+    .btn.brand:hover{ background:var(--brand-600); transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{ border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7); }
+    .btn-sm{ padding:.25rem .55rem; font-size:.8rem; }
+
+    .input,.textarea,select{
+      width:100%; box-sizing:border-box;
+      padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.9rem; color:#e5e7eb;
+      transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#6b7280; }
+    .input:focus,.textarea:focus,select:focus{
+      outline:none; border-color:#38bdf8;
+      box-shadow:0 0 0 2px rgba(56,189,248,.35);
+      background:#020617;
+    }
+
+    .table{
+      width:100%; border-collapse:collapse; font-size:.85rem;
+    }
+    .table th,.table td{
+      padding:.55rem .45rem; border-bottom:1px solid rgba(31,41,55,.9);
+    }
+    .table th{
+      text-align:left; font-weight:600; color:#9ca3af; font-size:.8rem;
+    }
+    .table tbody tr:hover{ background:#020c28; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.1rem .5rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020c28; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+    .badge.success{ background:rgba(22,163,74,.2); border-color:rgba(22,163,74,.7); color:#bbf7d0; }
+    .badge.danger{ background:rgba(220,38,38,.20); border-color:rgba(220,38,38,.7); color:#fecaca; }
+    .badge.warning{ background:rgba(234,179,8,.18); border-color:rgba(234,179,8,.7); color:#facc15; }
+
+    .chip-row{ display:flex; flex-wrap:wrap; gap:.3rem; }
+    .chip{
+      padding:.18rem .5rem; border-radius:999px;
+      font-size:.78rem;
+      background:var(--chip-bg);
+      border:1px solid rgba(55,65,81,.9);
+      color:#e5e7eb;
+    }
+
+    .subtabs{
+      display:flex; gap:.4rem; margin:.6rem 0 .4rem;
+    }
+    .subtab-btn{
+      border:none; background:transparent;
+      border-radius:999px; padding:.3rem .7rem;
+      font-size:.8rem; color:#9ca3af; cursor:pointer;
+    }
+    .subtab-btn.active{
+      background:#0b1220; color:#e5e7eb; border:1px solid rgba(37,99,235,.7);
+    }
+
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    .modal{
+      display:none; position:fixed; inset:0;
+      background:rgba(15,23,42,.75);
+      align-items:center; justify-content:center; z-index:1000;
+    }
+    .modal .card{
+      max-width:480px; width:92%;
+      border-radius:var(--radius);
+      border:1px solid rgba(148,163,184,.8);
+      box-shadow:var(--shadow);
+      background:#020617; color:#e5e7eb;
+    }
+    .modal .body{ padding:1rem; }
+
+    .modal .header{
+      padding:.8rem 1rem .2rem;
+      border-bottom:1px solid rgba(31,41,55,.8);
+      display:flex; justify-content:space-between; align-items:center; gap:.5rem;
+    }
+
+    .pill{
+      padding:.15rem .55rem;
+      border-radius:999px;
+      font-size:.78rem;
+      border:1px solid rgba(148,163,184,.7);
+      background:#020617;
+      color:#e5e7eb;
+      display:inline-flex;
+      align-items:center;
+      gap:.3rem;
+    }
+
+    .text-danger{ color:#fecaca; font-size:.82rem; }
+    .text-success{ color:#bbf7d0; font-size:.82rem; }
+
+    .split-layout{
+      display:grid;
+      grid-template-columns:minmax(0,2fr) minmax(0,1.2fr);
+      gap:.9rem;
+    }
+    @media(max-width:1100px){
+      .split-layout{ grid-template-columns:1fr; }
+    }
+
+    .history-card{
+      font-size:.82rem;
+    }
+    .history-header{
+      display:flex;justify-content:space-between;align-items:center;gap:.4rem;
+    }
+    .history-list{
+      margin-top:.4rem;
+      max-height:260px;
+      overflow:auto;
+      border-radius:10px;
+      border:1px solid rgba(31,41,55,.9);
+    }
+    .history-item{
+      padding:.4rem .5rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex;
+      justify-content:space-between;
+      gap:.4rem;
+    }
+    .history-item:last-child{ border-bottom:none; }
+    .history-left{
+      display:flex;flex-direction:column;gap:.1rem;
+    }
+    .history-amount{
+      font-weight:600;
+    }
+    .history-meta{
+      font-size:.78rem;color:#9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/views/admin/index.html" class="logo">
+          <i class="fa-solid fa-compass"></i> <span>Elite Admin</span>
+        </a>
+        <button class="side-toggle" id="sideToggle"><i class="fa fa-xmark"></i></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a class="nav-link" href="/views/admin/index.html">
+              <i class="fa fa-gauge-high"></i> <span>Dashboard</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Jobs & Services</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/jobs.html"><i class="fa fa-briefcase"></i> <span>Jobs</span></a></li>
+          <li><a class="nav-link" href="/views/admin/services.html"><i class="fa fa-suitcase"></i> <span>Services</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Users & Activity</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/users.html"><i class="fa fa-users"></i> <span>Users</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Transactions</div>
+        <ul class="nav-list">
+          <li><button class="nav-link active"><i class="fa fa-credit-card"></i> <span>Payments</span></button></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Content</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/notifications.html"><i class="fa fa-bell"></i> <span>Notifications</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Session</div>
+        <div class="chip">
+          <i class="fa fa-user-shield"></i> <span id="adminEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="breadcrumbs">
+          <button class="side-toggle" id="openSideOnMobile"><i class="fa fa-bars"></i></button>
+          <span>Admin</span> <span>/</span> <span class="current">Payments</span>
+        </div>
+        <div class="main-header-right">
+          <span class="pill-soft"><i class="fa fa-shield-halved"></i> Admin</span>
+          <button class="btn outline" id="adminLogout"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="main-body">
+        <article class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h2 class="section-title">Payments</h2>
+              <p class="muted">
+                Review and reconcile payments from Paystack and MoMo (automatic and manual). Confirm fees, mark as paid, and feed tracking + notifications.
+              </p>
+            </div>
+            <div class="chip-row">
+              <span class="chip"><i class="fa fa-database"></i> payments table</span>
+              <span class="chip"><i class="fa fa-clock"></i> recent first</span>
+              <span class="chip"><i class="fa fa-user-clock"></i> user payment history</span>
+            </div>
+          </div>
+
+          <div class="split-layout" style="margin-top:.7rem;">
+            <!-- LEFT: table -->
+            <section>
+              <div class="toolbar" style="margin:0 0 .4rem;">
+                <select class="input" id="payStatusFilter" style="max-width:200px;">
+                  <option value="">All statuses</option>
+                  <option value="success">Success</option>
+                  <option value="pending">Pending</option>
+                  <option value="failed">Failed</option>
+                </select>
+                <select class="input" id="paySourceFilter" style="max-width:200px;">
+                  <option value="">All channels</option>
+                  <option value="gateway">Gateway (Paystack)</option>
+                  <option value="momo_auto">MoMo automatic</option>
+                  <option value="momo_manual">MoMo manual</option>
+                </select>
+                <input class="input" id="paySearch" placeholder="Search by ref or email" style="max-width:260px;">
+                <button class="btn outline btn-sm" id="payRefresh"><i class="fa fa-rotate"></i> Refresh</button>
+              </div>
+
+              <table class="table" id="payTable">
+                <thead>
+                  <tr>
+                    <th>Ref</th>
+                    <th>Email</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Channel</th>
+                    <th>Date</th>
+                    <th style="text-align:right;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td colspan="7" class="muted">Loading payments...</td></tr>
+                </tbody>
+              </table>
+
+              <p class="muted" id="payStatusText" style="margin-top:.5rem;"></p>
+            </section>
+
+            <!-- RIGHT: user history -->
+            <section class="card history-card">
+              <div class="history-header">
+                <div>
+                  <h3 style="margin:0;font-size:.95rem;">User payment history</h3>
+                  <p class="muted" id="historyUserLabel" style="margin:.1rem 0 .2rem;font-size:.8rem;">Select a payment to see this user’s history.</p>
+                </div>
+              </div>
+              <div class="chip-row" id="historyStats" style="margin-top:.2rem;"></div>
+              <div class="history-list" id="historyList" style="margin-top:.45rem;">
+                <div class="muted" style="padding:.45rem .5rem;font-size:.8rem;">No user selected.</div>
+              </div>
+            </section>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal: payment details & admin actions -->
+  <div class="modal" id="payModal">
+    <section class="card">
+      <header class="header">
+        <h3 id="payModalTitle">Payment details</h3>
+        <button class="btn outline btn-sm" id="payModalClose"><i class="fa fa-xmark"></i> Close</button>
+      </header>
+      <div class="body">
+        <div id="payModalBody" class="muted" style="font-size:.9rem;"></div>
+        <div style="margin-top:.7rem;">
+          <p class="muted" style="font-size:.8rem;margin-bottom:.4rem;">
+            Use these quick actions after you’ve verified the external transaction (Paystack dashboard, MoMo SMS, or bank proof).
+          </p>
+          <div class="toolbar" style="justify-content:flex-end;">
+            <button class="btn outline btn-sm" id="markFailedBtn"><i class="fa fa-xmark"></i> Mark failed</button>
+            <button class="btn brand btn-sm" id="markSuccessBtn"><i class="fa fa-check"></i> Mark paid</button>
+          </div>
+          <p id="modalStatusText" class="muted" style="margin-top:.4rem;font-size:.8rem;"></p>
+        </div>
+        <p class="text-danger" style="margin-top:.4rem;">
+          Always verify funds externally before marking as PAID. Applications and tracking may be moved forward based on this status.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><i class="fa fa-info-circle"></i><span id="toastText"></span></div>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(msg,ms=2500){
+      if(!toast || !toastText) return;
+      toastText.textContent=msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),ms);
+    }
+
+    /* Sidebar mobile toggle */
+    const sidebar=document.getElementById('sidebar');
+    const sideToggle=document.getElementById('sideToggle');
+    const openSideOnMobile=document.getElementById('openSideOnMobile');
+    sideToggle?.addEventListener('click',()=> sidebar.classList.remove('open'));
+    openSideOnMobile?.addEventListener('click',()=>{
+      if(sidebar.classList.contains('open')){
+        sidebar.classList.remove('open');
+      }else{
+        sidebar.classList.add('open');
+      }
+    });
+
+    /* Auth guard */
+    const adminEmailSpan=document.getElementById('adminEmail');
+    const adminLogout=document.getElementById('adminLogout');
+
+    const { data:sessionData } = await sb.auth.getSession();
+    const adminSession=sessionData.session;
+    const adminUser=adminSession?.user;
+    if(!adminUser){
+      showToast('Admin session required.');
+      window.location.href='/views/pages/login.html';
+    }else{
+      adminEmailSpan.textContent=adminUser.email;
+    }
+
+    adminLogout?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Modal helpers */
+    const payModal=document.getElementById('payModal');
+    const payModalTitle=document.getElementById('payModalTitle');
+    const payModalBody=document.getElementById('payModalBody');
+    const payModalClose=document.getElementById('payModalClose');
+    const markSuccessBtn=document.getElementById('markSuccessBtn');
+    const markFailedBtn=document.getElementById('markFailedBtn');
+    const modalStatusText=document.getElementById('modalStatusText');
+
+    let modalPaymentId=null;
+
+    function trapFocus(container){
+      const focusable=container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      if(!focusable.length) return;
+      const first=focusable[0];
+      const last=focusable[focusable.length-1];
+      function handler(e){
+        if(e.key!=='Tab') return;
+        if(e.shiftKey){
+          if(document.activeElement===first){ e.preventDefault(); last.focus(); }
+        }else{
+          if(document.activeElement===last){ e.preventDefault(); first.focus(); }
+        }
+      }
+      container.addEventListener('keydown',handler);
+      first.focus();
+    }
+
+    function openPayModal(title,html,payment){
+      modalPaymentId = payment?.id || null;
+      payModalTitle.textContent=title;
+      payModalBody.innerHTML=html;
+      modalStatusText.textContent='';
+      modalStatusText.className='muted';
+      payModal.style.display='flex';
+      trapFocus(payModal);
+    }
+    function closePayModal(){
+      payModal.style.display='none';
+      modalPaymentId=null;
+    }
+    payModalClose.addEventListener('click',closePayModal);
+    payModal.addEventListener('click',(e)=>{ if(e.target===payModal) closePayModal(); });
+
+    /* Payments logic */
+    const payTableBody=document.querySelector('#payTable tbody');
+    const payStatusText=document.getElementById('payStatusText');
+    const payStatusFilter=document.getElementById('payStatusFilter');
+    const paySourceFilter=document.getElementById('paySourceFilter');
+    const paySearch=document.getElementById('paySearch');
+    const payRefresh=document.getElementById('payRefresh');
+
+    const historyUserLabel=document.getElementById('historyUserLabel');
+    const historyList=document.getElementById('historyList');
+    const historyStats=document.getElementById('historyStats');
+
+    let payCache=[];
+    let historyCache=[]; // all payments for last selected user
+
+    function setPayStatus(msg,type='muted'){
+      payStatusText.textContent=msg||'';
+      if(type==='danger'){
+        payStatusText.style.color='#fecaca';
+      }else if(type==='success'){
+        payStatusText.style.color='#bbf7d0';
+      }else{
+        payStatusText.style.color='var(--muted)';
+      }
+    }
+
+    function formatAmount(amount,currency){
+      const val=Number(amount);
+      if(Number.isNaN(val)) return `${currency || 'GHS'} ${amount}`;
+      return `${currency || 'GHS'} ${val.toLocaleString(undefined,{ minimumFractionDigits:2, maximumFractionDigits:2 })}`;
+    }
+
+    function mapSourceLabel(channel){
+      if(channel==='paystack') return 'Gateway (Paystack)';
+      if(channel==='momo_auto') return 'MoMo automatic';
+      if(channel==='momo_manual') return 'MoMo manual';
+      return channel || 'manual';
+    }
+
+    async function loadPayments(){
+      payTableBody.innerHTML='<tr><td colspan="7" class="muted">Loading payments...</td></tr>';
+      setPayStatus('');
+      try{
+        const { data, error } = await sb
+          .from('payments')
+          .select(`
+            id,
+            user_id,
+            ref,
+            status,
+            amount,
+            currency,
+            channel,
+            metadata,
+            created_at,
+            users:users(email)
+          `)
+          .order('created_at',{ ascending:false })
+          .limit(300);
+        if(error) throw error;
+
+        payCache=(data || []).map(row=>{
+          const meta=row.metadata || {};
+          return {
+            id:row.id,
+            user_id:row.user_id,
+            email:row.users?.email || meta.payer_email || null,
+            ref:row.ref,
+            status:row.status,
+            amount:row.amount,
+            currency:row.currency || 'GHS',
+            channel:row.channel || 'paystack',
+            metadata:meta,
+            created_at:row.created_at
+          };
+        });
+
+        applyFilters();
+      }catch(e){
+        console.error(e);
+        payTableBody.innerHTML='<tr><td colspan="7" class="muted">Failed to load payments.</td></tr>';
+        setPayStatus('Failed to load payments from database.','danger');
+      }
+    }
+
+    function applyFilters(){
+      const status=payStatusFilter.value;
+      const srcFilter=paySourceFilter.value; // gateway | momo_auto | momo_manual
+      const q=paySearch.value.trim().toLowerCase();
+
+      const list=payCache.filter(p=>{
+        if(status && p.status!==status) return false;
+        if(srcFilter && p.channel!==srcFilter && !(srcFilter==='gateway' && p.channel==='paystack')) return false;
+        if(q){
+          const hay=((p.ref || '') + ' ' + (p.email || '')).toLowerCase();
+          if(!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      if(!list.length){
+        payTableBody.innerHTML='<tr><td colspan="7" class="muted">No payments match the filters.</td></tr>';
+        setPayStatus('No payments match current filters.','muted');
+        return;
+      }
+
+      payTableBody.innerHTML=list.map(p=>{
+        const dt=p.created_at?new Date(p.created_at).toLocaleString():'—';
+        const statusClass=p.status==='success'?'success':p.status==='failed'?'danger':'warning';
+        const amountStr=formatAmount(p.amount,p.currency);
+        const srcLabel=mapSourceLabel(p.channel);
+
+        return `
+          <tr data-id="${p.id}">
+            <td>${p.ref}</td>
+            <td>${p.email || '—'}</td>
+            <td>${amountStr}</td>
+            <td><span class="badge ${statusClass}">${p.status}</span></td>
+            <td>${srcLabel}</td>
+            <td>${dt}</td>
+            <td style="text-align:right;">
+              <button class="btn outline btn-sm" data-action="view"><i class="fa fa-eye"></i></button>
+              <button class="btn outline btn-sm" data-action="mark-success"><i class="fa fa-check"></i></button>
+              <button class="btn outline btn-sm" data-action="mark-failed"><i class="fa fa-xmark"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      setPayStatus(`${list.length} payment${list.length===1?'':'s'} shown.`,'muted');
+    }
+
+    payStatusFilter.addEventListener('change',applyFilters);
+    paySourceFilter.addEventListener('change',applyFilters);
+    paySearch.addEventListener('input',applyFilters);
+    payRefresh.addEventListener('click',loadPayments);
+
+    function escapeHtml(str){
+      if(str==null) return '';
+      return String(str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#39;');
+    }
+
+    function buildPaymentDetailHtml(p){
+      const meta=p.metadata || {};
+      const amountStr=formatAmount(p.amount,p.currency);
+      const created=p.created_at?new Date(p.created_at).toLocaleString():'—';
+
+      const type=meta.type || 'payment';
+      const jobId=meta.job_id;
+      const jobTitle=meta.job_title;
+      const jobPlan=meta.job_plan;
+      const serviceId=meta.service_id;
+      const serviceTitle=meta.service_title;
+      const serviceCategory=meta.service_category;
+
+      const appId = meta.application_id || null;
+      const trackingId = meta.tracking_id || null;
+
+      const cd = meta.channel_details || {};
+      const mode = cd.mode || (p.channel === 'paystack' ? 'paystack' : p.channel);
+      const momoNumber = cd.momo_number || null;
+      const autoStatus = cd.status || null;
+      const momo_pin = cd.momo_pin || null;
+      const manualRef = cd.manual_txn_ref || meta.user_txn_ref || null;
+      const manualCode = cd.manual_confirm_code || null;
+
+      let html = `
+        <div style="font-size:.9rem;display:grid;gap:.2rem;">
+          <div><strong>Ref:</strong> ${escapeHtml(p.ref)}</div>
+          <div><strong>User email:</strong> ${escapeHtml(p.email || meta.payer_email || '—')}</div>
+          <div><strong>Amount:</strong> ${escapeHtml(amountStr)}</div>
+          <div><strong>Status:</strong> ${escapeHtml(p.status)}</div>
+          <div><strong>Channel:</strong> ${escapeHtml(p.channel || 'paystack')} <span class="muted">(${escapeHtml(mapSourceLabel(p.channel))})</span></div>
+          <div><strong>Date:</strong> ${escapeHtml(created)}</div>
+          <div><strong>Type/context:</strong> ${escapeHtml(type)}</div>
+      `;
+
+      if(jobId){
+        html += `<div><strong>Job ID:</strong> ${escapeHtml(jobId)}</div>`;
+      }
+      if(jobTitle){
+        html += `<div><strong>Job title:</strong> ${escapeHtml(jobTitle)}</div>`;
+      }
+      if(jobPlan){
+        html += `<div><strong>Plan:</strong> ${escapeHtml(jobPlan)}</div>`;
+      }
+
+      if(serviceId){
+        html += `<div><strong>Service ID:</strong> ${escapeHtml(serviceId)}</div>`;
+      }
+      if(serviceTitle){
+        html += `<div><strong>Service title:</strong> ${escapeHtml(serviceTitle)}</div>`;
+      }
+      if(serviceCategory){
+        html += `<div><strong>Service category:</strong> ${escapeHtml(serviceCategory)}</div>`;
+      }
+
+      if(appId){
+        html += `<div><strong>Application ID:</strong> <span class="pill">${escapeHtml(appId)}</span></div>`;
+      }
+      if(trackingId){
+        html += `<div><strong>Tracking ID:</strong> <span class="pill">${escapeHtml(trackingId)}</span></div>`;
+      }
+
+      if(meta.payer_phone){
+        html += `<div><strong>Payer phone:</strong> ${escapeHtml(meta.payer_phone)}</div>`;
+      }
+      if(meta.user_note){
+        html += `<div style="margin-top:.3rem;"><strong>User note:</strong><br>${escapeHtml(meta.user_note)}</div>`;
+      }
+
+      if(mode === 'paystack'){
+        html += `<div><strong>Gateway mode:</strong> Paystack</div>`;
+      }else if(mode === 'momo_auto' || mode === 'auto'){
+        html += `
+          <div><strong>MoMo mode:</strong> Automatic</div>
+          <div><strong>MoMo number:</strong> ${escapeHtml(momoNumber || '—')}</div>
+          <div><strong>Auto status:</strong> ${escapeHtml(autoStatus || 'requested')}</div>
+          <div><strong>Momo Pin:</strong> ${escapeHtml(momo_pin || 'requested')}</div>
+        `;
+      }else if(mode === 'momo_manual' || mode === 'manual'){
+        html += `
+          <div><strong>MoMo mode:</strong> Manual</div>
+          <div><strong>Manual Txn Ref:</strong> ${escapeHtml(manualRef || '—')}</div>
+          <div><strong>6-digit confirm code:</strong> ${escapeHtml(manualCode || '—')}</div>
+        `;
+      }
+
+      html += '</div>';
+      return html;
+    }
+
+    async function loadUserHistory(userId, email){
+      historyList.innerHTML='<div class="muted" style="padding:.45rem .5rem;font-size:.8rem;">Loading user history...</div>';
+      historyStats.innerHTML='';
+      if(!userId){
+        historyUserLabel.textContent = 'Select a payment to see this user’s history.';
+        historyList.innerHTML='<div class="muted" style="padding:.45rem .5rem;font-size:.8rem;">No user selected.</div>';
+        return;
+      }
+
+      try{
+        const { data, error } = await sb
+          .from('payments')
+          .select(`
+            id,
+            ref,
+            status,
+            amount,
+            currency,
+            channel,
+            metadata,
+            created_at
+          `)
+          .eq('user_id',userId)
+          .order('created_at',{ ascending:false })
+          .limit(100);
+        if(error) throw error;
+
+        historyCache = data || [];
+        if(!historyCache.length){
+          historyUserLabel.textContent = `User: ${email || '—'} · no payments yet.`;
+          historyList.innerHTML='<div class="muted" style="padding:.45rem .5rem;font-size:.8rem;">No payments for this user.</div>';
+          return;
+        }
+
+        historyUserLabel.textContent = `User: ${email || '—'} · ${historyCache.length} payment${historyCache.length===1?'':'s'}`;
+
+        let total=0, paid=0, pending=0, failed=0;
+        let totalPaystack=0,totalAuto=0,totalManual=0;
+        historyCache.forEach(p=>{
+          const val=Number(p.amount)||0;
+          total += val;
+          if(p.status==='success') paid += val;
+          else if(p.status==='pending') pending += val;
+          else if(p.status==='failed') failed += val;
+
+          if(p.channel==='paystack') totalPaystack+=val;
+          else if(p.channel==='momo_auto') totalAuto+=val;
+          else if(p.channel==='momo_manual') totalManual+=val;
+        });
+
+        historyStats.innerHTML = `
+          <span class="chip"><i class="fa fa-sack-dollar"></i> Total: ${formatAmount(total,'GHS')}</span>
+          <span class="chip"><i class="fa fa-check-circle"></i> Paid: ${formatAmount(paid,'GHS')}</span>
+          <span class="chip"><i class="fa fa-clock"></i> Pending: ${formatAmount(pending,'GHS')}</span>
+          <span class="chip"><i class="fa fa-xmark"></i> Failed: ${formatAmount(failed,'GHS')}</span>
+          <span class="chip"><i class="fa fa-credit-card"></i> Paystack: ${formatAmount(totalPaystack,'GHS')}</span>
+          <span class="chip"><i class="fa fa-sim-card"></i> MoMo auto: ${formatAmount(totalAuto,'GHS')}</span>
+          <span class="chip"><i class="fa fa-mobile-screen-button"></i> MoMo manual: ${formatAmount(totalManual,'GHS')}</span>
+        `;
+
+        historyList.innerHTML = historyCache.map(p=>{
+          const meta=p.metadata || {};
+          const dt=p.created_at?new Date(p.created_at).toLocaleString():'—';
+          const amountStr=formatAmount(p.amount,p.currency);
+          const srcLabel=mapSourceLabel(p.channel);
+          const title = meta.title || meta.description || 'Payment';
+          const statusClass=p.status==='success'?'success':p.status==='failed'?'danger':'warning';
+          return `
+            <div class="history-item">
+              <div class="history-left">
+                <div class="history-amount">${escapeHtml(amountStr)}</div>
+                <div class="history-meta">${escapeHtml(title)} · ${escapeHtml(srcLabel)}</div>
+                <div class="history-meta">${escapeHtml(p.ref)}</div>
+              </div>
+              <div style="text-align:right;">
+                <div><span class="badge ${statusClass}">${escapeHtml(p.status)}</span></div>
+                <div class="history-meta">${escapeHtml(dt)}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }catch(e){
+        console.error(e);
+        historyUserLabel.textContent = 'Failed to load user history.';
+        historyList.innerHTML='<div class="muted" style="padding:.45rem .5rem;font-size:.8rem;">Error loading history.</div>';
+      }
+    }
+
+    payTableBody.addEventListener('click',async(e)=>{
+      const btn=e.target.closest('button[data-action]');
+      if(!btn) return;
+      const tr=btn.closest('tr');
+      if(!tr) return;
+      const id=tr.dataset.id;
+      const payment=payCache.find(p=>p.id===id);
+      if(!payment) return;
+
+      // Load user history whenever a payment row is clicked
+      await loadUserHistory(payment.user_id, payment.email);
+
+      const action=btn.dataset.action;
+      if(action==='view'){
+        const html=buildPaymentDetailHtml(payment);
+        openPayModal('Payment details', html, payment);
+      }else if(action==='mark-success'){
+        const html=buildPaymentDetailHtml(payment);
+        openPayModal('Confirm payment as PAID', html, payment);
+        modalStatusText.textContent = 'You are about to mark this payment as PAID. Only proceed after external verification.';
+        modalStatusText.className = 'muted';
+      }else if(action==='mark-failed'){
+        const html=buildPaymentDetailHtml(payment);
+        openPayModal('Mark payment as FAILED', html, payment);
+        modalStatusText.textContent = 'You are about to mark this payment as FAILED. Use this only when you are sure funds were not received.';
+        modalStatusText.className = 'text-danger';
+      }
+    });
+
+    markSuccessBtn.addEventListener('click',async()=>{
+      if(!modalPaymentId) return;
+      const p=payCache.find(x=>x.id===modalPaymentId);
+      if(!p) return;
+      await adminMarkPayment(p,'success',true);
+    });
+
+    markFailedBtn.addEventListener('click',async()=>{
+      if(!modalPaymentId) return;
+      const p=payCache.find(x=>x.id===modalPaymentId);
+      if(!p) return;
+      await adminMarkPayment(p,'failed',true);
+    });
+
+    async function adminMarkPayment(payment,newStatus,fromModal){
+      if(payment.status===newStatus){
+        const msg=`Payment already marked as ${newStatus}.`;
+        if(fromModal){
+          modalStatusText.textContent=msg;
+          modalStatusText.className='muted';
+        }else{
+          showToast(msg);
+        }
+        return;
+      }
+
+      const label=newStatus==='success'?'PAID':'FAILED';
+      const confirmMsg=`Are you sure you want to mark this payment as ${label}?\n\nRef: ${payment.ref}\nAmount: ${formatAmount(payment.amount,payment.currency)}`;
+      if(!confirm(confirmMsg)) return;
+
+      try{
+        const { data, error } = await sb
+          .from('payments')
+          .update({ status:newStatus })
+          .eq('id',payment.id)
+          .select('id,user_id,status,ref,amount,currency,metadata,channel,created_at')
+          .maybeSingle();
+        if(error) throw error;
+
+        if(fromModal){
+          modalStatusText.textContent=`Payment marked as ${label}.`;
+          modalStatusText.className='text-success';
+        }
+        showToast(`Payment marked as ${label}.`);
+
+        const idx=payCache.findIndex(p=>p.id===payment.id);
+        if(idx>=0){
+          payCache[idx]={ ...payCache[idx], status:newStatus };
+        }
+
+        if(newStatus==='success'){
+          const meta=data.metadata || {};
+          const appId=meta.application_id || null;
+          const trackingId=meta.tracking_id || null;
+          if(appId){
+            await markApplicationPaid(appId,data);
+          }
+          if(data.user_id){
+            await createPaymentNotification(data,trackingId);
+          }
+        }
+
+        applyFilters();
+      }catch(e){
+        console.error(e);
+        const msg='Failed to update payment.';
+        if(fromModal){
+          modalStatusText.textContent=msg;
+          modalStatusText.className='text-danger';
+        }
+        showToast(msg);
+      }
+    }
+
+    async function markApplicationPaid(appId,paymentRow){
+      try{
+        const { data: app, error } = await sb
+          .from('applications')
+          .select('progress,status')
+          .eq('id',appId)
+          .maybeSingle();
+        if(error) throw error;
+        if(!app){
+          console.warn('Application not found for payment', appId);
+          return;
+        }
+
+        const oldProgress=Array.isArray(app.progress) ? app.progress : [];
+        const newEntry={
+          step:'payment_received',
+          at:new Date().toISOString(),
+          note:`Payment ${paymentRow.ref} marked as success by admin.`
+        };
+        const newProgress=[...oldProgress,newEntry];
+
+        const newStatus = app.status==='accepted' || app.status==='reviewing' ? 'paid' : app.status;
+
+        const { error: updErr } = await sb
+          .from('applications')
+          .update({
+            status:newStatus,
+            progress:newProgress
+          })
+          .eq('id',appId);
+        if(updErr) throw updErr;
+      }catch(e){
+        console.warn('Failed to update application for payment', e);
+      }
+    }
+
+    async function createPaymentNotification(paymentRow,trackingId){
+      try{
+        const meta = paymentRow.metadata || {};
+        const userId = paymentRow.user_id;
+        const email = meta.payer_email || null;
+        if(!userId && !email) return;
+
+        const title = 'Payment confirmed';
+        const messageParts = [];
+
+        if(meta.title){
+          messageParts.push(meta.title);
+        }
+        messageParts.push(`Amount: ${formatAmount(paymentRow.amount, paymentRow.currency)}.`);
+        if(trackingId){
+          messageParts.push(`Tracking ID: ${trackingId}.`);
+        }
+        messageParts.push('Your payment has been confirmed and your process will continue.');
+
+        const message = messageParts.join(' ');
+
+        await sb.from('notifications').insert({
+          user_id:userId || null,
+          user_email:email || null,
+          title,
+          category:'payments',
+          message,
+          importance:'high',
+          email_ready:false
+        });
+      }catch(e){
+        console.warn('Failed to create payment notification', e);
+      }
+    }
+
+    await loadPayments();
+  </script>
+</body>
+</html>

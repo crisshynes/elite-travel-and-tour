@@ -1,0 +1,1053 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Service detail — Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Detailed service view with requirements, conditions, benefits, and application options (Express, Work & Pay, Visa, Flights, Orientation)."/>
+  <link rel="stylesheet" href="/icons/fontawesome.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Standard ICO -->
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+<!-- Or PNG -->
+<link rel="icon" href="/favicon.png" type="image/png">
+
+<!-- Optional: SVG -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+    /* :root{
+      --brand:#0ea5e9;
+      --brand-600:#0284c7;
+      --brand-700:#0369a1;
+      --dark:#020617;
+      --light:#f9fafb;
+      --muted:#64748b;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.25);
+      --shadow-soft:0 16px 40px rgba(15,23,42,.15);
+      --radius:14px;
+      --warning:#f59e0b;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --chip-bg:#0b1220;
+    }
+
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at 5% 0%, rgba(59,130,246,.16) 0, transparent 45%),
+        radial-gradient(circle at 100% 20%, rgba(16,185,129,.12) 0, transparent 55%),
+        #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+    }
+
+    /* Nav (basic) */
+    nav .wrap{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:.7rem 1rem; border-bottom:1px solid rgba(31,41,55,.7);
+      background:rgba(2,6,23,.9);
+      position:sticky; top:0; z-index:40;
+    }
+    nav .logo img{ height:36px; }
+    nav .primary{ display:flex; gap:.7rem; list-style:none; padding:0; margin:0; }
+    nav .primary a{
+      display:inline-flex; align-items:center; gap:.35rem;
+      padding:.42rem .7rem; border-radius:999px;
+      color:#cbd5f5; text-decoration:none; font-weight:600;
+      border:1px solid transparent;
+    }
+    nav .primary a.active{ border-color:#38bdf8; background:#0b1220; }
+    nav .nav-right{ display:flex; align-items:center; gap:.45rem; }
+
+    .menu-toggle{
+      border:1px solid rgba(148,163,184,.35);
+      background:#020617; color:#e5e7eb;
+      padding:.43rem .7rem; border-radius:999px; cursor:pointer;
+    }
+
+    .mobile-panel{
+      display:none; background:#020617; border-bottom:1px solid rgba(31,41,55,.7);
+      padding:.6rem .9rem; position:sticky; top:44px; z-index:30;
+    }
+    .mobile-panel.open{ display:block; }
+    .mobile-panel .block{ margin:.45rem 0; }
+    .mobile-panel .block a{
+      display:block; color:#cbd5f5; text-decoration:none; padding:.35rem 0;
+    }
+
+    /* Notifications feed */
+    .feed.hidden{ display:none; }
+    .feed{
+      position:fixed; right:12px; top:64px; width:320px;
+      background:#020617; border:1px solid rgba(31,41,55,.9);
+      border-radius:12px; box-shadow:0 24px 60px rgba(0,0,0,.55); z-index:50;
+    }
+    .feed-toolbar{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:.6rem .7rem; border-bottom:1px solid rgba(31,41,55,.9);
+    }
+    .feed .list{ padding:.6rem .7rem; max-height:280px; overflow:auto; }
+    .feed .item{ padding:.4rem .45rem; border-radius:8px; background:#0b1220; margin-bottom:.35rem; } */
+
+    /* Page body */
+    main.container{
+      padding-top:1.5rem; padding-bottom:2rem; max-width:980px; margin:0 auto;
+    }
+
+    .card{ background:#020617; border:1px solid rgba(31,41,55,.8); border-radius:14px; box-shadow:var(--shadow); }
+    .card .body{ padding:1rem; }
+
+    .hero{
+      display:grid; grid-template-columns:1.4fr 1fr; gap:1.1rem; align-items:flex-start;
+    }
+    @media(max-width:900px){ .hero{ grid-template-columns:1fr; } }
+
+    .hero-left{ display:flex; flex-direction:column; gap:.6rem; }
+
+    .svc-subtitle{ font-size:.9rem; color:var(--muted); }
+
+    .service-img{
+      border-radius:14px; max-height:380px; object-fit:cover; width:100%;
+      background:#0b1220; box-shadow:0 24px 60px rgba(15,23,42,.45); border:1px solid rgba(31,41,55,.6);
+    }
+
+    .badges{ display:flex; gap:.45rem; flex-wrap:wrap; margin-top:.35rem; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.35rem;
+      padding:.23rem .6rem; border-radius:999px; background:#0b1220; color:#e5e7eb;
+      font-size:.8rem; font-weight:600; border:1px solid rgba(148,163,184,.45);
+    }
+    .badge i{ font-size:.7rem; }
+
+    .pill{
+      display:inline-flex; align-items:center; gap:.35rem;
+      border:1px solid rgba(148,163,184,.35); border-radius:999px; padding:.25rem .6rem; background:#020617;
+      font-size:.8rem; color:#cbd5f5;
+    }
+
+    .divider{ height:1px; background:rgba(148,163,184,.25); margin:1.1rem 0; }
+
+    .svc-desc{ font-size:.92rem; color:#cbd5f5; line-height:1.55; }
+
+    .highlights{ display:grid; gap:.65rem; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
+    .highlight{ background:#020617; border-radius:12px; padding:.75rem .8rem; box-shadow:0 24px 50px rgba(15,23,42,.35); border:1px solid rgba(31,41,55,.6); }
+    .highlight strong{ font-size:.9rem; color:#e5e7eb; }
+    .highlight p{ font-size:.85rem; margin:.2rem 0 0; color:#cbd5f5; }
+
+    .panel{ display:flex; gap:1rem; align-items:flex-start; }
+    @media(max-width:900px){ .panel{ flex-direction:column; } }
+
+    .side-card{ border-radius:12px; border:1px solid rgba(31,41,55,.6); padding:.9rem .9rem .85rem; background:#020617; box-shadow:var(--shadow-soft); width:100%; max-width:360px; }
+    .side-card.hidden{ display:none; }
+    .side-note{ font-size:.8rem; color:#94a3b8; margin-top:.35rem; }
+
+    .cta{ display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.75rem; }
+/* 
+    .btn{
+      display:inline-flex; align-items:center; gap:.4rem; padding:.52rem .9rem; border-radius:999px;
+      border:1px solid rgba(148,163,184,.35); background:#020617; color:#e5e7eb;
+      cursor:pointer; text-decoration:none; font-weight:600;
+      transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+    }
+    .btn:hover{ transform:translateY(-1px); box-shadow:0 16px 40px rgba(15,23,42,.35); border-color:#38bdf8; }
+    .btn.brand{ background:var(--brand); border-color:transparent; color:#f8fafc; }
+    .btn.brand:hover{ background:var(--brand-600); box-shadow:0 20px 46px rgba(2,132,199,.6); }
+    .btn.outline{ background:#020617; }
+    .btn[disabled]{ opacity:.6; cursor:not-allowed; } */
+
+    .input,select,textarea{
+      width:100%; box-sizing:border-box; padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.35); background:#020617;
+      font-size:.9rem; color:#e5e7eb; transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#94a3b8; }
+    .input:focus,select:focus,textarea:focus{ outline:none; border-color:#38bdf8; box-shadow:0 0 0 2px rgba(56,189,248,.25); background:#020617; }
+    .textarea{ min-height:90px; resize:vertical; }
+
+    .list{ list-style:disc; margin:.4rem 0 0 .9rem; color:#cbd5f5; }
+    .list li{ margin:.12rem 0; }
+
+    /* .small-text{ font-size:.82rem; }
+    .muted{ color:#94a3b8; }
+
+    .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px; box-shadow:0 16px 40px rgba(15,23,42,.65); z-index:2000; display:none; max-width:90vw; }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; } */
+
+    /* Modal */
+    /* .modal{ position:fixed; inset:0; background:rgba(2,6,23,.85); display:none; align-items:center; justify-content:center; z-index:80; }
+    .modal.open{ display:flex; }
+    .modal .card{ background:#020617; border:1px solid rgba(31,41,55,.8); border-radius:14px; box-shadow:0 24px 70px rgba(0,0,0,.75); max-width:520px; width:92%; } */
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav aria-label="Primary">
+    <div class="wrap">
+      <a class="logo" href="/"><img src="/assets/logo/logo.png" alt="Elite Travel & Tour"></a>
+      <ul class="primary">
+        <li><a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a></li>
+        <li><a href="/views/pages/services.html" class="active"><i class="fa fa-suitcase"></i> Services</a></li>
+        <li><a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a></li>
+        <li><a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a></li>
+        <li><a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a></li>
+        <li><a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a></li>
+      </ul>
+      <div class="nav-right">
+        <button id="bellBtn" class="btn outline bell" aria-label="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span id="bellCount" class="count hidden">0</span>
+        </button>
+        <span id="authStatus" class="auth-pill" style="display:none;">
+          <i class="fa fa-user-check"></i><span class="auth-text">Guest</span>
+        </span>
+        <button id="loginBtn" class="btn outline"><i class="fa fa-right-to-bracket"></i> Login</button>
+        <button id="profileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i></button>
+        <button id="logoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> </button>
+        <button id="menuToggle" class="menu-toggle" aria-expanded="false"><i class="fa fa-bars"></i></button>
+      </div>
+    </div>
+
+    <!-- Mobile panel -->
+    <div id="mobilePanel" class="mobile-panel">
+      <div class="block">
+        <a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a>
+        <a href="/views/pages/services.html" class="active"><i class="fa fa-suitcase"></i> Services</a>
+        <a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a>
+        <a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a>
+        <a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a>
+        <a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a>
+      </div>
+      <div class="block">
+        <span class="auth-pill"><i class="fa fa-user"></i><span id="mobileAuthText">Guest</span></span>
+        <div class="cta">
+          <button id="mobileLoginBtn" class="btn brand"><i class="fa fa-right-to-bracket"></i> Login</button>
+          <button id="mobileProfileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> Profile</button>
+          <button id="mobileLogoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Notifications feed -->
+  <div id="notifFeed" class="feed hidden">
+    <div class="feed-toolbar">
+      <span class="muted small-text">Notifications</span>
+      <div style="color:var(--brand);display:flex;gap:.25rem;">
+        <button id="markAllReadBtn" class="btn"><i class="fa fa-check-double"></i> Mark as read</button>
+        <button id="clearAllNotifBtn" class="btn"><i class="fa fa-trash"></i> Clear</button>
+      </div>
+    </div>
+    <div id="notifList" class="list"></div>
+  </div>
+  <script type="module" src="/src/js/notifications.js"></script>
+
+  <!-- Main -->
+  <main class="container">
+    <section class="card">
+      <div class="body">
+        <div class="hero">
+          <div class="hero-left">
+            <h2 class="page-title" id="svcTitle">Loading…</h2>
+            <p class="svc-subtitle" id="svcSubtitle">—</p>
+            <div class="badges" id="svcBadges"></div>
+            <div style="margin-top:.45rem;">
+              <span class="pill"><i class="fa fa-clock"></i> <span id="svcCreated">—</span></span>
+            </div>
+          </div>
+          <img id="svcImg" src="/assets/services/assistance.jpg" alt="Service image" class="service-img">
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="panel">
+          <div style="flex:1; min-width:0;">
+            <h3 class="section-title">Description</h3>
+            <p id="svcDesc" class="svc-desc">Loading service description...</p>
+
+            <h3 class="section-title" style="margin-top:.85rem;">Highlights</h3>
+            <div id="svcHighlights" class="highlights"></div>
+
+            <h3 class="section-title" style="margin-top:.95rem;">Requirements</h3>
+            <ul id="svcReqs" class="list"></ul>
+
+            <h3 class="section-title" style="margin-top:.95rem;">Conditions</h3>
+            <ul id="svcConditions" class="list"></ul>
+
+            <h3 class="section-title" style="margin-top:.95rem;">Benefits</h3>
+            <ul id="svcBenefits" class="list"></ul>
+
+            <div class="cta" style="margin-top:1rem;">
+              <a class="btn brand" href="/views/pages/application.html">
+                <i class="fa fa-paper-plane"></i> Submit application
+              </a>
+              <a class="btn outline" id="openApplications" href="#">
+                <i class="fa fa-file-signature"></i> Open applications
+              </a>
+              <a class="btn outline" id="openList" href="/views/pages/services.html">
+                <i class="fa fa-list"></i> Back to services
+              </a>
+            </div>
+          </div>
+
+          <aside class="side-card" id="applyCard">
+            <h3 class="section-title" style="margin-top:0;">Apply</h3>
+            <form class="list" id="applyForm" novalidate>
+              <input class="input" id="fullName" placeholder="Full name" required>
+              <input class="input" id="email" type="email" placeholder="Email" required>
+              <select class="input" id="plan" required>
+                <option value="">Select plan</option>
+                <option value="express">Express (self-funded, prioritized handling)</option>
+                <option value="work">Work & Pay (structured program, verified employers)</option>
+                <option value="flights">Flights-only</option>
+                <option value="orientation">Orientation-only</option>
+                <option value="visa">Visa-only</option>
+              </select>
+              <textarea class="textarea" id="motivation" placeholder="Tell us why this service fits your goals" required></textarea>
+              <div class="cta">
+                <button class="btn brand" id="applyBtn" type="submit">
+                  <i class="fa fa-paper-plane"></i> Submit application
+                </button>
+                <a class="btn outline" id="openApplications2" href="#">
+                  <i class="fa fa-file-signature"></i> Open applications
+                </a>
+                <a class="btn outline" id="openList2" href="/views/pages/services.html">
+                  <i class="fa fa-list"></i> Back to services
+                </a>
+              </div>
+              <p id="statusMsg" class="muted" style="margin-top:.5rem"></p>
+              <p class="side-note">
+                By submitting, you confirm the provided information is accurate and consent to verification checks.
+              </p>
+            </form>
+
+            <div class="divider" style="margin:1rem 0 .7rem;"></div>
+
+            <h3 class="section-title">Shortcuts</h3>
+            <div class="cta">
+              <a class="btn outline" href="/views/pages/service-detail.html?slug=express-full-self-funded">
+                <i class="fa fa-bolt"></i> View Express
+              </a>
+              <a class="btn outline" href="/views/pages/service-detail.html?slug=work-pay-company-covers">
+                <i class="fa fa-briefcase"></i> View Work & Pay
+              </a>
+              <a class="btn outline" href="/views/pages/service-detail.html?slug=flight-routing-ghana-uk-canada-lux">
+                <i class="fa fa-plane"></i> View Flights
+              </a>
+              <a class="btn outline" href="/views/pages/service-detail.html?slug=orientation-soft-landing-uk-canada-luxembourg">
+                <i class="fa fa-compass"></i> View Orientation
+              </a>
+              <a class="btn outline" href="/views/pages/service-detail.html?slug=visa-requirements-core-uk-canada-luxembourg">
+                <i class="fa fa-passport"></i> View Visa
+              </a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Confirmation modal -->
+  <div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmText">
+    <section class="card">
+      <div class="body">
+        <h3>Application submitted</h3>
+        <p id="confirmText"></p>
+        <div class="cta">
+          <button class="btn brand" id="confirmOk" type="button">
+            <i class="fa fa-check"></i> Continue
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;padding:1rem;">
+      <div>
+        <h4>Elite Travel & Tour</h4>
+        <p>Trusted partner for seamless journeys worldwide.</p>
+        <p class="muted">Visa assistance, Work & Pay programs, and flight bookings with premium support.</p>
+      </div>
+      <div>
+        <h4>Quick links</h4>
+        <ul>
+          <li><a href="/views/pages/services.html">Services</a></li>
+          <li><a href="/views/pages/work-and-pay.html">Work & Pay</a></li>
+          <li><a href="/views/pages/appointment.html">Book appointment</a></li>
+          <li><a href="/views/pages/contact.html">Contact</a></li>
+          <li><a href="/views/pages/about.html">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><i class="fa fa-phone"></i> +233 59 911 7007</p>
+        <p><i class="fa fa-envelope"></i> info@elitetravel.com</p>
+        <p><i class="fa fa-map-marker-alt"></i> Adabraka Akasanoma rd, Greater Accra, Ghana</p>
+        <div class="newsletter">
+          <label for="newsletterEmail" class="muted">Subscribe to our newsletter:</label><br>
+          <input id="newsletterEmail" type="email" placeholder="Your email">
+          <button id="subscribeBtn"><i class="fa fa-paper-plane"></i> Subscribe</button>
+        </div>
+        <div id="subscribeMsg" class="muted" style="margin-top:.5rem;"></div>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul class="list">
+          <li><a href="/views/pages/profile.html">Profile</a></li>
+          <li><a href="/views/pages/tracking.html">Tracking</a></li>
+          <li><a href="/views/pages/privacy.html">Privacy policy</a></li>
+          <li><a href="/views/pages/terms.html">Terms of service</a></li>
+        </ul>
+      </div>
+      <div class="social">
+        <h4>Follow us</h4>
+        <div class="cta">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom" style="text-align:center;padding:.7rem;border-top:1px solid rgba(31,41,55,.7);">© <span id="year"></span> Elite Travel & Tour. All rights reserved.</div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <i class="fa fa-info-circle"></i><span id="toastText">Notice</span>
+  </div>
+
+  <!-- Scripts -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    let currentUser=null;
+    let svcData=null;
+
+    // Footer year + newsletter
+    document.getElementById('year').textContent=new Date().getFullYear();
+    const subscribeBtn=document.getElementById('subscribeBtn');
+    const eemailInput=document.getElementById('newsletterEmail');
+    const subscribeMsg=document.getElementById('subscribeMsg');
+    subscribeBtn?.addEventListener('click',()=>{
+      const eemail=eemailInput.value.trim();
+      if(!eemail){
+        subscribeMsg.textContent='Please enter your email.';
+        subscribeMsg.style.color='red';
+        return;
+      }
+      subscribeMsg.textContent=`Thank you for subscribing, ${eemail}!`;
+      subscribeMsg.style.color='lightgreen';
+      eemailInput.value='';
+    });
+
+    // Toast
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(message,ms=2500){
+      if(!toast || !toastText) return;
+      toastText.textContent=message;
+      toast.classList.add('show');
+      setTimeout(()=> toast.classList.remove('show'),ms);
+    }
+
+    // Notification feed toggle
+    document.addEventListener('click',(e)=>{
+      const feed=document.getElementById('notifFeed');
+      if(!feed) return;
+      if(e.target.closest('#bellBtn')){
+        feed.classList.toggle('hidden');
+      }else if(!e.target.closest('#notifFeed')){
+        feed.classList.add('hidden');
+      }
+    });
+
+    // Supabase notifications subscription (with defensive lifecycle)
+    function renderNotification(n){
+      const list=document.getElementById('notifList');
+      const bellCount=document.getElementById('bellCount');
+      if(list){
+        const el=document.createElement('div');
+        el.className='item';
+        el.textContent=n?.message || n?.text || '';
+        list.prepend(el);
+      }
+      if(bellCount){
+        const count=parseInt(bellCount.textContent||'0',10)+1;
+        bellCount.textContent=String(count);
+        bellCount.classList.remove('hidden');
+      }
+    }
+
+    let notifChannel=null;
+    async function safeSubscribeNotifications(userId){
+      try{
+        if(notifChannel){
+          await sb.removeChannel(notifChannel);
+          notifChannel=null;
+        }
+        // Delay subscription a tick to avoid race during page boot
+        await new Promise(res=> setTimeout(res, 100));
+        notifChannel=sb.channel(`service-detail-notifs-${userId}`)
+          .on('postgres_changes',{
+            event:'INSERT',
+            schema:'public',
+            table:'notifications',
+            filter:`user_id=eq.${userId}`
+          },payload=> renderNotification(payload.new))
+          .subscribe((status)=>{
+            if(status !== 'SUBSCRIBED'){
+              console.warn('Realtime channel not subscribed (status):', status);
+            }
+          });
+      }catch(err){
+        console.warn('Realtime subscribe failed (non-fatal).', err);
+      }
+    }
+
+    // Auth buttons
+    const loginBtn=document.getElementById('loginBtn');
+    const logoutBtn=document.getElementById('logoutBtn');
+    const profileBtn=document.getElementById('profileBtn');
+    const mobileLoginBtn=document.getElementById('mobileLoginBtn');
+    const mobileLogoutBtn=document.getElementById('mobileLogoutBtn');
+    const mobileProfileBtn=document.getElementById('mobileProfileBtn');
+    const authText=document.querySelector('#authStatus .auth-text');
+    const mobileAuthText=document.getElementById('mobileAuthText');
+
+    function updateAuthUI(session){
+      const user=session?.user;
+      currentUser=user || null;
+
+      if(user){
+        if(authText) authText.textContent=user.email;
+        document.getElementById('authStatus')?.style.setProperty('display','none');
+        if(mobileAuthText) mobileAuthText.textContent=user.email;
+
+        loginBtn?.style.setProperty('display','none');
+        logoutBtn?.style.setProperty('display','inline-flex');
+        profileBtn?.style.setProperty('display','inline-flex');
+
+        mobileLoginBtn?.style.setProperty('display','none');
+        mobileLogoutBtn?.style.setProperty('display','inline-flex');
+        mobileProfileBtn?.style.setProperty('display','inline-flex');
+
+        profileBtn.onclick=()=> window.location.href=`/views/pages/user/profile.html?id=${user.id}`;
+        mobileProfileBtn.onclick=()=> window.location.href=`/views/pages/user/profile.html?id=${user.id}`;
+
+        safeSubscribeNotifications(user.id);
+      }else{
+        if(authText) authText.textContent='Guest';
+        document.getElementById('authStatus')?.style.setProperty('display','none');
+        if(mobileAuthText) mobileAuthText.textContent='Guest';
+
+        loginBtn?.style.setProperty('display','inline-flex');
+        logoutBtn?.style.setProperty('display','none');
+        profileBtn?.style.setProperty('display','none');
+
+        mobileLoginBtn?.style.setProperty('display','inline-flex');
+        mobileLogoutBtn?.style.setProperty('display','none');
+        mobileProfileBtn?.style.setProperty('display','none');
+      }
+    }
+
+    {
+      const { data }=await sb.auth.getSession();
+      updateAuthUI(data.session);
+    }
+    sb.auth.onAuthStateChange((_event,session)=> updateAuthUI(session));
+
+    loginBtn?.addEventListener('click',()=> window.location.href='/views/pages/login.html');
+    mobileLoginBtn?.addEventListener('click',()=> window.location.href='/views/pages/login.html');
+
+    logoutBtn?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+    mobileLogoutBtn?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+
+    // Mobile menu
+    const menuToggle=document.getElementById('menuToggle');
+    const mobilePanel=document.getElementById('mobilePanel');
+    menuToggle?.addEventListener('click',()=>{
+      const isOpen=mobilePanel.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded',String(isOpen));
+    });
+    mobilePanel?.addEventListener('click',(e)=>{
+      if(e.target.matches('a')){
+        mobilePanel.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded','false');
+      }
+    });
+
+    // DOM refs for service
+    const svcTitle=document.getElementById('svcTitle');
+    const svcSubtitle=document.getElementById('svcSubtitle');
+    const svcImg=document.getElementById('svcImg');
+    const svcDesc=document.getElementById('svcDesc');
+    const svcHighlights=document.getElementById('svcHighlights');
+    const svcReqs=document.getElementById('svcReqs');
+    const svcConditions=document.getElementById('svcConditions');
+    const svcBenefits=document.getElementById('svcBenefits');
+    const svcBadges=document.getElementById('svcBadges');
+    const svcCreated=document.getElementById('svcCreated');
+
+    const applyCard=document.getElementById('applyCard');
+    const applyForm=document.getElementById('applyForm');
+    const fullNameInput=document.getElementById('fullName');
+    const emailInput=document.getElementById('email');
+    const planSelect=document.getElementById('plan');
+    const motivationInput=document.getElementById('motivation');
+    const applyBtn=document.getElementById('applyBtn');
+    const openApplications=document.getElementById('openApplications');
+    const openApplications2=document.getElementById('openApplications2');
+    const statusMsg=document.getElementById('statusMsg');
+
+    const confirmModal=document.getElementById('confirmModal');
+    const confirmText=document.getElementById('confirmText');
+    const confirmOk=document.getElementById('confirmOk');
+
+    function normalizeMetadata(row){
+      const m=row.metadata || {};
+      const arr = v => Array.isArray(v) ? v : (v ? [v] : []);
+      return {
+        banner:m.banner || m.image_url || '/assets/services/assistance.jpg',
+        highlights:Array.isArray(m.highlights)?m.highlights:arr(m.highlights),
+        requirements:Array.isArray(m.requirements)?m.requirements:arr(m.requirements),
+        conditions:Array.isArray(m.conditions)?m.conditions:arr(m.conditions),
+        benefits:Array.isArray(m.benefits)?m.benefits:arr(m.benefits),
+        price_label:m.price_label || null,
+        price_amount:m.price_amount ?? (row.price ?? null),
+        tags:Array.isArray(m.tags)?m.tags:arr(m.tags),
+        extra_json:m.extra_json || null
+      };
+    }
+
+    function planLabel(plan){
+      if(plan==='work') return 'Work & Pay';
+      if(plan==='express') return 'Express';
+      if(plan==='flights') return 'Flights-only';
+      if(plan==='orientation') return 'Orientation-only';
+      if(plan==='visa') return 'Visa-only';
+      return 'Standard';
+    }
+
+    function statusLabel(status){
+      if(status==='active') return 'Active';
+      if(status==='inactive') return 'Inactive';
+      if(status==='draft') return 'Draft';
+      return status || 'Draft';
+    }
+
+    function renderService(row){
+      const meta=normalizeMetadata(row);
+      const title=row.title || 'Service';
+      const category=row.category || 'service';
+      const plan=row.plan || null;
+      const status=row.status || 'draft';
+      const created=row.created_at ? new Date(row.created_at).toLocaleDateString() : '—';
+
+      svcData={
+        id:row.id,
+        title,
+        slug:row.slug,
+        category,
+        plan,
+        status,
+        description:row.description || meta.extra_json?.short_desc || '',
+        metadata:meta,
+        created_at:row.created_at
+      };
+
+      svcTitle.textContent=title;
+      svcSubtitle.textContent=`${category} • ${planLabel(plan)}`;
+      svcImg.src=meta.banner;
+      svcImg.alt=title;
+      svcCreated.textContent=created;
+
+      // Badges
+      svcBadges.innerHTML='';
+      const badgePlan=document.createElement('span');
+      badgePlan.className='badge';
+      badgePlan.innerHTML=`<i class="fa fa-bolt"></i> ${planLabel(plan)}`;
+      svcBadges.appendChild(badgePlan);
+
+      const badgeCat=document.createElement('span');
+      badgeCat.className='badge';
+      badgeCat.innerHTML=`<i class="fa fa-tag"></i> ${category}`;
+      svcBadges.appendChild(badgeCat);
+
+      const badgeStatus=document.createElement('span');
+      badgeStatus.className='badge';
+      badgeStatus.innerHTML=`<i class="fa fa-shield-check"></i> ${statusLabel(status)}`;
+      svcBadges.appendChild(badgeStatus);
+
+      if(meta.price_label || meta.price_amount){
+        const badgePrice=document.createElement('span');
+        badgePrice.className='badge';
+        const priceStr = meta.price_amount != null
+          ? `GHS ${Number(meta.price_amount).toLocaleString()}`
+          : (meta.price_label || '—');
+        badgePrice.innerHTML=`<i class="fa fa-coins"></i> ${priceStr}`;
+        svcBadges.appendChild(badgePrice);
+      }
+
+      // Tags
+      if(meta.tags && meta.tags.length){
+        const badgeTags=document.createElement('span');
+        badgeTags.className='badge';
+        badgeTags.innerHTML=`<i class="fa fa-hashtag"></i> ${meta.tags.join(', ')}`;
+        svcBadges.appendChild(badgeTags);
+      }
+
+      // Description
+      svcDesc.textContent=row.description || 'No detailed description available yet.';
+
+      // Highlights
+      svcHighlights.innerHTML='';
+      const highlights=meta.highlights || [];
+      if(highlights.length){
+        highlights.forEach(h=>{
+          const div=document.createElement('div');
+          div.className='highlight';
+          div.innerHTML=`<strong>${h?.title || 'Highlight'}</strong><p>${h?.text || ''}</p>`;
+          svcHighlights.appendChild(div);
+        });
+      }else{
+        const div=document.createElement('div');
+        div.className='highlight';
+        div.innerHTML=`<strong>Verified support</strong><p>Our team guides you through every step with transparent communication.</p>`;
+        svcHighlights.appendChild(div);
+      }
+
+      // Requirements
+      svcReqs.innerHTML='';
+      const reqs=meta.requirements || [];
+      if(reqs.length){
+        reqs.forEach(r=>{
+          const li=document.createElement('li');
+          li.textContent=String(r);
+          svcReqs.appendChild(li);
+        });
+      }else{
+        const li=document.createElement('li');
+        li.textContent='Requirements will be discussed during your consultation.';
+        svcReqs.appendChild(li);
+      }
+
+      // Conditions
+      svcConditions.innerHTML='';
+      const conds=meta.conditions || [];
+      if(conds.length){
+        conds.forEach(c=>{
+          const li=document.createElement('li');
+          li.textContent=String(c);
+          svcConditions.appendChild(li);
+        });
+      }else{
+        const li=document.createElement('li');
+        li.textContent='Conditions vary by destination and partner. We will share full terms before you commit.';
+        svcConditions.appendChild(li);
+      }
+
+      // Benefits
+      svcBenefits.innerHTML='';
+      const benefits=meta.benefits || [];
+      if(benefits.length){
+        benefits.forEach(b=>{
+          const li=document.createElement('li');
+          li.textContent=String(b);
+          svcBenefits.appendChild(li);
+        });
+      }else{
+        const li=document.createElement('li');
+        li.textContent='Dedicated support, transparent pricing, and vetted partners.';
+        svcBenefits.appendChild(li);
+      }
+
+      // Prefill plan
+      if(plan){ planSelect.value=plan; }
+      applyCard.classList.remove('hidden');
+    }
+
+    // Canonical slugs
+    const CANONICAL = [
+      'work-pay-company-covers',
+      'express-full-self-funded',
+      'flight-routing-ghana-uk-canada-lux',
+      'orientation-soft-landing-uk-canada-luxembourg',
+      'visa-requirements-core-uk-canada-luxembourg'
+    ];
+
+    function mapPlanToCanonicalSlug(plan){
+      switch((plan || '').toLowerCase()){
+        case 'work': return 'work-pay-company-covers';
+        case 'express': return 'express-full-self-funded';
+        case 'flights': return 'flight-routing-ghana-uk-canada-lux';
+        case 'orientation': return 'orientation-soft-landing-uk-canada-luxembourg';
+        case 'visa': return 'visa-requirements-core-uk-canada-luxembourg';
+        default: return null;
+      }
+    }
+
+    function normalizeCanonicalSlug(slugFromUrl, planFromService){
+      const su = (slugFromUrl || '').toLowerCase();
+      if(CANONICAL.includes(su)) return su;
+
+      const p = (planFromService || '').toLowerCase();
+      const byPlan = mapPlanToCanonicalSlug(p);
+      if(byPlan) return byPlan;
+
+      // Fallback heuristics for shorthand
+      if(su === 'work' || su.includes('work')) return 'work-pay-company-covers';
+      if(su === 'express' || su.includes('express')) return 'express-full-self-funded';
+      if(su === 'flights' || su.includes('flight')) return 'flight-routing-ghana-uk-canada-lux';
+      if(su === 'orientation' || su.includes('orientation')) return 'orientation-soft-landing-uk-canada-luxembourg';
+      if(su === 'visa' || su.includes('visa')) return 'visa-requirements-core-uk-canada-luxembourg';
+
+      return null;
+    }
+
+    // Rule engine amounts
+    function computeRuleAmountFromSlug(slug){
+      if(!slug) return null;
+      const s = slug.toLowerCase();
+      if(s === 'work-pay-company-covers') return 3000;
+      if(s === 'express-full-self-funded') return 6000;
+      if(s === 'flight-routing-ghana-uk-canada-lux') return 500;
+      if(s === 'orientation-soft-landing-uk-canada-luxembourg') return 500;
+      if(s === 'visa-requirements-core-uk-canada-luxembourg') return 1500;
+      return null;
+    }
+
+    async function loadServiceBySlug(slug){
+      try{
+        const { data,error }=await sb
+          .from('services')
+          .select('id,title,slug,category,plan,status,description,metadata,created_at,price')
+          .eq('slug',slug)
+          .neq('status','deleted')
+          .maybeSingle();
+
+        if(error){
+          console.error(error);
+          showToast('Failed to load service.');
+          svcTitle.textContent='Service not found';
+          svcDesc.textContent='We could not find this service. It may have been removed or is not yet available.';
+          applyCard.classList.add('hidden');
+          return null;
+        }
+        if(!data){
+          svcTitle.textContent='Service not found';
+          svcDesc.textContent='We could not find this service. It may have been removed or is not yet available.';
+          applyCard.classList.add('hidden');
+          return null;
+        }
+
+        renderService(data);
+        return data;
+      }catch(e){
+        console.error(e);
+        showToast('Failed to load service.');
+        applyCard.classList.add('hidden');
+        return null;
+      }
+    }
+
+    // Init from URL
+    const params=new URLSearchParams(window.location.search);
+    const rawSlug=params.get('slug') || 'visa-requirements-core-uk-canada-luxembourg';
+    let loadedService = await loadServiceBySlug(rawSlug);
+
+    // Normalize shorthand to canonical and reload if needed
+    const canonicalFromUrl = normalizeCanonicalSlug(rawSlug, loadedService?.plan);
+    if(canonicalFromUrl && canonicalFromUrl !== rawSlug){
+      loadedService = await loadServiceBySlug(canonicalFromUrl);
+    }
+
+    // Open applications links
+    const canonicalSlugForLinks = loadedService?.slug || canonicalFromUrl || rawSlug;
+    document.getElementById('openApplications').href=`/views/pages/applications.html?service=${encodeURIComponent(canonicalSlugForLinks)}`;
+    document.getElementById('openApplications2').href=`/views/pages/applications.html?service=${encodeURIComponent(canonicalSlugForLinks)}`;
+
+    // Status helper
+    function setStatus(text,cls='muted'){
+      statusMsg.textContent=text;
+      statusMsg.className=cls;
+    }
+
+    // Confirmation modal helpers
+    function trapFocus(modal){
+      const focusable=modal.querySelectorAll('a[href],button,textarea,input,select,[tabindex]:not([tabindex="-1"])');
+      if(!focusable.length) return;
+      const first=focusable[0];
+      const last=focusable[focusable.length-1];
+      function keyHandler(e){
+        if(e.key!=='Tab') return;
+        if(e.shiftKey){
+          if(document.activeElement===first){ e.preventDefault(); last.focus(); }
+        }else{
+          if(document.activeElement===last){ e.preventDefault(); first.focus(); }
+        }
+      }
+      modal.addEventListener('keydown',keyHandler);
+      first.focus();
+    }
+
+    confirmOk.addEventListener('click',()=>{
+      confirmModal.classList.remove('open');
+      window.location.href = `/views/pages/applications.html?service=${encodeURIComponent(canonicalSlugForLinks)}`;
+    });
+    confirmModal.addEventListener('click',(e)=>{
+      if(e.target===confirmModal) confirmModal.classList.remove('open');
+    });
+
+    // Apply handler — create application with canonical slug + seeded amount
+    async function createApplication(payload){
+      const { error }=await sb.from('applications').insert(payload);
+      if(error) throw error;
+      return true;
+    }
+
+    applyForm?.addEventListener('submit',async(e)=>{
+      e.preventDefault();
+      if(!svcData || !(svcData.slug || svcData.id)){
+        setStatus('Service not loaded yet. Try again.','danger');
+        return;
+      }
+
+      const { data:sessionData }=await sb.auth.getSession();
+      const user=sessionData?.session?.user;
+      if(!user){
+        showToast('Please log in to apply.');
+        window.location.href='/views/pages/login.html';
+        return;
+      }
+
+      const fullname=fullNameInput.value.trim();
+      const email=emailInput.value.trim();
+      const plan=planSelect.value.trim().toLowerCase();
+      const motivation=motivationInput.value.trim();
+
+      if(!fullname || !email || !plan || !motivation){
+        setStatus('Please complete all fields.','danger');
+        return;
+      }
+      if(!email.includes('@')){
+        setStatus('Please enter a valid email.','danger');
+        return;
+      }
+
+      try{
+        applyBtn.setAttribute('disabled','true');
+        setStatus('Submitting application...','muted');
+
+        // Canonical slug resolution
+        const canonicalSlug = normalizeCanonicalSlug(svcData.slug, plan) || svcData.slug;
+        // Seed amount
+        const amountSeed =
+          (svcData.metadata?.price_amount ?? null) ||
+          computeRuleAmountFromSlug(canonicalSlug);
+
+        const priceLabel =
+          svcData.metadata?.price_label ||
+          svcData.title ||
+          'Program fee';
+
+        const payload={
+          user_id:user.id,
+          service_slug:canonicalSlug,
+          application_type:plan,     // program type aligned to plan
+          plan,
+          status:'submitted',
+          name:fullname,
+          email,
+          details:{
+            fullname,
+            email,
+            plan,
+            program_type:plan,
+            service_slug:canonicalSlug,
+            price_amount:amountSeed ?? null,
+            price_label:priceLabel,
+            payment: amountSeed != null ? {
+              amount: amountSeed,
+              currency: 'GHS',
+              label: priceLabel,
+              status: 'pending',
+              source: 'service'
+            } : null,
+            motivation
+          },
+          progress:[
+            { step:'submitted', at:new Date().toISOString(), note:'Application submitted via service detail page.' }
+          ],
+          metadata:{
+            service_id:svcData.id,
+            source:'service-detail'
+          }
+        };
+
+        await createApplication(payload);
+
+        confirmText.textContent=`Your application for "${svcData.title}" (${planLabel(plan)}) has been received. We’ll reach out via ${email} for next steps.`;
+        confirmModal.classList.add('open');
+        trapFocus(confirmModal);
+
+        applyForm.reset();
+        if(svcData.plan){ planSelect.value=svcData.plan; }
+        setStatus('Application submitted successfully.','success');
+        showToast('Application submitted.');
+      }catch(err){
+        console.error(err);
+        setStatus('Failed to submit application.','danger');
+        showToast('Failed to submit application.');
+      }finally{
+        applyBtn.removeAttribute('disabled');
+      }
+    });
+
+    // Auth gate for "Open applications"
+    function attachOpenAppsGate(anchor){
+      anchor.addEventListener('click',async(e)=>{
+        const { data:sessionData }=await sb.auth.getSession();
+        const user=sessionData?.session?.user;
+        if(!user){
+          e.preventDefault();
+          showToast('Please log in to view your applications.');
+          window.location.href='/views/pages/login.html';
+        }
+      });
+    }
+    attachOpenAppsGate(document.getElementById('openApplications'));
+    attachOpenAppsGate(document.getElementById('openApplications2'));
+
+    // Canonical express policy announcement
+    const expressCanonical = 'express-full-self-funded';
+    if((canonicalSlugForLinks || '').toLowerCase() === expressCanonical){
+      showToast('Express: Applicant bears costs; prioritized handling and partner offer benefits included.');
+    }
+  </script>
+</body>
+</html>

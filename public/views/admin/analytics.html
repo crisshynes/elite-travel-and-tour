@@ -1,0 +1,959 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — Analytics | Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Advanced analytics for Elite Travel & Tour — KPIs, revenue, funnels, tracking progress, and insights."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+
+  <style>
+    :root{
+      --brand:#0077cc;
+      --brand-500:#3b82f6;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --light:#f9fafb;
+      --muted:#64748b;
+      --bg:#020617;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-600:#4b5563;
+      --gray-700:#374151;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.7);
+      --radius:14px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --info:#0ea5e9;
+      --nav-border:rgba(31,41,55,.9);
+    }
+
+    *{ box-sizing:border-box; }
+
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(59,130,246,.26) 0, transparent 45%),
+        #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      min-height:0;
+    }
+    @media(max-width:900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid var(--nav-border);
+      background:
+        radial-gradient(circle at top left, #020c28 0, #020617 60%);
+      padding:.8rem .7rem;
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      box-shadow:0 0 0 1px rgba(15,23,42,.9);
+    }
+    .sidebar-header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.2rem .1rem .4rem;
+    }
+    .sidebar-header .logo{
+      display:flex; align-items:center; gap:.45rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; font-size:.98rem;
+      letter-spacing:.02em;
+    }
+    .sidebar-header .logo i{
+      color:#38bdf8;
+      font-size:1.05rem;
+    }
+
+    .side-toggle{
+      display:none; border:none; background:rgba(15,23,42,.8);
+      color:#cbd5f5; padding:.35rem .5rem; border-radius:999px; cursor:pointer;
+    }
+    .side-toggle i{ font-size:.9rem; }
+    @media(max-width:900px){
+      .sidebar{
+        position:fixed; inset:0 auto 0 0; width:260px;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:60;
+      }
+      .sidebar.open{ transform:translateX(0); }
+      .side-toggle{ display:inline-flex; }
+    }
+
+    .nav-section{ margin-top:.4rem; }
+    .nav-label{
+      font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+      color:#64748b; margin:.4rem 0 .2rem; padding:0 .2rem;
+    }
+    .nav-list{ list-style:none; padding:0; margin:0; }
+    .nav-link{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.45rem .55rem; border-radius:10px;
+      color:#cbd5f5; text-decoration:none; font-size:.9rem;
+      border:1px solid transparent; cursor:pointer;
+      background:transparent;
+    }
+    .nav-link i{ font-size:.9rem; }
+    .nav-link span.badge-pill{
+      margin-left:auto;
+      padding:.05rem .35rem;
+      border-radius:999px;
+      background:rgba(15,23,42,.95);
+      font-size:.7rem;
+      color:#9ca3af;
+      border:1px solid rgba(55,65,81,.9);
+    }
+    .nav-link:hover{
+      background:rgba(30,64,175,.45);
+      border-color:rgba(37,99,235,.6);
+    }
+    .nav-link.active{
+      background:rgba(37,99,235,.9);
+      border-color:rgba(37,99,235,1);
+      color:#e5e7eb;
+      box-shadow:0 10px 28px rgba(37,99,235,.6);
+    }
+
+    .sidebar-footer{
+      margin-top:auto; padding-top:.7rem;
+      border-top:1px solid rgba(30,64,175,.7);
+      font-size:.8rem; color:#64748b;
+    }
+    .sidebar-footer .chip{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.22rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(37,99,235,.7);
+      margin-top:.35rem; font-size:.78rem;
+    }
+    .sidebar-footer .chip i{ color:#22c55e; }
+
+    /* Main */
+    .main{
+      display:flex; flex-direction:column;
+      min-height:0;
+    }
+    .main-header{
+      padding:.55rem 1rem;
+      border-bottom:1px solid var(--nav-border);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 16px 50px rgba(15,23,42,.8);
+      position:sticky; top:0; z-index:40;
+    }
+    .breadcrumbs{
+      display:flex; align-items:center; gap:.35rem; font-size:.85rem; color:#9ca3af;
+    }
+    .breadcrumbs span.current{ color:#e5e7eb; font-weight:500; }
+
+    .main-header-right{
+      display:flex; align-items:center; gap:.5rem;
+      flex-wrap:wrap;
+    }
+
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.78rem; color:#e5e7eb;
+    }
+    .pill-soft i{ color:#38bdf8; }
+
+    .main-body{
+      padding:1rem;
+      overflow:auto;
+      min-height:0;
+    }
+
+    .card{
+      background:#020617;
+      border-radius:var(--radius);
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:var(--shadow);
+      padding:1rem;
+    }
+    .section-title{ font-size:1.15rem; margin-bottom:.4rem; }
+    .muted{ color:var(--muted); }
+
+    .toolbar{ display:flex; gap:.5rem; flex-wrap:wrap; margin:.6rem 0; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{
+      background:var(--brand); color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4);
+    }
+    .btn.brand:hover{
+      background:var(--brand-600);
+      transform:translateY(-1px);
+      box-shadow:0 16px 40px rgba(37,99,235,.55);
+    }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{
+      border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7);
+    }
+
+    .input,select{
+      width:100%; box-sizing:border-box;
+      padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.9rem; color:#e5e7eb;
+      transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#6b7280; }
+    .input:focus,select:focus{
+      outline:none; border-color:#38bdf8;
+      box-shadow:0 0 0 2px rgba(56,189,248,.35);
+      background:#020617;
+    }
+
+    .grid-3{ display:grid; gap:.8rem; grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .grid-2{ display:grid; gap:.8rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    @media(max-width:1100px){ .grid-3{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:800px){
+      .grid-3,.grid-2{ grid-template-columns:1fr; }
+    }
+
+    .kpi-card{
+      background:
+        radial-gradient(circle at top left, rgba(37,99,235,.25), transparent 55%),
+        #020617;
+      border-radius:12px;
+      border:1px solid rgba(31,41,55,.9);
+      padding:.75rem .85rem;
+      box-shadow:0 18px 40px rgba(15,23,42,.85);
+      display:flex; flex-direction:column; gap:.25rem;
+    }
+    .kpi-label{
+      font-size:.8rem; color:#9ca3af;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .kpi-value{ font-size:1.3rem; font-weight:700;}
+    .kpi-sub{ font-size:.78rem; color:#9ca3af; }
+    .kpi-trend{
+      font-size:.78rem; display:flex; gap:.3rem; align-items:center;
+      color:#22c55e; margin-top:.1rem;
+    }
+    .kpi-trend.down{ color:#f97316; }
+
+    .table{
+      width:100%; border-collapse:collapse; font-size:.85rem;
+    }
+    .table th,.table td{
+      padding:.5rem .45rem; border-bottom:1px solid rgba(31,41,55,.9);
+    }
+    .table th{
+      text-align:left; font-weight:600; color:#9ca3af; font-size:.78rem;
+    }
+    .table td.muted{ color:#6b7280; }
+
+    .status-pill{
+      display:inline-flex; align-items:center; gap:.25rem;
+      padding:.1rem .45rem; border-radius:999px;
+      font-size:.75rem;
+    }
+    .status-pill.pending{
+      background:rgba(234,179,8,.18); color:#facc15;
+      border:1px solid rgba(234,179,8,.7);
+    }
+    .status-pill.success{
+      background:rgba(22,163,74,.18); color:#bbf7d0;
+      border:1px solid rgba(22,163,74,.7);
+    }
+    .status-pill.failed{
+      background:rgba(220,38,38,.18); color:#fecaca;
+      border:1px solid rgba(220,38,38,.7);
+    }
+    .status-pill.neutral{
+      background:rgba(148,163,184,.12); color:#e5e7eb;
+      border:1px solid rgba(148,163,184,.7);
+    }
+
+    canvas{ max-width:100%; min-height:220px; }
+
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+      border:1px solid rgba(56,189,248,.7);
+      font-size:.85rem;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    .toast.alert{
+      border-color:rgba(248,250,252,.12);
+      background:rgba(127,29,29,.98);
+    }
+    .toast.alert i{ color:#fee2e2; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/views/admin/index.html" class="logo">
+          <i class="fa-solid fa-compass"></i> <span>Elite Admin</span>
+        </a>
+        <button class="side-toggle" id="sideToggle"><i class="fa fa-xmark"></i></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/index.html"><i class="fa fa-gauge-high"></i> Dashboard</a></li>
+          <li><button class="nav-link active"><i class="fa fa-chart-line"></i> Analytics</button></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Users & Activity</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/users.html"><i class="fa fa-users"></i> Users</a></li>
+          <li><a class="nav-link" href="/views/admin/tracking.html"><i class="fa fa-location-crosshairs"></i> Tracking</a></li>
+          <li><a class="nav-link" href="/views/admin/appointments.html"><i class="fa fa-calendar"></i> Appointments</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Transactions</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/payments.html"><i class="fa fa-credit-card"></i> Payments</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Content</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+          <li><a class="nav-link" href="/views/admin/testimonials.html"><i class="fa fa-star"></i> Testimonials</a></li>
+          <li><a class="nav-link" href="/views/admin/notifications.html"><i class="fa fa-bell"></i> Notifications</a></li>
+          <li><a class="nav-link" href="/views/admin/contacts.html"><i class="fa fa-envelope"></i> Contacts</a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Session</div>
+        <div class="chip">
+          <i class="fa fa-user-shield"></i> <span id="adminEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="breadcrumbs">
+          <button class="side-toggle" id="openSideOnMobile"><i class="fa fa-bars"></i></button>
+          <span>Admin</span> <span>/</span> <span class="current">Analytics</span>
+        </div>
+        <div class="main-header-right">
+          <span class="pill-soft" id="adminRolePill"><i class="fa fa-shield-halved"></i> Admin</span>
+          <button class="btn outline" id="adminLogout"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="main-body">
+        <!-- Top: controls + main KPIs -->
+        <article class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h2 class="section-title">Analytics overview</h2>
+              <p class="muted">Users, applications, payments, and tracking across the selected period.</p>
+            </div>
+            <div class="toolbar" style="margin:.25rem 0 0;">
+              <select id="rangeSelect" class="input" style="max-width:170px;">
+                <option value="7">Last 7 days</option>
+                <option value="30" selected>Last 30 days</option>
+                <option value="90">Last 90 days</option>
+              </select>
+              <button class="btn outline" id="refreshBtn"><i class="fa fa-rotate-right"></i> Refresh</button>
+              <button class="btn brand" id="exportBtn"><i class="fa fa-file-arrow-down"></i> Export JSON</button>
+            </div>
+          </div>
+
+          <div class="grid-3" style="margin-top:.9rem;">
+            <div class="kpi-card">
+              <div class="kpi-label">
+                <span>Total users (range)</span>
+                <i class="fa fa-users" style="color:#38bdf8;"></i>
+              </div>
+              <div class="kpi-value" id="kpiUsers">0</div>
+              <div class="kpi-sub" id="kpiUsersSub">—</div>
+              <div class="kpi-trend" id="kpiUsersTrend"><i class="fa fa-arrow-right"></i> —</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">
+                <span>Applications</span>
+                <i class="fa fa-clipboard-list" style="color:#a855f7;"></i>
+              </div>
+              <div class="kpi-value" id="kpiApps">0</div>
+              <div class="kpi-sub" id="kpiAppsSub">—</div>
+              <div class="kpi-trend" id="kpiAppsTrend"><i class="fa fa-arrow-right"></i> —</div>
+            </div>
+            <div class="kpi-card">
+              <div class="kpi-label">
+                <span>Revenue (successful payments)</span>
+                <i class="fa fa-coins" style="color:#facc15;"></i>
+              </div>
+              <div class="kpi-value" id="kpiRevenue">0</div>
+              <div class="kpi-sub" id="kpiRevenueSub">—</div>
+              <div class="kpi-trend" id="kpiRevenueTrend"><i class="fa fa-arrow-right"></i> —</div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Charts row -->
+        <article class="card" style="margin-top:1rem;">
+          <div class="grid-2">
+            <section>
+              <h3 class="section-title">User growth</h3>
+              <p class="muted" style="margin-bottom:.4rem;">Cumulative user registrations over the selected window.</p>
+              <canvas id="chartUsers"></canvas>
+            </section>
+            <section>
+              <h3 class="section-title">Revenue by month</h3>
+              <p class="muted" style="margin-bottom:.4rem;">Total successful payment amounts grouped by month.</p>
+              <canvas id="chartRevenue"></canvas>
+            </section>
+          </div>
+        </article>
+
+        <!-- Tracking + funnel -->
+        <article class="card" style="margin-top:1rem;">
+          <div class="grid-2">
+            <section>
+              <h3 class="section-title">Applications funnel</h3>
+              <p class="muted" style="margin-bottom:.4rem;">Submitted, processing, approved, rejected (based on status text).</p>
+              <canvas id="chartFunnel"></canvas>
+            </section>
+            <section>
+              <h3 class="section-title">Tracking status distribution</h3>
+              <p class="muted" style="margin-bottom:.4rem;">Pending, active, completed, rejected.</p>
+              <canvas id="chartTracking"></canvas>
+            </section>
+          </div>
+        </article>
+
+        <!-- Recent activity -->
+        <article class="card" style="margin-top:1rem; margin-bottom:.5rem;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h3 class="section-title">Recent activity</h3>
+              <p class="muted">Latest users, applications, and payments in the selected period.</p>
+            </div>
+            <div class="pill-soft" id="anomalyPill"><i class="fa fa-wave-square"></i> Anomaly scan: —</div>
+          </div>
+
+          <div class="grid-3" style="margin-top:.7rem;">
+            <section>
+              <h4 class="muted" style="font-size:.85rem;margin-bottom:.3rem;">New users</h4>
+              <table class="table" id="tableUsers">
+                <thead><tr><th>Email</th><th>Date</th></tr></thead>
+                <tbody><tr><td colspan="2" class="muted">Loading...</td></tr></tbody>
+              </table>
+            </section>
+            <section>
+              <h4 class="muted" style="font-size:.85rem;margin-bottom:.3rem;">Recent applications</h4>
+              <table class="table" id="tableApps">
+                <thead><tr><th>Plan</th><th>Status</th><th>Date</th></tr></thead>
+                <tbody><tr><td colspan="3" class="muted">Loading...</td></tr></tbody>
+              </table>
+            </section>
+            <section>
+              <h4 class="muted" style="font-size:.85rem;margin-bottom:.3rem;">Recent payments</h4>
+              <table class="table" id="tablePays">
+                <thead><tr><th>Ref</th><th>Amount</th><th>Status</th></tr></thead>
+                <tbody><tr><td colspan="3" class="muted">Loading...</td></tr></tbody>
+              </table>
+            </section>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"><i class="fa fa-info-circle"></i><span id="toastText"></span></div>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(msg,ms=2500,alert=false){
+      toastText.textContent=msg;
+      toast.classList.toggle('alert',alert);
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),ms);
+    }
+
+    /* Sidebar mobile */
+    const sidebar=document.getElementById('sidebar');
+    document.getElementById('sideToggle')?.addEventListener('click',()=> sidebar.classList.remove('open'));
+    document.getElementById('openSideOnMobile')?.addEventListener('click',()=> sidebar.classList.add('open'));
+
+    /* Auth + admin */
+    const adminEmailSpan=document.getElementById('adminEmail');
+    const adminRolePill=document.getElementById('adminRolePill');
+    const adminLogout=document.getElementById('adminLogout');
+
+    async function enforceAdmin(){
+      const { data,error } = await sb.auth.getSession();
+      if(error){
+        console.error('getSession error',error);
+        showToast('Failed to read session.',2500,true);
+        window.location.href='/views/pages/login.html';
+        return null;
+      }
+      const session=data.session;
+      const user=session?.user;
+      if(!user){
+        showToast('Admin session required.',2500,true);
+        window.location.href='/views/pages/login.html';
+        return null;
+      }
+      adminEmailSpan.textContent=user.email || '—';
+
+      // Best-effort app role
+      const { data:appUser, error:appErr } = await sb
+        .from('users')
+        .select('role')
+        .eq('email',user.email)
+        .maybeSingle();
+
+      if(appErr){
+        console.warn('users role lookup failed',appErr);
+        adminRolePill.innerHTML='<i class="fa fa-shield-halved"></i> ADMIN?';
+        return { authUser:user, appUser:null };
+      }
+
+      const role=(appUser?.role||'admin').toUpperCase();
+      adminRolePill.innerHTML=`<i class="fa fa-shield-halved"></i> ${role}`;
+      return { authUser:user, appUser };
+    }
+
+    adminLogout?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Elements */
+    const rangeSelect=document.getElementById('rangeSelect');
+    const refreshBtn=document.getElementById('refreshBtn');
+    const exportBtn=document.getElementById('exportBtn');
+
+    const kpiUsers=document.getElementById('kpiUsers');
+    const kpiApps=document.getElementById('kpiApps');
+    const kpiRevenue=document.getElementById('kpiRevenue');
+    const kpiUsersTrend=document.getElementById('kpiUsersTrend');
+    const kpiAppsTrend=document.getElementById('kpiAppsTrend');
+    const kpiRevenueTrend=document.getElementById('kpiRevenueTrend');
+    const kpiUsersSub=document.getElementById('kpiUsersSub');
+    const kpiAppsSub=document.getElementById('kpiAppsSub');
+    const kpiRevenueSub=document.getElementById('kpiRevenueSub');
+    const anomalyPill=document.getElementById('anomalyPill');
+
+    const tableUsersBody=document.querySelector('#tableUsers tbody');
+    const tableAppsBody=document.querySelector('#tableApps tbody');
+    const tablePaysBody=document.querySelector('#tablePays tbody');
+
+    let chartUsers=null;
+    let chartRevenue=null;
+    let chartFunnel=null;
+    let chartTracking=null;
+    let isLoading=false;
+
+    function percentageChange(current,previous){
+      if(previous===0) return current>0 ? 100 : 0;
+      return ((current-previous)/previous)*100;
+    }
+
+    function formatTrend(el,value){
+      const sign=value>0?'+':value<0?'-':'';
+      const abs=Math.abs(value).toFixed(1);
+      const cls=value<0?'kpi-trend down':'kpi-trend';
+      el.className=cls;
+      el.innerHTML=`<i class="fa fa-arrow-${value<0?'down':'up'}"></i> ${sign}${abs}% vs prev`;
+    }
+
+    function formatCurrency(x){
+      if(x==null) return '0';
+      return new Intl.NumberFormat('en-US',{ maximumFractionDigits:0 }).format(x);
+    }
+
+    function classifyPaymentStatus(statusRaw){
+      const s=(statusRaw||'').toLowerCase();
+      if(['success','successful','paid'].some(k=>s.includes(k))) return 'success';
+      if(['fail','error'].some(k=>s.includes(k))) return 'failed';
+      if(['pend','init'].some(k=>s.includes(k))) return 'pending';
+      return 'neutral';
+    }
+
+    function statusPillHTML(status){
+      const cls=classifyPaymentStatus(status);
+      const label=status || '—';
+      return `<span class="status-pill ${cls}">${label}</span>`;
+    }
+
+    function createLineChart(ctx,label,labels,data){
+      return new Chart(ctx,{
+        type:'line',
+        data:{
+          labels,
+          datasets:[{
+            label,
+            data,
+            borderColor:'#38bdf8',
+            backgroundColor:'rgba(56,189,248,.15)',
+            tension:.3,
+            fill:true,
+            pointRadius:2,
+            pointHoverRadius:3
+          }]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{ legend:{ labels:{ color:'#e5e7eb', font:{ size:11 } } } },
+          scales:{
+            x:{ ticks:{ color:'#9ca3af', font:{ size:10 } }, grid:{ color:'rgba(31,41,55,.6)' } },
+            y:{ ticks:{ color:'#9ca3af', font:{ size:10 } }, grid:{ color:'rgba(31,41,55,.6)' } }
+          }
+        }
+      });
+    }
+
+    function createBarChart(ctx,label,labels,data,color='rgba(34,197,94,.7)'){
+      return new Chart(ctx,{
+        type:'bar',
+        data:{
+          labels,
+          datasets:[{
+            label,
+            data,
+            backgroundColor:color,
+            borderRadius:4
+          }]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{ legend:{ labels:{ color:'#e5e7eb', font:{ size:11 } } } },
+          scales:{
+            x:{ ticks:{ color:'#9ca3af', font:{ size:10 } }, grid:{ display:false } },
+            y:{ ticks:{ color:'#9ca3af', font:{ size:10 } }, grid:{ color:'rgba(31,41,55,.6)' } }
+          }
+        }
+      });
+    }
+
+    function createPieChart(ctx,labels,data,colors){
+      return new Chart(ctx,{
+        type:'doughnut',
+        data:{
+          labels,
+          datasets:[{
+            data,
+            backgroundColor:colors,
+            borderColor:'#020617',
+            borderWidth:1
+          }]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{
+            legend:{ position:'bottom', labels:{ color:'#e5e7eb', font:{ size:10 } } }
+          },
+          cutout:'55%'
+        }
+      });
+    }
+
+    async function loadAnalytics(){
+      if(isLoading) return;
+      isLoading=true;
+
+      const days=parseInt(rangeSelect.value,10);
+      const now=new Date();
+      const from=new Date(now.getTime()-days*24*60*60*1000);
+      const fromISO=from.toISOString();
+      const prevFrom=new Date(from.getTime()-days*24*60*60*1000).toISOString();
+
+      try{
+        const [
+          usersCurrentRes, usersPrevRes,
+          appsCurrentRes, appsPrevRes,
+          paysCurrentRes, paysPrevRes
+        ] = await Promise.all([
+          sb.from('users').select('id,email,created_at').gte('created_at',fromISO),
+          sb.from('users').select('id,email,created_at').gte('created_at',prevFrom).lt('created_at',fromISO),
+          sb.from('applications').select('id,created_at,plan,status').gte('created_at',fromISO),
+          sb.from('applications').select('id,created_at').gte('created_at',prevFrom).lt('created_at',fromISO),
+          sb.from('payments').select('amount,status,created_at').gte('created_at',fromISO),
+          sb.from('payments').select('amount,status,created_at').gte('created_at',prevFrom).lt('created_at',fromISO)
+        ]);
+
+        const usersCurrent=usersCurrentRes?.data||[];
+        const usersPrev=usersPrevRes?.data||[];
+        const appsCurrent=appsCurrentRes?.data||[];
+        const appsPrev=appsPrevRes?.data||[];
+        const paysCurrent=paysCurrentRes?.data||[];
+        const paysPrev=paysPrevRes?.data||[];
+
+        console.log('usersCurrent',usersCurrent);
+        console.log('appsCurrent',appsCurrent);
+        console.log('paysCurrent',paysCurrent);
+
+        const usersCurCount=usersCurrent.length;
+        const usersPrevCount=usersPrev.length;
+        const appsCurCount=appsCurrent.length;
+        const appsPrevCount=appsPrev.length;
+
+        const successFilter=p=>classifyPaymentStatus(p.status)==='success';
+        const revCur=paysCurrent.filter(successFilter).reduce((s,p)=>s+(Number(p.amount)||0),0);
+        const revPrev=paysPrev.filter(successFilter).reduce((s,p)=>s+(Number(p.amount)||0),0);
+
+        kpiUsers.textContent=usersCurCount;
+        kpiApps.textContent=appsCurCount;
+        kpiRevenue.textContent=formatCurrency(revCur);
+
+        kpiUsersSub.textContent=`Prev: ${usersPrevCount}`;
+        kpiAppsSub.textContent=`Prev: ${appsPrevCount}`;
+        kpiRevenueSub.textContent=`Prev: ${formatCurrency(revPrev)}`;
+
+        formatTrend(kpiUsersTrend,percentageChange(usersCurCount,usersPrevCount));
+        formatTrend(kpiAppsTrend,percentageChange(appsCurCount,appsPrevCount));
+        formatTrend(kpiRevenueTrend,percentageChange(revCur,revPrev));
+
+        // User growth chart
+        const userPoints=[...usersCurrent].sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+        const labelsUsers=[];
+        const dataUsers=[];
+        let cum=0;
+        const bucketSize=Math.max(1,Math.floor(days/8));
+        for(let i=0;i<days;i+=bucketSize){
+          const bucketDate=new Date(from.getTime()+i*24*60*60*1000);
+          const next=new Date(bucketDate.getTime()+bucketSize*24*60*60*1000);
+          const added=userPoints.filter(u=>{
+            const d=new Date(u.created_at);
+            return d>=bucketDate && d<next;
+          }).length;
+          cum+=added;
+          labelsUsers.push(bucketDate.toLocaleDateString());
+          dataUsers.push(cum);
+        }
+
+        if(chartUsers) chartUsers.destroy();
+        chartUsers=createLineChart(
+          document.getElementById('chartUsers').getContext('2d'),
+          'Users',
+          labelsUsers,
+          dataUsers
+        );
+
+        // Revenue by month
+        const revMap=new Map();
+        paysCurrent.forEach(p=>{
+          if(classifyPaymentStatus(p.status)!=='success') return;
+          const d=new Date(p.created_at);
+          const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+          revMap.set(key,(revMap.get(key)||0)+(Number(p.amount)||0));
+        });
+        const revLabels=[...revMap.keys()].sort();
+        const revData=revLabels.map(k=>revMap.get(k));
+
+        if(chartRevenue) chartRevenue.destroy();
+        chartRevenue=createBarChart(
+          document.getElementById('chartRevenue').getContext('2d'),
+          'Revenue',
+          revLabels,
+          revData
+        );
+
+        // Applications funnel
+        const appsAllRes=await sb.from('applications')
+          .select('status')
+          .gte('created_at',fromISO);
+        const appsAll=appsAllRes?.data||[];
+        const funnelCounts={ submitted:0, processing:0, approved:0, rejected:0 };
+        appsAll.forEach(a=>{
+          const s=(a.status||'').toLowerCase();
+          if(s.includes('approve')) funnelCounts.approved++;
+          else if(s.includes('reject')) funnelCounts.rejected++;
+          else if(s.includes('process')) funnelCounts.processing++;
+          else funnelCounts.submitted++;
+        });
+        const funnelLabels=['Submitted','Processing','Approved','Rejected'];
+        const funnelData=[funnelCounts.submitted,funnelCounts.processing,funnelCounts.approved,funnelCounts.rejected];
+
+        if(chartFunnel) chartFunnel.destroy();
+        chartFunnel=createBarChart(
+          document.getElementById('chartFunnel').getContext('2d'),
+          'Applications funnel',
+          funnelLabels,
+          funnelData,
+          'rgba(168,85,247,.8)'
+        );
+
+        // Tracking distribution
+        const tracksRes=await sb.from('tracking')
+          .select('status')
+          .gte('updated_at',fromISO);
+        const tracks=tracksRes?.data||[];
+        const tCounts={ pending:0, active:0, completed:0, rejected:0 };
+        tracks.forEach(t=>{
+          const s=(t.status||'pending').toLowerCase();
+          if(s==='active') tCounts.active++;
+          else if(s==='completed') tCounts.completed++;
+          else if(s==='rejected') tCounts.rejected++;
+          else tCounts.pending++;
+        });
+        const tLabels=['Pending','Active','Completed','Rejected'];
+        const tData=[tCounts.pending,tCounts.active,tCounts.completed,tCounts.rejected];
+
+        if(chartTracking) chartTracking.destroy();
+        chartTracking=createPieChart(
+          document.getElementById('chartTracking').getContext('2d'),
+          tLabels,
+          tData,
+          ['#38bdf8','#f59e0b','#22c55e','#ef4444']
+        );
+
+        // Recent users
+        const usersSorted=[...usersCurrent].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,5);
+        if(!usersSorted.length){
+          tableUsersBody.innerHTML='<tr><td colspan="2" class="muted">No users in this range.</td></tr>';
+        }else{
+          tableUsersBody.innerHTML=usersSorted.map(u=>{
+            const dt=new Date(u.created_at).toLocaleDateString();
+            const email=u.email || '—';
+            return `<tr><td>${email}</td><td>${dt}</td></tr>`;
+          }).join('');
+        }
+
+        // Recent apps
+        const appsListRes=await sb.from('applications')
+          .select('plan,status,created_at')
+          .gte('created_at',fromISO)
+          .order('created_at',{ ascending:false })
+          .limit(5);
+        const appsList=appsListRes?.data||[];
+        if(!appsList.length){
+          tableAppsBody.innerHTML='<tr><td colspan="3" class="muted">No applications in this range.</td></tr>';
+        }else{
+          tableAppsBody.innerHTML=appsList.map(a=>{
+            const dt=new Date(a.created_at).toLocaleDateString();
+            const st=a.status || '—';
+            const cls=st.toLowerCase().includes('approve')
+              ? 'success'
+              : st.toLowerCase().includes('reject')
+                ? 'failed'
+                : 'pending';
+            return `<tr>
+              <td>${a.plan || '—'}</td>
+              <td><span class="status-pill ${cls}">${st}</span></td>
+              <td>${dt}</td>
+            </tr>`;
+          }).join('');
+        }
+
+        // Recent payments
+        const paysListRes=await sb.from('payments')
+          .select('ref,amount,status,created_at')
+          .gte('created_at',fromISO)
+          .order('created_at',{ ascending:false })
+          .limit(5);
+        const paysList=paysListRes?.data||[];
+        if(!paysList.length){
+          tablePaysBody.innerHTML='<tr><td colspan="3" class="muted">No payments in this range.</td></tr>';
+        }else{
+          tablePaysBody.innerHTML=paysList.map(p=>{
+            const amt=formatCurrency(p.amount);
+            return `<tr>
+              <td>${p.ref}</td>
+              <td>${amt}</td>
+              <td>${statusPillHTML(p.status)}</td>
+            </tr>`;
+          }).join('');
+        }
+
+        // Anomaly detection
+        const change=percentageChange(revCur,revPrev);
+        if(Math.abs(change)>40 && (revCur>0 || revPrev>0)){
+          const type=change>0?'spike':'drop';
+          anomalyPill.innerHTML=`<i class="fa fa-wave-square"></i> Anomaly: ${type} (${change.toFixed(1)}%)`;
+        }else{
+          anomalyPill.innerHTML='<i class="fa fa-wave-square"></i> Anomaly scan: normal';
+        }
+
+      }catch(e){
+        console.error('loadAnalytics error',e);
+        showToast('Failed loading analytics.',2500,true);
+      }finally{
+        isLoading=false;
+      }
+    }
+
+    rangeSelect.addEventListener('change',()=>{ loadAnalytics(); });
+    refreshBtn.addEventListener('click',()=>{ loadAnalytics(); });
+
+    exportBtn.addEventListener('click',()=>{
+      const days=parseInt(rangeSelect.value,10);
+      const now=new Date();
+      const snapshot={
+        exported_at:now.toISOString(),
+        range_days:days,
+        kpis:{
+          users:Number(kpiUsers.textContent)||0,
+          applications:Number(kpiApps.textContent)||0,
+          revenue:kpiRevenue.textContent
+        }
+      };
+      const blob=new Blob([JSON.stringify(snapshot,null,2)],{ type:'application/json' });
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');
+      a.href=url;
+      a.download=`analytics_snapshot_${now.toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Analytics snapshot exported.');
+    });
+
+    (async()=>{
+      await enforceAdmin();
+      await loadAnalytics();
+    })();
+  </script>
+</body>
+</html>

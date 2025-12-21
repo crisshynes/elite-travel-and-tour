@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — Users | Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Admin users management for Elite Travel & Tour — search, filter, inspect, and monitor user accounts with journeys, payments, and applications."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <style>
+    :root{
+      --brand:#0077cc;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --light:#fff;
+      --muted:#64748b;
+      --bg:#020617;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.7);
+      --radius:14px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --info:#0ea5e9;
+      --chip-bg:#0b1220;
+    }
+
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(59,130,246,.26) 0, transparent 45%),
+        #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      min-height:0;
+    }
+    @media(max-width:900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(31,41,55,.9);
+      background:radial-gradient(circle at top left, #020c28 0, #020617 60%);
+      padding:.8rem .7rem;
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      box-shadow:0 0 0 1px rgba(15,23,42,.9);
+      overflow-y:auto;
+      max-height:100vh;
+    }
+    .sidebar-header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.2rem .1rem .4rem;
+    }
+    .sidebar-header .logo{
+      display:flex; align-items:center; gap:.4rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; font-size:.98rem;
+    }
+    .sidebar-header .logo i{ color:#38bdf8; }
+    .side-toggle{
+      display:none; border:none; background:rgba(15,23,42,.8);
+      color:#cbd5f5; padding:.35rem .5rem; border-radius:999px; cursor:pointer;
+    }
+    .side-toggle i{ font-size:.9rem; }
+
+    @media(max-width:900px){
+      .sidebar{
+        position:fixed; inset:0 auto 0 0; width:260px;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:60;
+      }
+      .sidebar.open{ transform:translateX(0); }
+      .side-toggle{ display:inline-flex; }
+    }
+
+    .nav-section{ margin-top:.4rem; }
+    .nav-label{
+      font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+      color:#64748b; margin:.4rem 0 .2rem; padding:0 .2rem;
+    }
+    .nav-list{ list-style:none; padding:0; margin:0; }
+    .nav-item{ margin-bottom:.2rem; }
+    .nav-link{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.45rem .55rem; border-radius:10px;
+      color:#cbd5f5; text-decoration:none; font-size:.9rem;
+      border:1px solid transparent; cursor:pointer;
+      background:transparent;
+    }
+    .nav-link i{ font-size:.9rem; }
+    .nav-link span.badge{
+      margin-left:auto; font-size:.7rem;
+      background:#0b1220; padding:.05rem .4rem; border-radius:999px;
+      border:1px solid rgba(148,163,184,.7); color:#e2e8f0;
+    }
+    .nav-link:hover{
+      background:rgba(30,64,175,.45);
+      border-color:rgba(37,99,235,.6);
+    }
+    .nav-link.active{
+      background:rgba(37,99,235,.9);
+      border-color:rgba(37,99,235,1);
+      color:#e5e7eb;
+      box-shadow:0 10px 28px rgba(37,99,235,.6);
+    }
+
+    .sidebar-footer{
+      margin-top:auto; padding-top:.5rem;
+      border-top:1px solid rgba(30,64,175,.7);
+      font-size:.8rem; color:#64748b;
+    }
+    .sidebar-footer .chip{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.22rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(37,99,235,.7);
+      margin-top:.35rem; font-size:.78rem;
+    }
+    .sidebar-footer .chip i{ color:#22c55e; }
+
+    /* Main */
+    .main{
+      display:flex; flex-direction:column;
+      min-height:0;
+    }
+    .main-header{
+      padding:.55rem 1rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 16px 50px rgba(15,23,42,.8);
+      position:sticky; top:0; z-index:40;
+    }
+    .breadcrumbs{
+      display:flex; align-items:center; gap:.35rem; font-size:.85rem; color:#9ca3af;
+    }
+    .breadcrumbs span.current{ color:#e5e7eb; font-weight:500; }
+    .main-header-right{ display:flex; align-items:center; gap:.5rem; }
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.78rem; color:#e5e7eb;
+    }
+
+    .main-body{
+      padding:1rem;
+      overflow:auto;
+    }
+    .card{
+      background:#020617;
+      border-radius:var(--radius);
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:var(--shadow);
+      padding:1rem;
+    }
+    .section-title{ font-size:1.15rem; margin-bottom:.4rem; }
+    .muted{ color:var(--muted); }
+    .small-text{ font-size:.8rem; }
+
+    .toolbar{ display:flex; gap:.5rem; flex-wrap:wrap; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{ background:var(--brand); color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4); }
+    .btn.brand:hover{ background:var(--brand-600); transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{ border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7); }
+    .btn-sm{ padding:.25rem .55rem; font-size:.8rem; }
+    .btn[disabled]{ opacity:.5; cursor:not-allowed; }
+
+    .input,.textarea,select{
+      width:100%; box-sizing:border-box;
+      padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.9rem; color:#e5e7eb;
+      transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#6b7280; }
+    .input:focus,.textarea:focus,select:focus{
+      outline:none; border-color:#38bdf8;
+      box-shadow:0 0 0 2px rgba(56,189,248,.35);
+      background:#020617;
+    }
+
+    .table{
+      width:100%; border-collapse:collapse; font-size:.85rem;
+    }
+    .table th,.table td{
+      padding:.55rem .45rem; border-bottom:1px solid rgba(31,41,55,.9);
+    }
+    .table th{
+      text-align:left; font-weight:600; color:#9ca3af; font-size:.8rem;
+    }
+    .table tbody tr:hover{ background:#020c28; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.1rem .5rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020c28; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+    .badge.success{ background:rgba(22,163,74,.2); border-color:rgba(22,163,74,.7); color:#bbf7d0; }
+    .badge.danger{ background:rgba(220,38,38,.20); border-color:rgba(220,38,38,.7); color:#fecaca; }
+    .badge.warning{ background:rgba(234,179,8,.18); border-color:rgba(234,179,8,.7); color:#facc15; }
+
+    .chip-row{ display:flex; flex-wrap:wrap; gap:.3rem; }
+    .chip{
+      padding:.18rem .5rem; border-radius:999px;
+      font-size:.78rem;
+      background:var(--chip-bg);
+      border:1px solid rgba(55,65,81,.9);
+      color:#e5e7eb;
+      display:inline-flex; align-items:center; gap:.25rem;
+    }
+
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    .modal{
+      display:none; position:fixed; inset:0;
+      background:rgba(15,23,42,.75);
+      align-items:center; justify-content:center; z-index:1000;
+    }
+    .modal .card{
+      max-width:560px; width:92%;
+      border-radius:var(--radius);
+      border:1px solid rgba(148,163,184,.8);
+      box-shadow:var(--shadow);
+      background:#020617; color:#e5e7eb;
+    }
+    .modal .body{ padding:1rem; }
+
+    .grid-2{ display:grid; gap:.7rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    @media(max-width:700px){ .grid-2{ grid-template-columns:1fr; } }
+
+    .tag-row{ display:flex; flex-wrap:wrap; gap:.3rem; margin-top:.4rem; }
+    .tag{
+      padding:.14rem .45rem; border-radius:999px; font-size:.75rem;
+      border:1px solid rgba(148,163,184,.7); color:#e5e7eb; background:#020617;
+    }
+
+    .timeline{
+      border-left:1px solid rgba(55,65,81,.9);
+      padding-left:.6rem;
+      margin-top:.4rem;
+      font-size:.8rem;
+    }
+    .timeline-item{ margin-bottom:.35rem; }
+    .timeline-item strong{ display:block; }
+    .timeline-item span{ color:#9ca3af; }
+
+    .mono{ font-family:"JetBrains Mono","SF Mono",ui-monospace,monospace; font-size:.8rem; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/views/admin/index.html" class="logo">
+          <i class="fa-solid fa-compass"></i> <span>Elite Admin</span>
+        </a>
+        <button class="side-toggle" id="sideToggle"><i class="fa fa-xmark"></i></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a class="nav-link" href="/views/admin/index.html">
+              <i class="fa fa-gauge-high"></i> <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/views/admin/analytics.html">
+              <i class="fa fa-chart-line"></i> <span>Analytics</span>
+              <span class="badge">beta</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Jobs & Services</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/createjobs.html"><i class="fa fa-plus"></i> <span>Create Job</span></a></li>
+          <li><a class="nav-link" href="/views/admin/jobs.html"><i class="fa fa-briefcase"></i> <span>Jobs</span></a></li>
+          <li><a class="nav-link" href="/views/admin/services.html"><i class="fa fa-suitcase"></i> <span>Services</span></a></li>
+          <li><a class="nav-link" href="/views/admin/activeprocess.html"><i class="fa fa-spinner"></i> <span>Active processes</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Users & Activity</div>
+        <ul class="nav-list">
+          <li><button class="nav-link active"><i class="fa fa-users"></i> <span>Users</span></button></li>
+          <li><a class="nav-link" href="/views/admin/user-details.html"><i class="fa fa-id-card"></i> <span>User details</span></a></li>
+          <li><a class="nav-link" href="/views/admin/activeusers.html"><i class="fa fa-user-check"></i> <span>Active users</span></a></li>
+          <li><a class="nav-link" href="/views/admin/tracking.html"><i class="fa fa-location-crosshairs"></i> <span>Tracking</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Transactions</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/payments.html"><i class="fa fa-credit-card"></i> <span>Payments</span></a></li>
+          <li><a class="nav-link" href="/views/admin/appointments.html"><i class="fa fa-calendar"></i> <span>Appointments</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Content & Feedback</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/notifications.html"><i class="fa fa-bell"></i> <span>Notifications</span></a></li>
+          <li><a class="nav-link" href="/views/admin/testimonials.html"><i class="fa fa-star"></i> <span>Testimonials</span></a></li>
+          <li><a class="nav-link" href="/views/admin/contacts.html"><i class="fa fa-envelope-open-text"></i> <span>Contact messages</span></a></li>
+          <li><a class="nav-link" href="/views/admin/applications.html"><i class="fa fa-file-signature"></i> <span>Applications</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Session</div>
+        <div class="chip">
+          <i class="fa fa-user-shield"></i> <span id="adminEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="breadcrumbs">
+          <button class="side-toggle" id="openSideOnMobile"><i class="fa fa-bars"></i></button>
+          <span>Admin</span> <span>/</span> <span class="current">Users</span>
+        </div>
+        <div class="main-header-right">
+          <span class="pill-soft"><i class="fa fa-shield-halved"></i> Admin</span>
+          <button class="btn outline" id="adminLogout"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="main-body">
+        <article class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h2 class="section-title">Users</h2>
+              <p class="muted small-text">
+                Search, inspect, and manage registered user accounts. This powers tracking, payments, and applications — every change here is global.
+              </p>
+              <div class="tag-row">
+                <span class="tag"><i class="fa fa-database"></i> users table</span>
+                <span class="tag"><i class="fa fa-envelope"></i> email is identity</span>
+                <span class="tag"><i class="fa fa-location-crosshairs"></i> journeys via applications + tracking</span>
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div class="chip-row">
+                <span class="chip"><i class="fa fa-id-card"></i> Role-aware</span>
+                <span class="chip"><i class="fa fa-triangle-exclamation"></i> RLS enforced</span>
+              </div>
+              <p class="small-text muted" id="usersSummary" style="margin-top:.4rem;">Loading users...</p>
+            </div>
+          </div>
+
+          <div class="toolbar" style="margin:.7rem 0 .4rem;">
+            <input class="input" id="userSearch" placeholder="Search by email, name, phone, tracking" style="max-width:260px;">
+            <select class="input" id="userStatusFilter" style="max-width:160px;">
+              <option value="">All statuses</option>
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
+            </select>
+            <select class="input" id="userRoleFilter" style="max-width:160px;">
+              <option value="">All roles</option>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+              <option value="superadmin">Superadmin</option>
+            </select>
+            <button class="btn outline btn-sm" id="usersRefresh"><i class="fa fa-rotate"></i> Refresh</button>
+          </div>
+
+          <table class="table" id="usersTable">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Contact</th>
+                <th>Status / Role</th>
+                <th>Journeys</th>
+                <th>Joined</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="6" class="muted small-text">Loading users...</td></tr>
+            </tbody>
+          </table>
+
+          <p class="muted small-text" id="usersStatus" style="margin-top:.5rem;"></p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal: user details -->
+  <div class="modal" id="userModal">
+    <section class="card"><div class="body">
+      <h3 id="userModalTitle">User details</h3>
+      <div id="userModalBody" class="muted" style="font-size:.9rem;"></div>
+      <div class="toolbar" style="margin-top:.7rem;justify-content:space-between;flex-wrap:wrap;">
+        <div class="chip-row" id="userModalChips"></div>
+        <div class="toolbar" style="gap:.4rem;">
+          <button class="btn outline btn-sm" id="userOpenProfile"><i class="fa fa-arrow-up-right-from-square"></i> Open profile</button>
+          <button class="btn outline btn-sm" id="userOpenTracking"><i class="fa fa-location-crosshairs"></i> Tracking</button>
+          <button class="btn outline btn-sm" id="userOpenApps"><i class="fa fa-file-signature"></i> Applications</button>
+          <button class="btn outline btn-sm" id="userOpenPayments"><i class="fa fa-credit-card"></i> Payments</button>
+          <button class="btn outline btn-sm" id="userModalClose">Close</button>
+        </div>
+      </div>
+    </div></section>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><i class="fa fa-info-circle"></i><span id="toastText"></span></div>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(msg,ms=2500){
+      toastText.textContent=msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),ms);
+    }
+
+    /* Sidebar mobile toggle */
+    const sidebar=document.getElementById('sidebar');
+    const sideToggle=document.getElementById('sideToggle');
+    const openSideOnMobile=document.getElementById('openSideOnMobile');
+    sideToggle?.addEventListener('click',()=> sidebar.classList.remove('open'));
+    openSideOnMobile?.addEventListener('click',()=> sidebar.classList.add('open'));
+
+    /* Auth guard */
+    const adminEmailSpan=document.getElementById('adminEmail');
+    const adminLogout=document.getElementById('adminLogout');
+    let currentAdmin=null;
+    let isAdmin=false;
+
+    async function detectAdmin(user){
+      if(!user) return false;
+      const metaRole = user.app_metadata?.role || user.user_metadata?.role;
+      if(metaRole === 'admin' || metaRole === 'superadmin') return true;
+      try{
+        const { data, error } = await sb.from('users').select('role').eq('id', user.id).maybeSingle();
+        if(error) return false;
+        return data && (data.role === 'admin' || data.role === 'superadmin');
+      }catch{
+        return false;
+      }
+    }
+
+    {
+      const { data } = await sb.auth.getSession();
+      const session=data.session;
+      const user=session?.user;
+      if(!user){
+        showToast('Admin session required.');
+        window.location.href='/views/pages/login.html';
+      }else{
+        currentAdmin=user;
+        adminEmailSpan.textContent=user.email || 'admin';
+        isAdmin = await detectAdmin(user);
+        if(!isAdmin){
+          showToast('Your account is not marked as admin. You may see limited data.');
+        }
+      }
+    }
+
+    adminLogout?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Focus trap */
+    function trapFocus(container){
+      const focusable=container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      const first=focusable[0];
+      const last=focusable[focusable.length-1];
+      function handler(e){
+        if(e.key!=='Tab') return;
+        if(e.shiftKey){
+          if(document.activeElement===first){ e.preventDefault(); last.focus(); }
+        }else{
+          if(document.activeElement===last){ e.preventDefault(); first.focus(); }
+        }
+      }
+      container.addEventListener('keydown',handler);
+      first && first.focus();
+    }
+
+    /* Modal helpers */
+    const userModal=document.getElementById('userModal');
+    const userModalTitle=document.getElementById('userModalTitle');
+    const userModalBody=document.getElementById('userModalBody');
+    const userModalClose=document.getElementById('userModalClose');
+    const userModalChips=document.getElementById('userModalChips');
+    const userOpenProfile=document.getElementById('userOpenProfile');
+    const userOpenTracking=document.getElementById('userOpenTracking');
+    const userOpenApps=document.getElementById('userOpenApps');
+    const userOpenPayments=document.getElementById('userOpenPayments');
+
+    let selectedUser=null;
+
+    function openUserModal(title,html,chips=[]){
+      userModalTitle.textContent=title;
+      userModalBody.innerHTML=html;
+      userModalChips.innerHTML='';
+      chips.forEach(c=>{
+        const span=document.createElement('span');
+        span.className='chip';
+        span.innerHTML = `<i class="fa ${c.icon||'fa-circle-info'}"></i> ${c.label}`;
+        userModalChips.appendChild(span);
+      });
+      userModal.style.display='flex';
+      trapFocus(userModal);
+    }
+    function closeUserModal(){
+      userModal.style.display='none';
+      selectedUser=null;
+    }
+    userModalClose.addEventListener('click',closeUserModal);
+    userModal.addEventListener('click',(e)=>{ if(e.target===userModal) closeUserModal(); });
+
+    userOpenProfile.addEventListener('click',()=>{
+      if(!selectedUser) return;
+      window.open(`/views/pages/profile.html?email=${encodeURIComponent(selectedUser.email)}`,'_blank');
+    });
+    userOpenTracking.addEventListener('click',()=>{
+      if(!selectedUser) return;
+      window.open(`/views/admin/tracking.html?user_id=${encodeURIComponent(selectedUser.id)}`,'_blank');
+    });
+    userOpenApps.addEventListener('click',()=>{
+      if(!selectedUser) return;
+      window.open(`/views/admin/applications.html?user_id=${encodeURIComponent(selectedUser.id)}`,'_blank');
+    });
+    userOpenPayments.addEventListener('click',()=>{
+      if(!selectedUser) return;
+      window.open(`/views/admin/payments.html?user_id=${encodeURIComponent(selectedUser.id)}`,'_blank');
+    });
+
+    /* Users logic */
+    const usersTableBody=document.querySelector('#usersTable tbody');
+    const usersStatus=document.getElementById('usersStatus');
+    const usersRefresh=document.getElementById('usersRefresh');
+    const userSearch=document.getElementById('userSearch');
+    const userStatusFilter=document.getElementById('userStatusFilter');
+    const userRoleFilter=document.getElementById('userRoleFilter');
+    const usersSummary=document.getElementById('usersSummary');
+
+    let usersCache=[];
+
+    function setUsersStatus(msg,type='muted'){
+      usersStatus.textContent=msg||'';
+      usersStatus.className=`small-text ${type}`;
+    }
+
+    function matchesSearch(u,q){
+      if(!q) return true;
+      q=q.toLowerCase();
+      const name=(u.fullname || u.fullname || '').toLowerCase();
+      const email=(u.email||'').toLowerCase();
+      const phone=(u.phone||'').toLowerCase();
+      const tracking=(u.latest_tracking_id||'').toLowerCase();
+      return (
+        name.includes(q) ||
+        email.includes(q) ||
+        phone.includes(q) ||
+        tracking.includes(q)
+      );
+    }
+
+    async function loadUsers(){
+      usersTableBody.innerHTML='<tr><td colspan="6" class="muted small-text">Loading users...</td></tr>';
+      setUsersStatus('');
+      usersSummary.textContent='Loading users...';
+      try{
+        const { data:rows,error }=await sb.from('users')
+          .select(`
+            id,
+            fullname,
+            email,
+            phone,
+            status,
+            created_at,
+            role,
+            country,
+            last_login_at,
+            latest_tracking_id,
+            latest_application_status
+          `)
+          .order('created_at',{ ascending:false })
+          .limit(300);
+        if(error) throw error;
+        usersCache=rows || [];
+        usersSummary.textContent=`Loaded ${usersCache.length} user${usersCache.length===1?'':'s'}.`;
+        applyUserFilters();
+      }catch(e){
+        console.error(e);
+        usersTableBody.innerHTML='<tr><td colspan="6" class="muted small-text">Failed to load users.</td></tr>';
+        setUsersStatus('Failed to load users from database.','danger');
+        usersSummary.textContent='Failed to load users.';
+      }
+    }
+
+    function applyUserFilters(){
+      const q=userSearch.value.trim();
+      const status=userStatusFilter.value;
+      const role=userRoleFilter.value;
+
+      const list=usersCache.filter(u=>{
+        const st=(u.status || 'active');
+        const rl=(u.role || 'user');
+        if(status && st!==status) return false;
+        if(role && rl!==role) return false;
+        if(!matchesSearch(u,q)) return false;
+        return true;
+      });
+
+      if(!list.length){
+        usersTableBody.innerHTML='<tr><td colspan="6" class="muted small-text">No users match the filters.</td></tr>';
+        setUsersStatus('No users match the current search and filters.','muted');
+        return;
+      }
+
+      usersTableBody.innerHTML=list.map(u=>{
+        const name=u.fullname || u.fullname || '(no name)';
+        const joined=u.created_at?new Date(u.created_at).toLocaleDateString():'—';
+        const st=(u.status||'active');
+        const statusClass=st==='active'?'success':st==='suspended'?'danger':'warning';
+        const rl=(u.role||'user');
+        const roleLabel=rl==='superadmin'?'Superadmin':rl==='admin'?'Admin':'User';
+        const country=u.country || '—';
+        const lastLogin=u.last_login_at ? new Date(u.last_login_at).toLocaleString() : '—';
+        const latestTracking=u.latest_tracking_id || '—';
+        const latestStatus=u.latest_application_status || 'None';
+
+        return `
+          <tr data-id="${u.id}">
+            <td>
+              <div>${name}</div>
+              <div class="muted small-text mono">${u.id}</div>
+            </td>
+            <td>
+              <div>${u.email || '—'}</div>
+              <div class="muted small-text">${u.phone || 'No phone'} • ${country}</div>
+            </td>
+            <td>
+              <div class="chip-row">
+                <span class="badge ${statusClass}">${st}</span>
+                <span class="badge">${roleLabel}</span>
+              </div>
+              <div class="muted small-text">Last login: ${lastLogin}</div>
+            </td>
+            <td>
+              <div class="small-text">Last tracking: <span class="mono">${latestTracking}</span></div>
+              <div class="muted small-text">Status: ${latestStatus}</div>
+            </td>
+            <td>${joined}</td>
+            <td style="text-align:right;">
+              <button class="btn outline btn-sm" data-action="view"><i class="fa fa-eye"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      setUsersStatus(`${list.length} user${list.length===1?'':'s'} shown.`,'muted');
+    }
+
+    userStatusFilter.addEventListener('change',applyUserFilters);
+    userRoleFilter.addEventListener('change',applyUserFilters);
+    userSearch.addEventListener('input',()=>{ applyUserFilters(); });
+    usersRefresh.addEventListener('click',loadUsers);
+
+    usersTableBody.addEventListener('click',async(e)=>{
+      const btn=e.target.closest('button[data-action="view"]');
+      if(!btn) return;
+      const tr=btn.closest('tr');
+      const id=tr.dataset.id;
+      const u=usersCache.find(x=>String(x.id)===String(id));
+      if(!u) return;
+      selectedUser=u;
+
+      let appsCount=0, paysCount=0, lastApp=null;
+      try{
+        const [{ count:aCount },{ count:pCount }, lastAppRes] = await Promise.all([
+          sb.from('applications').select('id',{ count:'exact', head:true }).eq('user_id',u.id),
+          sb.from('payments').select('id',{ count:'exact', head:true }).eq('user_id',u.id),
+          sb.from('applications').select('id,tracking_id,status,created_at,plan,application_type').eq('user_id',u.id).order('created_at',{ascending:false}).limit(1)
+        ]);
+        appsCount=aCount ?? 0;
+        paysCount=pCount ?? 0;
+        lastApp=(lastAppRes.data && lastAppRes.data[0]) || null;
+      }catch(err){
+        console.error('user aggregates error',err);
+      }
+
+      const name=u.fullname || u.fullname || '(no name)';
+      const joined=u.created_at ? new Date(u.created_at).toLocaleString() : '—';
+      const lastLogin=u.last_login_at ? new Date(u.last_login_at).toLocaleString() : '—';
+      const st=(u.status || 'active');
+      const rl=(u.role || 'user');
+      const chips=[];
+      chips.push({ icon:'fa-user', label: rl==='superadmin'?'Superadmin':rl==='admin'?'Admin':'User' });
+      chips.push({ icon:'fa-signal', label: st });
+      if(u.country) chips.push({ icon:'fa-earth-africa', label:u.country });
+      chips.push({ icon:'fa-file-signature', label:`${appsCount} applications` });
+      chips.push({ icon:'fa-credit-card', label:`${paysCount} payments` });
+
+      let trackingBlock='';
+      if(lastApp){
+        trackingBlock = `
+          <div class="timeline" style="margin-top:.4rem;">
+            <div class="timeline-item">
+              <strong>Last application</strong>
+              <span>${new Date(lastApp.created_at).toLocaleString()} — ${lastApp.status || 'submitted'}</span>
+            </div>
+            <div class="small-text">Tracking: <span class="mono">${lastApp.tracking_id || '—'}</span> • Plan: ${lastApp.plan || '—'} • Type: ${lastApp.application_type || '—'}</div>
+          </div>
+        `;
+      }else{
+        trackingBlock = `<p class="muted small-text" style="margin-top:.3rem;">No applications recorded yet.</p>`;
+      }
+
+      const html=`
+        <div class="grid-2">
+          <div>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${u.email || '—'}</p>
+            <p><strong>Phone:</strong> ${u.phone || '—'} <span class="muted small-text">(not verified)</span></p>
+            <p><strong>Status:</strong> ${st}</p>
+          </div>
+          <div>
+            <p><strong>Role:</strong> ${rl}</p>
+            <p><strong>Country:</strong> ${u.country || '—'}</p>
+            <p><strong>Joined:</strong> ${joined}</p>
+            <p><strong>Last login:</strong> ${lastLogin}</p>
+          </div>
+        </div>
+        <hr style="border:none;border-top:1px solid rgba(31,41,55,.9);margin:.7rem 0;">
+        <div>
+          <p><strong>Journeys overview</strong></p>
+          <p class="small-text">Applications: ${appsCount} • Payments: ${paysCount}</p>
+          ${trackingBlock}
+        </div>
+      `;
+      openUserModal('User details',html,chips);
+    });
+
+    // Realtime subscription (optional: surface new users)
+    sb.channel('admin-users-updates')
+      .on('postgres_changes',{event:'INSERT',schema:'public',table:'users'},payload=>{
+        showToast(`New user registered: ${payload.new.email || 'no email'}`);
+        loadUsers();
+      })
+      .subscribe();
+
+    await loadUsers();
+  </script>
+</body>
+</html>

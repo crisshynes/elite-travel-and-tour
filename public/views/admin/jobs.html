@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — Jobs | Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Admin jobs management for Elite Travel & Tour — create, list, and manage Work & Pay and Express jobs."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <style>
+    :root{
+      --brand:#0077cc;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --light:#fff;
+      --muted:#64748b;
+      --bg:#020617;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.7);
+      --radius:14px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --info:#0ea5e9;
+      --chip-bg:#0b1220;
+    }
+
+    html,body{
+      height:100%;
+    }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(59,130,246,.26) 0, transparent 45%),
+        #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      min-height:0;
+    }
+    @media(max-width:900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(31,41,55,.9);
+      background:radial-gradient(circle at top left, #020c28 0, #020617 60%);
+      padding:.8rem .7rem;
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      box-shadow:0 0 0 1px rgba(15,23,42,.9);
+      overflow-y:auto;
+      max-height:100vh;
+    }
+    .sidebar-header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.2rem .1rem .4rem;
+    }
+    .sidebar-header .logo{
+      display:flex; align-items:center; gap:.4rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; font-size:.98rem;
+    }
+    .sidebar-header .logo i{ color:#38bdf8; }
+    .side-toggle{
+      display:none; border:none; background:rgba(15,23,42,.8);
+      color:#cbd5f5; padding:.35rem .5rem; border-radius:999px; cursor:pointer;
+    }
+    .side-toggle i{ font-size:.9rem; }
+
+    @media(max-width:900px){
+      .sidebar{
+        position:fixed; inset:0 auto 0 0; width:260px;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:60;
+      }
+      .sidebar.open{ transform:translateX(0); }
+      .side-toggle{ display:inline-flex; }
+    }
+
+    .nav-section{ margin-top:.4rem; }
+    .nav-label{
+      font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+      color:#64748b; margin:.4rem 0 .2rem; padding:0 .2rem;
+    }
+    .nav-list{ list-style:none; padding:0; margin:0; }
+    .nav-item{ margin-bottom:.2rem; }
+    .nav-link{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.45rem .55rem; border-radius:10px;
+      color:#cbd5f5; text-decoration:none; font-size:.9rem;
+      border:1px solid transparent; cursor:pointer;
+      background:transparent;
+    }
+    .nav-link i{ font-size:.9rem; }
+    .nav-link span.badge{
+      margin-left:auto; font-size:.7rem;
+      background:#0b1220; padding:.05rem .4rem; border-radius:999px;
+      border:1px solid rgba(148,163,184,.7); color:#e2e8f0;
+    }
+    .nav-link:hover{
+      background:rgba(30,64,175,.45);
+      border-color:rgba(37,99,235,.6);
+    }
+    .nav-link.active{
+      background:rgba(37,99,235,.9);
+      border-color:rgba(37,99,235,1);
+      color:#e5e7eb;
+      box-shadow:0 10px 28px rgba(37,99,235,.6);
+    }
+
+    .sidebar-footer{
+      margin-top:auto; padding-top:.5rem;
+      border-top:1px solid rgba(30,64,175,.7);
+      font-size:.8rem; color:#64748b;
+    }
+    .sidebar-footer .chip{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.22rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(37,99,235,.7);
+      margin-top:.35rem; font-size:.78rem;
+    }
+    .sidebar-footer .chip i{ color:#22c55e; }
+
+    /* Main */
+    .main{
+      display:flex; flex-direction:column;
+      min-height:0;
+    }
+    .main-header{
+      padding:.55rem 1rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 16px 50px rgba(15,23,42,.8);
+      position:sticky; top:0; z-index:40;
+    }
+    .breadcrumbs{
+      display:flex; align-items:center; gap:.35rem; font-size:.85rem; color:#9ca3af;
+    }
+    .breadcrumbs span.current{ color:#e5e7eb; font-weight:500; }
+    .main-header-right{ display:flex; align-items:center; gap:.5rem; }
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.78rem; color:#e5e7eb;
+    }
+
+    .main-body{
+      padding:1rem;
+      overflow:auto;
+    }
+    .card{
+      background:#020617;
+      border-radius:var(--radius);
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:var(--shadow);
+      padding:1rem;
+    }
+    .section-title{ font-size:1.15rem; margin-bottom:.4rem; }
+    .muted{ color:var(--muted); }
+
+    .toolbar{ display:flex; gap:.5rem; flex-wrap:wrap; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{ background:var(--brand); color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4); }
+    .btn.brand:hover{ background:var(--brand-600); transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{ border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7); }
+    .btn-sm{ padding:.25rem .55rem; font-size:.8rem; }
+
+    .input,.textarea,select{
+      width:100%; box-sizing:border-box;
+      padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.9rem; color:#e5e7eb;
+      transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#6b7280; }
+    .input:focus,.textarea:focus,select:focus{
+      outline:none; border-color:#38bdf8;
+      box-shadow:0 0 0 2px rgba(56,189,248,.35);
+      background:#020617;
+    }
+    .textarea{ min-height:90px; resize:vertical; }
+
+    .subtabs{
+      display:flex; gap:.4rem; margin:.6rem 0 .4rem;
+    }
+    .subtab-btn{
+      border:none; background:transparent;
+      border-radius:999px; padding:.3rem .7rem;
+      font-size:.8rem; color:#9ca3af; cursor:pointer;
+    }
+    .subtab-btn.active{
+      background:#0b1220; color:#e5e7eb; border:1px solid rgba(37,99,235,.7);
+    }
+
+    .table{
+      width:100%; border-collapse:collapse; font-size:.85rem;
+    }
+    .table th,.table td{
+      padding:.55rem .45rem; border-bottom:1px solid rgba(31,41,55,.9);
+    }
+    .table th{
+      text-align:left; font-weight:600; color:#9ca3af; font-size:.8rem;
+    }
+    .table tbody tr:hover{ background:#020c28; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.1rem .5rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020c28; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+    .badge.success{ background:rgba(22,163,74,.2); border-color:rgba(22,163,74,.7); color:#bbf7d0; }
+    .badge.danger{ background:rgba(220,38,38,.20); border-color:rgba(220,38,38,.7); color:#fecaca; }
+    .badge.warning{ background:rgba(234,179,8,.18); border-color:rgba(234,179,8,.7); color:#facc15; }
+    .badge.deleted{ background:rgba(148,163,184,.18); border-color:rgba(148,163,184,.65); color:#e5e7eb; }
+
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    /* Drawer for create/edit job */
+    .drawer{
+      position:fixed; top:0; right:0; width:360px; max-width:100%;
+      height:100%; background:#020617;
+      border-left:1px solid rgba(31,41,55,.9);
+      box-shadow:-24px 0 60px rgba(15,23,42,.8);
+      transform:translateX(100%);
+      transition:transform .2s ease-out;
+      z-index:80;
+      display:flex; flex-direction:column;
+    }
+    .drawer.open{ transform:translateX(0); }
+    .drawer-header{
+      padding:.75rem .85rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+    }
+    .drawer-body{
+      padding:.8rem .85rem;
+      overflow:auto;
+      flex:1;
+    }
+    .drawer-footer{
+      padding:.7rem .85rem;
+      border-top:1px solid rgba(31,41,55,.9);
+      display:flex; justify-content:space-between; align-items:center; gap:.5rem;
+      flex-wrap:wrap;
+    }
+
+    .chip-row{ display:flex; flex-wrap:wrap; gap:.3rem; }
+    .chip{
+      padding:.18rem .5rem; border-radius:999px;
+      font-size:.78rem;
+      background:var(--chip-bg);
+      border:1px solid rgba(55,65,81,.9);
+      color:#e5e7eb;
+    }
+
+    .danger-text{
+      color:#fecaca;
+      font-size:.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/views/admin/index.html" class="logo">
+          <i class="fa-solid fa-compass"></i> <span>Elite Admin</span>
+        </a>
+        <button class="side-toggle" id="sideToggle"><i class="fa fa-xmark"></i></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a class="nav-link" href="/views/admin/index.html">
+              <i class="fa fa-gauge-high"></i> <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/views/admin/analytics.html">
+              <i class="fa fa-chart-line"></i> <span>Analytics</span>
+              <span class="badge">beta</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Jobs & Services</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/createjobs.html"><i class="fa fa-plus"></i> <span>Create Job</span></a></li>
+          <li><a class="nav-link" href="/views/admin/jobs.html"><i class="fa fa-briefcase"></i> <span>Jobs</span></a></li>
+          <li><a class="nav-link" href="/views/admin/services.html"><i class="fa fa-suitcase"></i> <span>Services</span></a></li>
+          <li><a class="nav-link" href="/views/admin/activeprocess.html"><i class="fa fa-spinner"></i> <span>Active processes</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Users & Activity</div>
+        <ul class="nav-list">
+          <li><button class="nav-link active"><i class="fa fa-users"></i> <span>Users</span></button></li>
+          <li><a class="nav-link" href="/views/admin/user-details.html"><i class="fa fa-id-card"></i> <span>User details</span></a></li>
+          <li><a class="nav-link" href="/views/admin/activeusers.html"><i class="fa fa-user-check"></i> <span>Active users</span></a></li>
+          <li><a class="nav-link" href="/views/admin/tracking.html"><i class="fa fa-location-crosshairs"></i> <span>Tracking</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Transactions</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/payments.html"><i class="fa fa-credit-card"></i> <span>Payments</span></a></li>
+          <li><a class="nav-link" href="/views/admin/appointments.html"><i class="fa fa-calendar"></i> <span>Appointments</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Content & Feedback</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/notifications.html"><i class="fa fa-bell"></i> <span>Notifications</span></a></li>
+          <li><a class="nav-link" href="/views/admin/testimonials.html"><i class="fa fa-star"></i> <span>Testimonials</span></a></li>
+          <li><a class="nav-link" href="/views/admin/contacts.html"><i class="fa fa-envelope-open-text"></i> <span>Contact messages</span></a></li>
+          <li><a class="nav-link" href="/views/admin/applications.html"><i class="fa fa-file-signature"></i> <span>Applications</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Session</div>
+        <div class="chip">
+          <i class="fa fa-user-shield"></i> <span id="adminEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="breadcrumbs">
+          <button class="side-toggle" id="openSideOnMobile"><i class="fa fa-bars"></i></button>
+          <span>Admin</span> <span>/</span> <span class="current">Jobs</span>
+        </div>
+        <div class="main-header-right">
+          <span class="pill-soft"><i class="fa fa-shield-halved"></i> Admin</span>
+          <button class="btn outline" id="adminLogout"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="main-body">
+        <article class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h2 class="section-title">Jobs</h2>
+              <p class="muted">
+                Manage core jobs for Work & Pay, Express, and other programs. Use the Job Builder for full details, images, and metadata.
+              </p>
+            </div>
+            <div class="chip-row">
+              <span class="chip"><i class="fa fa-database"></i> Jobs table</span>
+              <span class="chip"><i class="fa fa-bolt"></i> Builder‑ready</span>
+              <span class="chip"><i class="fa fa-recycle"></i> Soft delete (hard purge after 30 days)</span>
+            </div>
+          </div>
+
+          <div class="toolbar" style="margin:.7rem 0 .5rem;">
+            <button class="btn brand" id="openCreateDrawer"><i class="fa fa-plus"></i> New job</button>
+            <button class="btn outline" id="refreshJobs"><i class="fa fa-rotate"></i> Refresh</button>
+          </div>
+
+          <div class="subtabs">
+            <button class="subtab-btn active" data-filter="all">All (except deleted)</button>
+            <button class="subtab-btn" data-filter="active">Active</button>
+            <button class="subtab-btn" data-filter="draft">Draft</button>
+            <button class="subtab-btn" data-filter="archived">Archived</button>
+            <button class="subtab-btn" data-filter="deleted">Deleted</button>
+          </div>
+
+          <div class="toolbar" style="margin-bottom:.4rem;">
+            <input id="jobSearch" class="input" placeholder="Search by title or country" style="max-width:260px;">
+            <select id="jobPlanFilter" class="input" style="max-width:200px;">
+              <option value="">All plans</option>
+              <option value="work">Work & Pay</option>
+              <option value="express">Express</option>
+            </select>
+          </div>
+
+          <table class="table" id="jobsTable">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Country</th>
+                <th>Plan</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="6" class="muted">Loading jobs...</td></tr>
+            </tbody>
+          </table>
+
+          <p class="muted" id="jobsStatus" style="margin-top:.5rem;"></p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Drawer for create/edit job (simple hybrid) -->
+  <aside class="drawer" id="jobDrawer" aria-modal="true" role="dialog">
+    <div class="drawer-header">
+      <h3 id="jobDrawerTitle">Create job</h3>
+      <button class="btn outline btn-sm" id="closeDrawer"><i class="fa fa-xmark"></i> Close</button>
+    </div>
+    <div class="drawer-body">
+      <form id="jobForm" class="grid" style="gap:.7rem;">
+        <div>
+          <label for="jobTitle" class="muted" style="font-size:.85rem;">Job title</label>
+          <input id="jobTitle" class="input" placeholder="e.g., Warehouse worker in Canada" required>
+        </div>
+        <div class="grid" style="gap:.5rem;">
+          <div>
+            <label for="jobCountry" class="muted" style="font-size:.85rem;">Country</label>
+            <input id="jobCountry" class="input" placeholder="e.g., Canada, UK, Czech">
+          </div>
+          <div>
+            <label for="jobPlan" class="muted" style="font-size:.85rem;">Plan</label>
+            <select id="jobPlan" class="input">
+              <option value="">No specific plan</option>
+              <option value="work">Work & Pay</option>
+              <option value="express">Express</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid" style="gap:.5rem;">
+          <div>
+            <label for="jobStatus" class="muted" style="font-size:.85rem;">Status</label>
+            <select id="jobStatus" class="input">
+              <option value="active">Active</option>
+              <option value="draft">Draft</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label for="jobDesc" class="muted" style="font-size:.85rem;">Description</label>
+          <textarea id="jobDesc" class="textarea" placeholder="Short description (visible on listing pages)"></textarea>
+        </div>
+      </form>
+      <p class="muted" id="jobFormStatus" style="margin-top:.4rem;"></p>
+      <p class="muted" style="margin-top:.4rem;font-size:.8rem;">
+        For full details (images, salary, requirements, benefits, metadata), open this job in the Job Builder.
+      </p>
+      <p class="danger-text" style="margin-top:.4rem;">
+        Deleting a job marks it as <strong>deleted</strong>. It can be hard‑deleted after 30 days.
+      </p>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn outline" id="jobFormCancel">Cancel</button>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+        <button class="btn outline" id="jobFormDelete" style="display:none;">
+          <i class="fa fa-trash"></i> Delete
+        </button>
+        <button class="btn brand" id="jobFormSubmit">
+          <i class="fa fa-save"></i> Save
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><i class="fa fa-info-circle"></i><span id="toastText"></span></div>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(msg,ms=2500){
+      toastText.textContent=msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),ms);
+    }
+
+    /* Sidebar mobile toggle */
+    const sidebar=document.getElementById('sidebar');
+    const sideToggle=document.getElementById('sideToggle');
+    const openSideOnMobile=document.getElementById('openSideOnMobile');
+    sideToggle?.addEventListener('click',()=> sidebar.classList.remove('open'));
+    openSideOnMobile?.addEventListener('click',()=>{
+      if(sidebar.classList.contains('open')){
+        sidebar.classList.remove('open');
+      }else{
+        sidebar.classList.add('open');
+      }
+    });
+
+    /* Auth guard */
+    const adminEmailSpan=document.getElementById('adminEmail');
+    const adminLogout=document.getElementById('adminLogout');
+
+    const { data } = await sb.auth.getSession();
+    const session=data.session;
+    const user=session?.user;
+
+    if(!user){
+      showToast('Admin session required.');
+      window.location.href='/views/pages/login.html';
+    }else{
+      adminEmailSpan.textContent=user.email;
+      // hook for role enforcement if needed
+    }
+
+    adminLogout?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Jobs logic */
+    const jobsTableBody=document.querySelector('#jobsTable tbody');
+    const jobsStatus=document.getElementById('jobsStatus');
+    const refreshJobsBtn=document.getElementById('refreshJobs');
+    const jobSearch=document.getElementById('jobSearch');
+    const jobPlanFilter=document.getElementById('jobPlanFilter');
+    const filterBtns=document.querySelectorAll('.subtab-btn');
+
+    const drawer=document.getElementById('jobDrawer');
+    const openCreateDrawerBtn=document.getElementById('openCreateDrawer');
+    const closeDrawerBtn=document.getElementById('closeDrawer');
+    const jobForm=document.getElementById('jobForm');
+    const jobFormStatus=document.getElementById('jobFormStatus');
+    const jobFormSubmit=document.getElementById('jobFormSubmit');
+    const jobFormCancel=document.getElementById('jobFormCancel');
+    const jobFormDelete=document.getElementById('jobFormDelete');
+    const jobDrawerTitle=document.getElementById('jobDrawerTitle');
+
+    const jobTitleInput=document.getElementById('jobTitle');
+    const jobCountryInput=document.getElementById('jobCountry');
+    const jobPlanInput=document.getElementById('jobPlan');
+    const jobStatusInput=document.getElementById('jobStatus');
+    const jobDescInput=document.getElementById('jobDesc');
+
+    let jobsCache=[];
+    let editingJobId=null;
+
+    function setJobsStatus(msg,type='muted'){
+      jobsStatus.textContent=msg||'';
+      jobsStatus.className=type;
+    }
+
+    function trapFocus(container){
+      const focusable=container.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if(!focusable.length) return;
+      const first=focusable[0];
+      const last=focusable[focusable.length-1];
+      function handler(e){
+        if(e.key!=='Tab') return;
+        if(e.shiftKey){
+          if(document.activeElement===first){ e.preventDefault(); last.focus(); }
+        }else{
+          if(document.activeElement===last){ e.preventDefault(); first.focus(); }
+        }
+      }
+      container.addEventListener('keydown',handler);
+      first.focus();
+    }
+
+    function openDrawer(mode='create',job=null){
+      drawer.classList.add('open');
+      editingJobId = mode==='edit' && job ? job.id : null;
+
+      if(mode==='edit' && job){
+        jobDrawerTitle.textContent='Edit job';
+        jobTitleInput.value=job.title || '';
+        jobCountryInput.value=job.country || '';
+        jobPlanInput.value=job.plan || '';
+        jobStatusInput.value=job.status || 'active';
+        jobDescInput.value=job.description || '';
+        jobFormDelete.style.display='inline-flex';
+      }else{
+        jobDrawerTitle.textContent='Create job';
+        jobForm.reset();
+        jobStatusInput.value='active';
+        jobFormDelete.style.display='none';
+      }
+      jobFormStatus.textContent='';
+      jobFormStatus.className='muted';
+      trapFocus(drawer);
+    }
+
+    function closeDrawer(){
+      drawer.classList.remove('open');
+      editingJobId=null;
+    }
+
+    openCreateDrawerBtn.addEventListener('click',()=> openDrawer('create'));
+    closeDrawerBtn.addEventListener('click',closeDrawer);
+    jobFormCancel.addEventListener('click',(e)=>{
+      e.preventDefault();
+      closeDrawer();
+    });
+    drawer.addEventListener('click',(e)=>{ if(e.target===drawer) closeDrawer(); });
+
+    async function loadJobs(){
+      jobsTableBody.innerHTML='<tr><td colspan="6" class="muted">Loading jobs...</td></tr>';
+      setJobsStatus('');
+      try{
+        const { data:rows,error }=await sb.from('jobs')
+          .select('id,title,country,plan,status,description,created_at')
+          .order('created_at',{ ascending:false });
+        if(error) throw error;
+        jobsCache=rows || [];
+        applyFilters();
+      }catch(e){
+        console.error(e);
+        jobsTableBody.innerHTML='<tr><td colspan="6" class="muted">Failed to load jobs.</td></tr>';
+        setJobsStatus('Failed to load jobs from database.','danger');
+      }
+    }
+
+    function applyFilters(){
+      const statusFilter=document.querySelector('.subtab-btn.active')?.dataset.filter || 'all';
+      const planFilter=jobPlanFilter.value;
+      const search=jobSearch.value.trim().toLowerCase();
+
+      const list=jobsCache.filter(j=>{
+        // soft delete handling
+        if(statusFilter==='deleted'){
+          if(j.status!=='deleted') return false;
+        }else{
+          if(j.status==='deleted' && statusFilter!=='deleted') return false;
+          if(statusFilter==='active' && j.status!=='active') return false;
+          if(statusFilter==='draft' && j.status!=='draft') return false;
+          if(statusFilter==='archived' && j.status!=='archived') return false;
+        }
+
+        if(planFilter && j.plan!==planFilter) return false;
+
+        if(search){
+          const hay=((j.title || '') + ' ' + (j.country || '')).toLowerCase();
+          if(!hay.includes(search)) return false;
+        }
+        return true;
+      });
+
+      if(!list.length){
+        jobsTableBody.innerHTML='<tr><td colspan="6" class="muted">No jobs match the filters.</td></tr>';
+        return;
+      }
+
+      jobsTableBody.innerHTML=list.map(j=>{
+        const created=j.created_at?new Date(j.created_at).toLocaleDateString():'—';
+        let statusClass='warning';
+        if(j.status==='active') statusClass='success';
+        else if(j.status==='archived') statusClass='danger';
+        else if(j.status==='deleted') statusClass='deleted';
+
+        const isDeleted=j.status==='deleted';
+
+        return `
+          <tr data-id="${j.id}">
+            <td>${j.title}</td>
+            <td>${j.country || '—'}</td>
+            <td>${j.plan || '—'}</td>
+            <td><span class="badge ${statusClass}">${j.status}</span></td>
+            <td>${created}</td>
+            <td style="text-align:right;">
+              <button class="btn outline btn-sm" data-action="edit" title="Quick edit" ${isDeleted?'disabled style="opacity:.4;cursor:not-allowed;"':''}>
+                <i class="fa fa-pen"></i>
+              </button>
+              <button class="btn outline btn-sm" data-action="toggle" title="Toggle active/archived" ${isDeleted?'disabled style="opacity:.4;cursor:not-allowed;"':''}>
+                <i class="fa fa-toggle-on"></i>
+              </button>
+              <button class="btn brand btn-sm" data-action="builder" title="Open in Job Builder" ${isDeleted?'disabled style="opacity:.4;cursor:not-allowed;"':''}>
+                <i class="fa fa-up-right-from-square"></i>
+              </button>
+              <button class="btn outline btn-sm" data-action="delete" title="Soft delete job">
+                <i class="fa fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    filterBtns.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        filterBtns.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilters();
+      });
+    });
+
+    jobPlanFilter.addEventListener('change',applyFilters);
+    jobSearch.addEventListener('input',applyFilters);
+
+    refreshJobsBtn.addEventListener('click',loadJobs);
+
+    jobsTableBody.addEventListener('click',(e)=>{
+      const btn=e.target.closest('button[data-action]');
+      if(!btn) return;
+      const tr=btn.closest('tr');
+      const id=tr.dataset.id;
+      const job=jobsCache.find(j=>j.id===id);
+      if(!job) return;
+
+      if(btn.dataset.action==='edit'){
+        if(job.status==='deleted'){
+          showToast('Cannot edit a deleted job.',3000);
+          return;
+        }
+        openDrawer('edit',job);
+      }
+
+      if(btn.dataset.action==='toggle'){
+        if(job.status==='deleted'){
+          showToast('Cannot toggle a deleted job.',3000);
+          return;
+        }
+        const nextStatus=job.status==='active'?'archived':'active';
+        const confirmMsg=`Mark "${job.title}" as ${nextStatus}?`;
+        if(confirm(confirmMsg)){
+          toggleJobStatus(job.id,nextStatus);
+        }
+      }
+
+      if(btn.dataset.action==='builder'){
+        if(job.status==='deleted'){
+          showToast('Cannot open a deleted job in builder.',3000);
+          return;
+        }
+        // Hybrid: send to full Job Builder page (createjobs.html)
+        window.location.href=`/views/admin/createjobs.html?id=${job.id}`;
+      }
+
+      if(btn.dataset.action==='delete'){
+        if(job.status==='deleted'){
+          showToast('Job already marked as deleted.',3000);
+          return;
+        }
+        const confirmMsg=`Soft delete "${job.title}"?\n\nIt will be marked as deleted now and can be hard-deleted after 30 days.`;
+        if(confirm(confirmMsg)){
+          softDeleteJob(job.id);
+        }
+      }
+    });
+
+    async function toggleJobStatus(id,nextStatus){
+      try{
+        const { error }=await sb.from('jobs').update({ status:nextStatus }).eq('id',id);
+        if(error) throw error;
+        showToast('Job status updated.');
+        await loadJobs();
+      }catch(e){
+        console.error(e);
+        showToast('Failed to update job status.');
+      }
+    }
+
+    async function softDeleteJob(id){
+      try{
+        const { error }=await sb.from('jobs').update({ status:'deleted' }).eq('id',id);
+        if(error) throw error;
+        showToast('Job soft-deleted.');
+        await loadJobs();
+      }catch(e){
+        console.error(e);
+        showToast('Failed to delete job.',3000);
+      }
+    }
+
+    jobFormSubmit.addEventListener('click',async(e)=>{
+      e.preventDefault();
+      const title=jobTitleInput.value.trim();
+      const country=jobCountryInput.value.trim();
+      const plan=jobPlanInput.value || null;
+      const status=jobStatusInput.value || 'active';
+      const desc=jobDescInput.value.trim();
+
+      if(!title){
+        jobFormStatus.textContent='Job title is required.';
+        jobFormStatus.className='muted danger';
+        return;
+      }
+
+      jobFormStatus.textContent='Saving job...';
+      jobFormStatus.className='muted';
+
+      try{
+        if(editingJobId){
+          const { error }=await sb.from('jobs').update({
+            title,
+            country,
+            plan,
+            status,
+            description:desc
+          }).eq('id',editingJobId);
+          if(error) throw error;
+          showToast('Job updated.');
+        }else{
+          const { error }=await sb.from('jobs').insert({
+            title,
+            country,
+            plan,
+            status,
+            description:desc
+          });
+          if(error) throw error;
+          showToast('Job created.');
+        }
+        jobFormStatus.textContent='Saved.';
+        jobFormStatus.className='muted success';
+        await loadJobs();
+        setTimeout(closeDrawer,800);
+      }catch(e){
+        console.error(e);
+        jobFormStatus.textContent=e.message || 'Failed to save job.';
+        jobFormStatus.className='muted danger';
+      }
+    });
+
+    jobFormDelete.addEventListener('click',async(e)=>{
+      e.preventDefault();
+      if(!editingJobId) return;
+      const currentJob=jobsCache.find(j=>j.id===editingJobId);
+      const name=currentJob?.title || 'this job';
+      const confirmMsg=`Soft delete "${name}"?\n\nIt will be marked as deleted and can be hard-deleted after 30 days.`;
+      if(!confirm(confirmMsg)) return;
+
+      try{
+        const { error }=await sb.from('jobs').update({ status:'deleted' }).eq('id',editingJobId);
+        if(error) throw error;
+        showToast('Job soft-deleted.');
+        await loadJobs();
+        closeDrawer();
+      }catch(err){
+        console.error(err);
+        showToast('Failed to delete job.',3000);
+      }
+    });
+
+    // Initial load
+    await loadJobs();
+  </script>
+</body>
+</html>

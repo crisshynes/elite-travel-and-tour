@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>About — Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description"
+    content="About Elite Travel & Tour: trusted partner for seamless journeys worldwide, verified partners, secure payments, and real-time tracking." />
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Standard ICO -->
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+<!-- Or PNG -->
+<link rel="icon" href="/favicon.png" type="image/png">
+
+<!-- Optional: SVG -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+  <script type="module" src="/src/js/notifications.js"></script>
+
+  <style>
+   
+
+    /* Hero */
+    .hero {
+      background: url('/assets/about/hero-lake.jpg') center/cover no-repeat;
+      color: #fff;
+      text-align: center;
+      padding: 4rem 2rem;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, .35);
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      text-shadow: 0 1px 6px rgba(0, 0, 0, .35);
+    }
+
+    
+    /* Mission & Vision */
+    .grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .grid-4 {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    /* KPIs */
+    .kpi {
+      background: var(--bg);
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .kpi .val {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #0a4d7a;
+    }
+
+    .kpi div:last-child {
+      color: #555;
+    }
+
+    /* Values */
+    .values {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .values .card {
+      text-align: center;
+    }
+
+    .values i {
+      color: var(--brand);
+      margin-bottom: .25rem;
+    }
+
+    /* Team */
+    .team-card {
+      text-align: center;
+    }
+    .team-card:hover {
+      transform: translate(-50px);
+    }
+    .team-card img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-bottom: .5rem;
+      object-fit: cover;
+    }
+
+    .team-card .toolbar a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--bg);
+      border: 1px solid #e6f0fc;
+    }
+
+    .team-card .toolbar a:hover {
+      background: var(--light);
+    }
+
+    .team-card i {
+      color: var(--brand);
+    }
+
+    /* Timeline */
+    .timeline {
+      border-left: 2px solid #ccc;
+      padding-left: 1rem;
+    }
+
+    .timeline-item {
+      margin: 1rem 0;
+      position: relative;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -10px;
+      top: 5px;
+      width: 12px;
+      height: 12px;
+      background: #0077cc;
+      border-radius: 50%;
+    }
+
+    /* Choose Us */
+    .choose {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .testimonial {
+      background: var(--bg);
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .badge-row i {
+      font-size: 2rem;
+      color: #0077cc;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--dark);
+      color: #eee;
+      padding: 2rem 1rem;
+      margin-top: 2rem;
+    }
+
+    footer .grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    footer a {
+      color: #eee;
+      text-decoration: none;
+    }
+
+    footer li a:hover {
+      text-decoration: underline;
+      color: #0077cc;
+    }
+
+    footer .social i {
+      margin-right: .5rem;
+    }
+
+    footer .social i:hover {
+      background: #1b2a3a;
+      padding: 5px;
+      border: 1px solid #0077cc;
+      color: #0077cc;
+    }
+
+    footer .legal {
+      text-align: center;
+      margin-top: 1rem;
+      color: #999;
+      font-size: .9rem;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1b2a3a;
+      color: #eaf4ff;
+      padding: .75rem 1rem;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      z-index: 2000;
+      display: none;
+      max-width: 90vw;
+    }
+
+    .toast.show {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+
+    .toast i {
+      color: #4fc3f7;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav aria-label="Primary">
+    <div class="wrap">
+      <a class="logo" href="/"><img src="/assets/logo/logo.png" alt="Elite Travel & Tour"></a>
+      <ul class="primary">
+        <li><a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a></li>
+        <li><a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+        <li><a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a></li>
+        <li><a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a></li>
+        <li><a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a></li>
+        <li><a href="/views/pages/about.html" class="active"><i class="fa fa-circle-info"></i> About</a></li>
+      </ul>
+      <div class="nav-right">
+        <span id="authStatus" class="auth-pill" style="display:none;">
+          <i class="fa fa-user-check"></i><span class="auth-text">Guest</span>
+        </span>
+        <button id="loginBtn" class="btn outline"><i class="fa fa-right-to-bracket"></i> Login</button>
+        <button id="profileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> </button>
+        <button id="logoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i>
+          </button>
+        <button id="menuToggle" class="menu-toggle"><i class="fa fa-bars"></i></button>
+      </div>
+    </div>
+
+    <!-- Mobile panel -->
+    <div id="mobilePanel" class="mobile-panel">
+      <div class="block">
+        <a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a>
+        <a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a>
+        <a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a>
+        <a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a>
+        <a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a>
+        <a href="/views/pages/about.html" class="active"><i class="fa fa-circle-info"></i> About</a>
+      </div>
+      <div class="block">
+        <span class="auth-pill"><i class="fa fa-user"></i><span id="mobileAuthText">Guest</span></span>
+        <div class="toolbar">
+          <button id="mobileLoginBtn" class="btn brand"><i class="fa fa-right-to-bracket"></i> Login</button>
+          <button id="mobileProfileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i></button>
+          <button id="mobileLogoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i>
+            Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <!-- Hero Banner -->
+    <section class="hero" aria-label="About hero">
+      <h1>Elite Travel & Tour</h1>
+      <p>Your trusted partner for seamless journeys worldwide.</p>
+    </section>
+
+    <!-- Company Overview -->
+    <section class="card" aria-labelledby="overview-title">
+      <div class="body">
+        <h2 id="overview-title" class="page-title">Company Overview</h2>
+        <p>Elite Travel & Tour delivers transparent travel services with verified partners, secure payments, and
+          real-time tracking. We combine years of expertise with cutting-edge technology to ensure every trip is safe,
+          enjoyable, and memorable.</p>
+      </div>
+    </section>
+
+    <!-- Mission & Vision -->
+    <section class="grid grid-2" aria-label="Mission and Vision">
+      <div class="card">
+        <div class="body">
+          <h3 class="section-title">Our Mission</h3>
+          <p>To simplify global travel by offering reliable, secure, and personalized services that empower our clients
+            to explore with confidence.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="body">
+          <h3 class="section-title">Our Vision</h3>
+          <p>To be Africa’s most trusted travel brand, connecting people to experiences across the world with innovation
+            and integrity.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- KPIs -->
+    <section class="grid grid-3" aria-label="Key performance indicators">
+      <div class="kpi">
+        <div class="val">3+</div>
+        <div>Countries served</div>
+      </div>
+      <div class="kpi">
+        <div class="val">12</div>
+        <div>Years of experience</div>
+      </div>
+      <div class="kpi">
+        <div class="val">4.8</div>
+        <div>Star rating</div>
+      </div>
+    </section>
+
+    <!-- Values -->
+    <section class="card" aria-labelledby="values-title">
+      <div class="body">
+        <h3 id="values-title" class="section-title">Our Values</h3>
+        <div class="values">
+          <div class="card">
+            <div class="body"><i class="fa-solid fa-shield-halved fa-2x" aria-hidden="true"></i>
+              <h4>Integrity</h4>
+              <p>We operate with honesty and transparency in all our services.</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="body"><i class="fa-solid fa-handshake fa-2x" aria-hidden="true"></i>
+              <h4>Partnership</h4>
+              <p>We build strong relationships with clients and verified partners.</p>
+            </div>
+          </div>
+          <div class="card">
+            <div class="body"><i class="fa-solid fa-globe fa-2x" aria-hidden="true"></i>
+              <h4>Innovation</h4>
+              <p>We leverage technology to deliver modern, efficient travel solutions.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team -->
+    <section class="card" aria-labelledby="team-title">
+      <div class="body">
+        <h3 id="team-title" class="section-title">Our Team</h3>
+        <div class="grid grid-4">
+          <div class="card team-card">
+            <div class="body">
+              <img src="/assets/team/ama.jpg" alt="Ama — Operations Lead" loading="lazy">
+              <strong>Ama Kolo Amania</strong>
+              <div class="muted">Operations Lead</div>
+              <div class="toolbar"><a href="#" aria-label="Ama on LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="card team-card">
+            <div class="body">
+              <img src="/assets/team/john.jpg" alt="Destiny — Client Success" loading="lazy">
+              <strong>Destiny Frimpong Bengson</strong>
+              <div class="muted">Client Success</div>
+              <div class="toolbar"><a href="#" aria-label="Kwesi on LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="card team-card">
+            <div class="body">
+              <img src="/assets/team/samuel.jpg" alt="Samuel — Compliance" loading="lazy">
+              <strong>Samuel K. Aning</strong>
+              <div class="muted">Agent</div>
+              <div class="toolbar"><a href="#" aria-label="Samuel on LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+              </div>
+            </div>
+          </div>
+          <div class="card team-card">
+            <div class="body">
+              <img src="/assets/team/kofi.jpg" alt="Kofi — Engineering" loading="lazy">
+              <strong>Kofi Antwi Boasiako</strong>
+              <div class="muted">Engineering</div>
+              <div class="toolbar"><a href="#" aria-label="Kofi on LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Timeline -->
+    <section class="card" aria-labelledby="journey-title">
+      <div class="body">
+        <h3 id="journey-title" class="section-title">Our Journey</h3>
+        <div class="timeline">
+          <div class="timeline-item"><strong>2013</strong> — Founded in Accra, Ghana with a vision to simplify travel.
+          </div>
+          <div class="timeline-item"><strong>2015</strong> — Expanded to serve 10 countries across Africa.</div>
+          <div class="timeline-item"><strong>2018</strong> — Launched secure online booking and payment system.</div>
+          <div class="timeline-item"><strong>2021</strong> — Partnered with 10+ verified travel agencies worldwide.
+          </div>
+          <div class="timeline-item"><strong>2024</strong> — Achieved 4.8 star rating and 3+ countries served.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="card" aria-labelledby="choose-title">
+      <div class="body">
+        <h3 id="choose-title" class="section-title">Why Choose Us</h3>
+        <div class="choose">
+          <div class="testimonial">
+            <p>"Elite Travel handled my visa application flawlessly. I felt supported every step of the way!"</p>
+            <div class="muted">— Sarah M.</div>
+          </div>
+          <div class="testimonial">
+            <p>"Professional and seamless process. Booking was a breeze and payments were secure."</p>
+            <div class="muted">— John W.</div>
+          </div>
+          <div class="testimonial">
+            <p>"Trusted partners and real-time updates gave me peace of mind during my trip."</p>
+            <div class="muted">— Kwame A.</div>
+          </div>
+        </div>
+        <div class="badge-row" aria-label="Trust badges">
+          <i class="fa-solid fa-certificate" title="Verified Partners" aria-hidden="true"></i>
+          <i class="fa-solid fa-lock" title="Secure Payments" aria-hidden="true"></i>
+          <i class="fa-solid fa-clock" title="Real-time Tracking" aria-hidden="true"></i>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="grid">
+      <div>
+        <h4>Elite Travel & Tour</h4>
+        <p>Trusted partner for seamless journeys worldwide.</p>
+        <p class="muted">Visa assistance, Work & Pay programs, and flight bookings with premium support.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/views/pages/services.html">Services</a></li>
+          <li><a href="/views/pages/work-and-pay.html">Work & Pay</a></li>
+          <li><a href="/views/pages/appointment.html">Book Appointment</a></li>
+          <li><a href="/views/pages/contact.html">Contact</a></li>
+          <li><a href="/views/pages/about.html">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><i class="fa fa-phone"></i> +233 59 911 7007</p>
+        <p><i class="fa fa-envelope"></i> info@elitetravel.com</p>
+        <p><i class="fa fa-map-marker-alt"></i> Adabraka Akasanoma rd, Greater Accra, Ghana</p>
+        <!-- Newsletter -->
+        <div class="newsletter">
+          <label for="newsletterEmail" class="muted">Subscribe to our newsletter:</label><br>
+          <input id="newsletterEmail" type="email" placeholder="Your email">
+          <button id="subscribeBtn"><i class="fa fa-paper-plane"></i> Subscribe</button>
+        </div>
+        <div id="subscribeMsg" class="muted" style="margin-top:.5rem;"></div>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul class="list">
+          <li><a href="/views/pages/profile.html">Profile</a></li>
+          <li><a href="/views/pages/tracking.html">Tracking</a></li>
+          <li><a href="/views/pages/privacy.html">Privacy Policy</a></li>
+          <li><a href="/views/pages/terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="social">
+        <h4>Follow Us</h4>
+        <div class="toolbar">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer bottom -->
+    <div class="footer-bottom">© <span id="year"></span> Elite Travel & Tour. All rights reserved.</div>
+  </footer>
+  <script>
+    // Dynamic year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Newsletter subscription demo
+    const subscribeBtn = document.getElementById('subscribeBtn');
+    const eemailInput = document.getElementById('newsletterEmail');
+    const subscribeMsg = document.getElementById('subscribeMsg');
+    subscribeBtn.addEventListener('click', () => {
+      const eemail = eemailInput.value.trim();
+      if (!eemail) { subscribeMsg.textContent = "Please enter your email."; subscribeMsg.style.color = "red"; return; }
+      subscribeMsg.textContent = `Thank you for subscribing, ${eemail}!`;
+      subscribeMsg.style.color = "lightgreen";
+      eemailInput.value = "";
+    });
+  </script>
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"><i class="fa fa-info-circle"></i><span
+      id="toastText">Notice</span></div>
+
+  
+ <script type="module">
+  import { sb } from '/src/js/supabase.js';
+
+// --- Notification feed toggle
+  document.addEventListener('click',(e)=>{
+    const feed=document.getElementById('notifFeed');
+    if(!feed) return;
+    if(e.target.closest('#bellBtn')){ feed.classList.toggle('hidden'); }
+    else if(!e.target.closest('#notifFeed')){ feed.classList.add('hidden'); }
+  });
+
+  
+  // --- Supabase notifications subscription
+  function renderNotification(n){
+    const list=document.getElementById('notifList');
+    const bellCount=document.getElementById('bellCount');
+    if(list){
+      const el=document.createElement('div');
+      el.className='item';
+      el.textContent=n.message || n.text;
+      list.prepend(el);
+    }
+    if(bellCount){
+      const count=parseInt(bellCount.textContent||'0',10)+1;
+      bellCount.textContent=String(count);
+      bellCount.classList.remove('hidden');
+    }
+  }
+
+  let channel;
+  async function subscribeNotifications(userId){
+    if(channel){ await sb.removeChannel(channel); channel=null; }
+    channel=sb.channel(`header-notifs-${userId}`)
+      .on('postgres_changes',{
+        event:'INSERT',
+        schema:'public',
+        table:'notifications',
+        filter:`user_id=eq.${userId}`
+      },payload=>{
+        renderNotification(payload.new);
+      })
+      .subscribe();
+  }
+
+  /* =========================================
+     Auth buttons
+  ========================================== */
+  const loginBtn=document.getElementById('loginBtn');
+  const logoutBtn=document.getElementById('logoutBtn');
+  const profileBtn=document.getElementById('profileBtn');
+  const mobileLoginBtn=document.getElementById('mobileLoginBtn');
+  const mobileLogoutBtn=document.getElementById('mobileLogoutBtn');
+  const mobileProfileBtn=document.getElementById('mobileProfileBtn');
+  const authText=document.querySelector('#authStatus .auth-text');
+  const mobileAuthText=document.getElementById('mobileAuthText');
+
+  function updateAuthUI(session){
+    const user=session?.user;
+    if(user){
+      if(authText) authText.textContent=user.email;
+      if(mobileAuthText) mobileAuthText.textContent=user.email;
+
+      loginBtn?.style.setProperty('display','none');
+      logoutBtn?.style.setProperty('display','inline-flex');
+      profileBtn?.style.setProperty('display','inline-flex');
+
+      mobileLoginBtn?.style.setProperty('display','none');
+      mobileLogoutBtn?.style.setProperty('display','inline-flex');
+      mobileProfileBtn?.style.setProperty('display','inline-flex');
+
+      profileBtn?.addEventListener('click',()=>window.location.href=`/views/pages/user/profile.html?id=${user.id}`);
+      mobileProfileBtn?.addEventListener('click',()=>window.location.href=`/views/pages/user/profile.html?id=${user.id}`);
+    } else {
+      if(authText) authText.textContent='Guest';
+      if(mobileAuthText) mobileAuthText.textContent='Guest';
+
+      loginBtn?.style.setProperty('display','inline-flex');
+      logoutBtn?.style.setProperty('display','none');
+      profileBtn?.style.setProperty('display','none');
+
+      mobileLoginBtn?.style.setProperty('display','inline-flex');
+      mobileLogoutBtn?.style.setProperty('display','none');
+      mobileProfileBtn?.style.setProperty('display','none');
+    }
+  }
+
+  // Initial session check
+  const { data } = await sb.auth.getSession();
+  updateAuthUI(data.session);
+
+  // Listen for auth changes
+  sb.auth.onAuthStateChange((_event, session)=>{
+    updateAuthUI(session);
+  });
+
+  // Login buttons redirect to login page
+  loginBtn?.addEventListener('click', ()=> window.location.href='/views/pages/login.html');
+  mobileLoginBtn?.addEventListener('click', ()=> window.location.href='/views/pages/login.html');
+
+  // Logout buttons sign out via Supabase
+  logoutBtn?.addEventListener('click', async ()=>{
+    await sb.auth.signOut();
+    updateAuthUI(null);
+    window.location.href='/views/pages/login.html';
+  });
+  mobileLogoutBtn?.addEventListener('click', async ()=>{
+    await sb.auth.signOut();
+    updateAuthUI(null);
+    window.location.href='/views/pages/login.html';
+  });
+
+  /* =========================================
+     Toast notifications
+  ========================================== */
+  const toast = document.getElementById('toast');
+  const toastText = document.getElementById('toastText');
+  function showToast(message, ms=2500){
+    toastText.textContent = message;
+    toast.classList.add('show');
+    setTimeout(()=> toast.classList.remove('show'), ms);
+  }
+
+  /* =========================================
+     Mobile menu toggle
+  ========================================== */
+  const menuToggle = document.getElementById('menuToggle');
+  const mobilePanel = document.getElementById('mobilePanel');
+  menuToggle?.addEventListener('click', ()=>{
+    const isOpen = mobilePanel.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  mobilePanel?.addEventListener('click', (e)=>{
+    if(e.target.matches('a')) {
+      mobilePanel.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded','false');
+    }
+  });
+
+  </script>
+</body>
+
+</html>

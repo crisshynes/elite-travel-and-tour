@@ -1,0 +1,1573 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — Applications | Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Admin view and manage job and program applications, tracking IDs, and payment initiation for Elite Travel & Tour."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <style>
+    :root{
+      --brand:#0077cc;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --light:#fff;
+      --muted:#64748b;
+      --bg:#020617;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.7);
+      --radius:14px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --info:#0ea5e9;
+      --chip-bg:#0b1220;
+    }
+
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:
+        radial-gradient(circle at top, rgba(59,130,246,.26) 0, transparent 45%),
+        #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      min-height:0;
+    }
+    @media(max-width:900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(31,41,55,.9);
+      background:radial-gradient(circle at top left, #020c28 0, #020617 60%);
+      padding:.8rem .7rem;
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      box-shadow:0 0 0 1px rgba(15,23,42,.9);
+      overflow-y:auto;
+      max-height:100vh;
+    }
+    .sidebar-header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.2rem .1rem .4rem;
+    }
+    .sidebar-header .logo{
+      display:flex; align-items:center; gap:.4rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; font-size:.98rem;
+    }
+    .sidebar-header .logo i{ color:#38bdf8; }
+    .side-toggle{
+      display:none; border:none; background:rgba(15,23,42,.8);
+      color:#cbd5f5; padding:.35rem .5rem; border-radius:999px; cursor:pointer;
+    }
+    .side-toggle i{ font-size:.9rem; }
+    @media(max-width:900px){
+      .sidebar{
+        position:fixed; inset:0 auto 0 0; width:260px;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:60;
+      }
+      .sidebar.open{ transform:translateX(0); }
+      .side-toggle{ display:inline-flex; }
+    }
+
+    .nav-section{ margin-top:.4rem; }
+    .nav-label{
+      font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+      color:#64748b; margin:.4rem 0 .2rem; padding:0 .2rem;
+    }
+    .nav-list{ list-style:none; padding:0; margin:0; }
+    .nav-item{ margin:0; padding:0; }
+    .nav-link{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.45rem .55rem; border-radius:10px;
+      color:#cbd5f5; text-decoration:none; font-size:.9rem;
+      border:1px solid transparent; cursor:pointer;
+      background:transparent;
+    }
+    .nav-link span.badge{
+      margin-left:auto;
+      font-size:.7rem;
+      padding:.1rem .4rem;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.8);
+      background:#020617;
+      color:#e5e7eb;
+    }
+    .nav-link:hover{
+      background:rgba(30,64,175,.45);
+      border-color:rgba(37,99,235,.6);
+    }
+    .nav-link.active{
+      background:rgba(37,99,235,.9);
+      border-color:rgba(37,99,235,1);
+      color:#e5e7eb;
+      box-shadow:0 10px 28px rgba(37,99,235,.6);
+    }
+
+    .sidebar-footer{
+      margin-top:auto; padding-top:.5rem;
+      border-top:1px solid rgba(30,64,175,.7);
+      font-size:.8rem; color:#64748b;
+    }
+    .sidebar-footer .chip{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.22rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(37,99,235,.7);
+      margin-top:.35rem; font-size:.78rem;
+    }
+    .sidebar-footer .chip i{ color:#22c55e; }
+
+    /* Main layout */
+    .main{
+      display:flex; flex-direction:column;
+      min-height:0;
+    }
+    .main-header{
+      padding:.55rem 1rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 16px 50px rgba(15,23,42,.8);
+      position:static; top:0; z-index:40;
+      overflow:scroll;
+    }
+    .breadcrumbs{
+      display:flex; align-items:center; gap:.35rem; font-size:.85rem; color:#9ca3af;
+    }
+    .breadcrumbs span.current{ color:#e5e7eb; font-weight:500; }
+
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.78rem; color:#e5e7eb;
+    }
+
+    .main-body{
+      padding:1rem;
+      overflow:auto;
+      min-height:0;
+    }
+
+    .card{
+      background:#020617;
+      border-radius:var(--radius);
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:var(--shadow);
+      padding:1rem;
+      height:auto;
+      min-height:0;
+      box-sizing:border-box;
+      display:flex;
+      flex-direction:column;
+    }
+    .section-title{ font-size:1.15rem; margin-bottom:.4rem; }
+    .muted{ color:var(--muted); }
+    .small-text{ font-size:.78rem; }
+
+    .toolbar{ display:flex; gap:.5rem; flex-wrap:wrap; margin:.6rem 0; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{ background:var(--brand); color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4); }
+    .btn.brand:hover{ background:var(--brand-600); transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{ border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7); }
+    .btn-sm{ padding:.25rem .55rem; font-size:.8rem; }
+    .btn[disabled]{ opacity:.5; cursor:not-allowed; }
+
+    .input,select,textarea{
+      width:100%; box-sizing:border-box;
+      padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.9rem; color:#e5e7eb;
+      transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#6b7280; }
+    .input:focus,select:focus,textarea:focus{
+      outline:none; border-color:#38bdf8;
+      box-shadow:0 0 0 2px rgba(56,189,248,.35);
+      background:#020617;
+    }
+    .textarea{ min-height:90px; resize:vertical; }
+
+    .grid-main{
+      display:grid; gap:.9rem; grid-template-columns:1.9fr 1.4fr;
+      flex:1;
+      min-height:0;
+    }
+    @media(max-width:1100px){
+      .grid-main{ grid-template-columns:1fr; height:auto; }
+    }
+
+    .list-scroll-wrap{
+      overflow-y:auto;
+      padding-right:.4rem;
+      min-width:0;
+    }
+    .detail-wrap{
+      position:static;
+      align-self:flex-start;
+      min-width:0;
+    }
+    @media(max-width:1100px){
+      .detail-wrap{ position:static; margin-top:1rem; }
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:.83rem;
+    }
+    thead{
+      background:rgba(15,23,42,1);
+    }
+    th,td{
+      padding:.4rem .45rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      text-align:left;
+      vertical-align:top;
+    }
+    tbody tr:hover{
+      background:rgba(15,23,42,.85);
+    }
+
+    .status-pill{
+      display:inline-flex; align-items:center; gap:.25rem;
+      padding:.14rem .5rem; border-radius:999px;
+      font-size:.75rem; font-weight:600;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      text-transform:capitalize;
+    }
+    .status-submitted{ border-color:#38bdf8; color:#38bdf8; }
+    .status-reviewing{ border-color:#fbbf24; color:#fbbf24; }
+    .status-accepted{ border-color:#22c55e; color:#bbf7d0; }
+    .status-rejected{ border-color:#f97373; color:#fecaca; }
+    .status-completed{ border-color:#38bdf8; color:#a5f3fc; }
+
+    .badge-plan{
+      display:inline-flex; align-items:center; gap:.25rem;
+      padding:.14rem .55rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020c28; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+
+    .mono{
+      font-family:"JetBrains Mono","SF Mono",ui-monospace,monospace;
+      font-size:.78rem;
+    }
+
+    .chip-row{
+      display:flex; flex-wrap:wrap; gap:.35rem;
+    }
+
+    .preview-card{
+      background:
+        radial-gradient(circle at top left, rgba(37,99,235,.35), transparent 55%),
+        radial-gradient(circle at bottom, rgba(16,185,129,.16), transparent 60%),
+        #020617;
+      border-radius:14px;
+      border:1px solid rgba(31,41,55,.9);
+      padding:.9rem .9rem 1rem;
+      box-shadow:0 18px 50px rgba(15,23,42,.9);
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .preview-header{
+      display:flex; justify-content:space-between; align-items:center; gap:.6rem;
+    }
+    .preview-title{ font-size:1rem; font-weight:600; }
+    .preview-sub{ font-size:.84rem; color:#9ca3af; }
+    .preview-meta{
+      display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.6rem;
+      font-size:.8rem;
+    }
+
+    .preview-body{
+      margin-top:.55rem;
+      font-size:.86rem;
+      color:#cbd5f5;
+      max-height:250px;
+      overflow:auto;
+      border-radius:10px;
+      border:1px solid rgba(31,41,55,.9);
+      padding:.5rem .55rem;
+      background:rgba(15,23,42,.7);
+    }
+
+    .timeline{
+      margin-top:.4rem;
+      border-left:1px solid rgba(55,65,81,.9);
+      padding-left:.6rem;
+      font-size:.78rem;
+      max-height:150px;
+      overflow:auto;
+    }
+    .timeline-item{
+      margin-bottom:.35rem;
+    }
+    .timeline-item strong{
+      display:block;
+      color:#e5e7eb;
+    }
+    .timeline-item span{
+      color:#9ca3af;
+    }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.1rem .5rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020c28; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+    .badge.success{ background:rgba(22,163,74,.2); border-color:rgba(22,163,74,.7); color:#bbf7d0; }
+    .badge.warning{ background:rgba(234,179,8,.18); border-color:rgba(234,179,8,.7); color:#facc15; }
+    .badge.info{ background:rgba(14,165,233,.18); border-color:rgba(14,165,233,.7); color:#7dd3fc; }
+    .badge.danger{ background:rgba(220,38,38,.18); border-color:rgba(220,38,38,.7); color:#fecaca; }
+
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    .admin-warning{
+      margin-top:.6rem;
+      padding:.55rem .7rem;
+      border-radius:10px;
+      border:1px dashed rgba(248,250,252,.3);
+      background:rgba(148,163,184,.08);
+      color:#e5e7eb;
+      font-size:.78rem;
+      display:none;
+    }
+
+    .payment-box{
+      margin-top:.55rem;
+      padding:.55rem .65rem;
+      border-radius:10px;
+      border:1px solid rgba(148,163,184,.4);
+      background:rgba(15,23,42,.8);
+      font-size:.8rem;
+    }
+    .payment-box strong{
+      display:flex; align-items:center; gap:.35rem;
+    }
+    .payment-row{
+      display:flex; justify-content:space-between; align-items:center; gap:.5rem; margin-top:.25rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/views/admin/index.html" class="logo">
+          <i class="fa-solid fa-compass"></i> <span>Elite Admin</span>
+        </a>
+        <button class="side-toggle" id="sideToggle"><i class="fa fa-xmark"></i></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a class="nav-link" href="/views/admin/index.html">
+              <i class="fa fa-gauge-high"></i> <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/views/admin/analytics.html">
+              <i class="fa fa-chart-line"></i> <span>Analytics</span>
+              <span class="badge">beta</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Jobs & Services</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/createjobs.html"><i class="fa fa-plus"></i> <span>Create Job</span></a></li>
+          <li><a class="nav-link" href="/views/admin/jobs.html"><i class="fa fa-briefcase"></i> <span>Jobs</span></a></li>
+          <li><a class="nav-link" href="/views/admin/services.html"><i class="fa fa-suitcase"></i> <span>Services</span></a></li>
+          <li><a class="nav-link" href="/views/admin/activeprocess.html"><i class="fa fa-spinner"></i> <span>Active processes</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Users & Activity</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/users.html"><i class="fa fa-users"></i> <span>Users</span></a></li>
+          <li><a class="nav-link" href="/views/admin/user-details.html"><i class="fa fa-id-card"></i> <span>User details</span></a></li>
+          <li><a class="nav-link" href="/views/admin/activeusers.html"><i class="fa fa-user-check"></i> <span>Active users</span></a></li>
+          <li><a class="nav-link" href="/views/admin/tracking.html"><i class="fa fa-location-crosshairs"></i> <span>Tracking</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Transactions</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/payments.html"><i class="fa fa-credit-card"></i> <span>Payments</span></a></li>
+          <li><a class="nav-link" href="/views/admin/appointments.html"><i class="fa fa-calendar"></i> <span>Appointments</span></a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Content & Feedback</div>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/views/admin/notifications.html"><i class="fa fa-bell"></i> <span>Notifications</span></a></li>
+          <li><a class="nav-link" href="/views/admin/testimonials.html"><i class="fa fa-star"></i> <span>Testimonials</span></a></li>
+          <li><a class="nav-link" href="/views/admin/contacts.html"><i class="fa fa-envelope-open-text"></i> <span>Contact messages</span></a></li>
+          <li><a class="nav-link active" href="/views/admin/applications.html"><i class="fa fa-file-signature"></i> <span>Applications</span></a></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Session</div>
+        <div class="chip" id="adminSessionChip">
+          <i class="fa fa-user-shield"></i> <span id="adminEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="breadcrumbs">
+          <button class="side-toggle" id="openSideOnMobile"><i class="fa fa-bars"></i></button>
+          <span>Admin</span> <span>/</span>
+          <span class="current">Applications</span>
+        </div>
+        <div class="main-header-right">
+          <span class="pill-soft" id="modeBadge"><i class="fa fa-file-signature"></i> Applications</span>
+          <button class="btn outline" id="adminLogout"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="main-body">
+        <article class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;flex-wrap:wrap;">
+            <div>
+              <h2 class="section-title">Applications</h2>
+              <p class="muted small-text">
+                Review Work & Pay, Express, visa, flights and orientation applications. Accept, assign tracking and initiate the payment amount for the user’s tracking journey.
+              </p>
+            </div>
+            <div class="chip-row">
+              <span class="badge"><i class="fa fa-database"></i> applications + users + services</span>
+              <span class="badge"><i class="fa fa-bars-progress"></i> feeds admin & public tracking</span>
+              <span class="badge info"><i class="fa fa-credit-card"></i> payment initiation when accepted</span>
+            </div>
+          </div>
+
+          <div class="grid-main" style="margin-top:.9rem;">
+            <!-- LEFT: LIST -->
+            <div class="list-scroll-wrap">
+              <div class="toolbar" style="margin-top:0;">
+                <select id="filterStatus" class="input" style="max-width:140px;">
+                  <option value="">All statuses</option>
+                  <option value="submitted">Submitted</option>
+                  <option value="reviewing">Reviewing</option>
+                  <option value="accepted">Accepted</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="completed">Completed</option>
+                </select>
+                <select id="filterPlan" class="input" style="max-width:160px;">
+                  <option value="">All plans</option>
+                  <option value="work">Work & Pay</option>
+                  <option value="express">Express</option>
+                  <option value="visa">Visa-only</option>
+                  <option value="flights">Flights-only</option>
+                  <option value="orientation">Orientation-only</option>
+                </select>
+                <select id="filterProgramType" class="input" style="max-width:170px;">
+                  <option value="">All programs</option>
+                  <option value="work">Work programs</option>
+                  <option value="visa">Visa & Requirements</option>
+                  <option value="flights">Flights & Routing</option>
+                  <option value="orientation">Orientation & Soft Landing</option>
+                </select>
+                <input id="searchInput" class="input" placeholder="Search name / email / tracking / country / role" style="max-width:260px;">
+                <button class="btn outline btn-sm" id="reloadBtn"><i class="fa fa-rotate-right"></i> Reload</button>
+              </div>
+
+              <p class="muted small-text" id="summaryText" style="margin:.2rem 0 .5rem;">Loading applications...</p>
+
+              <div style="border-radius:12px;border:1px solid rgba(31,41,55,.9);overflow:scroll;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Applicant</th>
+                      <th>Program / Plan</th>
+                      <th>Country / Role</th>
+                      <th>Status</th>
+                      <th>Tracking</th>
+                      <th>Submitted</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="appsTbody">
+                    <tr><td colspan="7" class="small-text muted">Loading...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div id="adminWarning" class="admin-warning">
+                <strong>Admin-only notice:</strong> Your account doesn’t appear to have an admin role.
+                You may see limited data depending on RLS.
+              </div>
+            </div>
+
+            <!-- RIGHT: DETAIL -->
+            <div class="detail-wrap">
+              <div class="preview-card">
+                <div class="preview-header">
+                  <div>
+                    <div class="preview-title" id="detailTitle">Select an application</div>
+                    <div class="preview-sub" id="detailSubtitle">Click a row to view details, accept, and connect tracking + payment.</div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.2rem;">
+                    <span class="badge" id="detailBadge">applications</span>
+                    <span class="badge warning" id="detailTrackingBadge" style="display:none;"><i class="fa fa-location-crosshairs"></i> No tracking ID</span>
+                    <span class="badge success" id="detailTrackingSet" style="display:none;"><i class="fa fa-check"></i> Tracking set</span>
+                  </div>
+                </div>
+
+                <div class="preview-meta" id="detailMeta"></div>
+
+                <div class="preview-body">
+                  <div class="field">
+                    <div class="small-text muted">Status & tracking</div>
+                    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem;margin-top:.3rem;">
+                      <div>
+                        <label class="small-text muted">Status</label>
+                        <select id="detailStatus" class="input" style="margin-top:.2rem;">
+                          <option value="submitted">Submitted</option>
+                          <option value="reviewing">Reviewing</option>
+                          <option value="accepted">Accepted</option>
+                          <option value="rejected">Rejected</option>
+                          <option value="completed">Completed</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="small-text muted">Tracking ID</label>
+                        <div style="display:flex;gap:.3rem;margin-top:.2rem;">
+                          <input id="detailTrackingId" class="input" placeholder="ET-WP-2025-000123 or custom pattern">
+                          <button class="btn outline btn-sm" id="detailGenerateId"><i class="fa fa-wand-magic-sparkles"></i></button>
+                        </div>
+                        <div class="small-text muted" style="margin-top:.1rem;">
+                          When <strong>accepted</strong> + tracking set, public tracking page will show “Accepted – upload documents” plus the payment amount.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="field" style="margin-top:.5rem;">
+                    <div class="small-text muted">Documents status</div>
+                    <div id="detailDocsStatus" class="small-text muted" style="margin-top:.2rem;">No documents submitted yet.</div>
+                  </div>
+
+                  <div class="field" style="margin-top:.5rem;">
+                    <div class="small-text muted">Payment summary (for tracking)</div>
+                    <div id="paymentBox" class="payment-box">
+                      <strong><i class="fa fa-credit-card"></i> Payment not yet initiated</strong>
+                      <div class="small-text muted" id="paymentText" style="margin-top:.15rem;">
+                        Once you accept an application, we will lock in a pending payment record with the amount the user is expected to pay. The tracking page will read from this.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="field" style="margin-top:.6rem;">
+                    <div class="small-text muted">Timeline (progress)</div>
+                    <div class="timeline" id="detailTimeline">
+                      <div class="muted small-text">No timeline entries yet.</div>
+                    </div>
+                  </div>
+
+                  <div class="field" style="margin-top:.6rem;">
+                    <div class="small-text muted">Admin note (added as progress item)</div>
+                    <textarea id="detailAdminNote" class="textarea" placeholder="e.g., Accepted, tracking ID assigned, payment of GHS 3,000 initiated."></textarea>
+                  </div>
+                </div>
+
+                <div class="toolbar" style="margin-top:.7rem;justify-content:space-between;flex-wrap:wrap;">
+                  <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+                    <button class="btn outline btn-sm" id="detailMarkAccepted"><i class="fa fa-check"></i> Accept & initiate payment</button>
+                    <button class="btn outline btn-sm" id="detailOpenTracking"><i class="fa fa-location-crosshairs"></i> Open tracking admin</button>
+                    <button class="btn outline btn-sm" id="detailOpenPublicTracking"><i class="fa fa-arrow-up-right-from-square"></i> Open public tracking</button>
+                  </div>
+                  <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+                    <button class="btn outline btn-sm" id="detailReset" disabled><i class="fa fa-rotate-left"></i> Reset</button>
+                    <button class="btn brand btn-sm" id="detailSave" disabled><i class="fa fa-floppy-disk"></i> Save changes</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><i class="fa fa-info-circle"></i><span id="toastText">Notice</span></div>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    let currentUser = null;
+    let isAdmin = false;
+    let allApplications = [];
+    let selectedApp = null;
+    let originalDetailState = null;
+
+    const adminEmailEl = document.getElementById('adminEmail');
+    const sidebar = document.getElementById('sidebar');
+    const sideToggle = document.getElementById('sideToggle');
+    const openSideOnMobile = document.getElementById('openSideOnMobile');
+    const modeBadge = document.getElementById('modeBadge');
+
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+
+    const filterStatus = document.getElementById('filterStatus');
+    const filterPlan = document.getElementById('filterPlan');
+    const filterProgramType = document.getElementById('filterProgramType');
+    const searchInput = document.getElementById('searchInput');
+    const reloadBtn = document.getElementById('reloadBtn');
+    const appsTbody = document.getElementById('appsTbody');
+    const summaryText = document.getElementById('summaryText');
+    const adminWarning = document.getElementById('adminWarning');
+
+    const detailTitle = document.getElementById('detailTitle');
+    const detailSubtitle = document.getElementById('detailSubtitle');
+    const detailBadge = document.getElementById('detailBadge');
+    const detailTrackingBadge = document.getElementById('detailTrackingBadge');
+    const detailTrackingSet = document.getElementById('detailTrackingSet');
+    const detailMeta = document.getElementById('detailMeta');
+    const detailStatus = document.getElementById('detailStatus');
+    const detailTrackingId = document.getElementById('detailTrackingId');
+    const detailAdminNote = document.getElementById('detailAdminNote');
+    const detailTimeline = document.getElementById('detailTimeline');
+    const detailDocsStatus = document.getElementById('detailDocsStatus');
+    const detailGenerateId = document.getElementById('detailGenerateId');
+    const detailMarkAccepted = document.getElementById('detailMarkAccepted');
+    const detailOpenTracking = document.getElementById('detailOpenTracking');
+    const detailOpenPublicTracking = document.getElementById('detailOpenPublicTracking');
+    const detailReset = document.getElementById('detailReset');
+    const detailSave = document.getElementById('detailSave');
+
+    const paymentBox = document.getElementById('paymentBox');
+    const paymentText = document.getElementById('paymentText');
+
+    const adminLogout = document.getElementById('adminLogout');
+
+    /* Toast */
+    function showToast(message, ms=2500){
+      if(!toast || !toastText) return;
+      toastText.textContent = message;
+      toast.classList.add('show');
+      setTimeout(()=> toast.classList.remove('show'), ms);
+    }
+
+    /* Sidebar toggles */
+    sideToggle?.addEventListener('click', ()=>{
+      sidebar.classList.remove('open');
+    });
+    openSideOnMobile?.addEventListener('click', ()=>{
+      sidebar.classList.add('open');
+    });
+
+    adminLogout?.addEventListener('click', async ()=>{
+      await sb.auth.signOut();
+      window.location.href='/views/admin/login.html';
+    });
+
+    /* Admin detection */
+    async function detectAdmin(user){
+      if(!user) return false;
+      const role = user.app_metadata?.role || user.user_metadata?.role;
+      if(role === 'admin' || role === 'superadmin' || role === 'owner') return true;
+      try{
+        const { data, error } = await sb.from('users')
+          .select('role')
+          .eq('id', user.id)
+          .maybeSingle();
+        if(error) return false;
+        return data && (data.role === 'admin' || data.role === 'superadmin' || data.role === 'owner');
+      }catch{
+        return false;
+      }
+    }
+
+    function statusClass(status){
+      switch(status){
+        case 'submitted': return 'status-submitted';
+        case 'reviewing': return 'status-reviewing';
+        case 'accepted': return 'status-accepted';
+        case 'rejected': return 'status-rejected';
+        case 'completed': return 'status-completed';
+        default: return 'status-submitted';
+      }
+    }
+
+    function statusLabel(status){
+      if(status === 'submitted') return 'Submitted';
+      if(status === 'reviewing') return 'Reviewing';
+      if(status === 'accepted') return 'Accepted';
+      if(status === 'rejected') return 'Rejected';
+      if(status === 'completed') return 'Completed';
+      return status || 'Unknown';
+    }
+
+    function planLabel(plan){
+      if(plan === 'work') return 'Work & Pay';
+      if(plan === 'express') return 'Express';
+      if(plan === 'visa') return 'Visa-only';
+      if(plan === 'flights') return 'Flights-only';
+      if(plan === 'orientation') return 'Orientation-only';
+      return plan || 'Standard';
+    }
+
+    function programTypeLabel(pt){
+      if(pt === 'work') return 'Work programs';
+      if(pt === 'visa') return 'Visa & Requirements';
+      if(pt === 'flights') return 'Flights & Routing';
+      if(pt === 'orientation') return 'Orientation & Soft Landing';
+      return 'General';
+    }
+
+    function fmtDate(d){
+      if(!d) return '—';
+      try{
+        const dt = new Date(d);
+        return dt.toLocaleDateString() + ' ' + dt.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+      }catch{
+        return d;
+      }
+    }
+
+    function normalizeDetails(app){
+      const d = app.details || {};
+      const docsSummary = d.documents_summary || d.required_docs || {};
+      const payment = d.payment || null;
+
+      let serviceSlug =
+        d.service_slug ||
+        app.service_slug ||
+        d.slug ||
+        null;
+
+      if (!serviceSlug) {
+        const plan = d.plan || app.plan || null;
+        const program = d.program_type || app.application_type || null;
+        const country = d.country || app.country || null;
+        const role = d.role || app.role || null;
+
+        const parts = [plan, program, country, role]
+          .filter(Boolean)
+          .map(x => String(x).trim().toLowerCase().replace(/\s+/g, '-'));
+
+        if (parts.length > 0) {
+          serviceSlug = parts.join('-');
+        }
+      }
+
+      return {
+        fullname: d.fullname || d.full_name || d.name || app.name || app.applicant_name || 'Applicant',
+        email: d.email || app.user_email || app.email || '—',
+        phone: d.phone || d.phone_number || app.phone || '—',
+        dob: d.dob || '—',
+        program_type: d.program_type || app.application_type || null,
+        plan: d.plan || app.plan || null,
+        country: d.country || app.country || '—',
+        role: d.role || app.role || '—',
+        motivation: d.motivation || '',
+        notes: d.notes || '',
+        documents_summary: docsSummary,
+        created_from: d.created_from || null,
+        service_id: d.service_id || null,
+        service_slug: serviceSlug,
+        price_amount: d.price_amount || d.service_price || d.price || null,
+        price_label: d.price_label || null,
+        payment
+      };
+    }
+
+    function normalizeSlug(raw, plan, programType){
+      const s = (raw || '').toLowerCase();
+
+      const known = [
+        'orientation-soft-landing-uk-canada-luxembourg',
+        'flight-routing-ghana-uk-canada-lux',
+        'express-full-self-funded',
+        'work-pay-company-covers',
+        'visa-requirements-core-uk-canada-luxembourg'
+      ];
+      if (known.includes(s)) return s;
+
+      if (plan === 'work') return 'work-pay-company-covers';
+      if (plan === 'express') return 'express-full-self-funded';
+      if (plan === 'flights') return 'flight-routing-ghana-uk-canada-lux';
+      if (plan === 'orientation') return 'orientation-soft-landing-uk-canada-luxembourg';
+      if (plan === 'visa') return 'visa-requirements-core-uk-canada-luxembourg';
+
+      if (programType === 'work') return 'work-pay-company-covers';
+      if (programType === 'visa') return 'visa-requirements-core-uk-canada-luxembourg';
+      if (programType === 'flights') return 'flight-routing-ghana-uk-canada-lux';
+      if (programType === 'orientation') return 'orientation-soft-landing-uk-canada-luxembourg';
+
+      return null;
+    }
+
+    function computeRuleAmountFromDetails(d){
+      const raw = (d.program_type || d.plan || d.service_slug || '').toLowerCase();
+
+      if (raw.includes('express')) return 6000;
+      if (raw.includes('work')) return 3000;
+      if (raw.includes('flight')) return 500;
+      if (raw.includes('tour')) return 500;
+      if (raw.includes('orientation')) return 500; // example orientation fee
+      if (raw.includes('visa')) return 1500;       // example visa fee
+
+      return null;
+    }
+
+    async function fetchServicePriceForApplication(app){
+      const d = normalizeDetails(app);
+      let slug = normalizeSlug(d.service_slug, d.plan, d.program_type);
+
+      if (!slug) return null;
+
+      try {
+        const { data, error } = await sb
+          .from('services')
+          .select('id, title, price, category, slug')
+          .eq('slug', slug)
+          .limit(1)
+          .maybeSingle();
+
+        if (error || !data) {
+          const amount = computeRuleAmountFromDetails(d);
+          if (amount != null) {
+            app.details = app.details || {};
+            app.details.price_amount = amount;
+            app.details.service_price = amount;
+            if (!app.details.price_label) app.details.price_label = data?.title || 'Program fee';
+            if (!app.details.program_type) app.details.program_type = d.program_type || 'general';
+            if (!app.details.service_slug) app.details.service_slug = slug;
+            return amount;
+          }
+          return null;
+        }
+
+        const price = data.price != null ? Number(data.price) : null;
+
+        app.details = app.details || {};
+        if (price != null) {
+          app.details.price_amount = price;
+          app.details.service_price = price;
+        }
+        if (data.title && !app.details.price_label) {
+          app.details.price_label = data.title;
+        }
+        if (data.category && !app.details.program_type) {
+          app.details.program_type = data.category;
+        }
+        if (!app.details.service_slug) {
+          app.details.service_slug = data.slug;
+        }
+
+        return price;
+      } catch (e) {
+        console.error('Failed to fetch service price for application', e);
+        return null;
+      }
+    }
+
+    function buildDocumentsStatus(summary, appStatus){
+      if(!summary || typeof summary !== 'object') {
+        if(appStatus === 'accepted'){
+          return 'No documents summary yet. Tracking page will prompt user to upload required documents.';
+        }
+        return 'Documents not requested yet or not captured.';
+      }
+
+      const ready = [];
+      const notReady = [];
+
+      const map = {
+        national_id: 'National ID',
+        passport: 'Passport',
+        medicals: 'Medicals',
+        police_report: 'Police report',
+        birth_cert: 'Birth certificate',
+        guarantor: 'Guarantor(s)'
+      };
+
+      for(const key in map){
+        if(Object.prototype.hasOwnProperty.call(summary,key)){
+          if(summary[key]) ready.push(map[key]);
+          else notReady.push(map[key]);
+        }
+      }
+
+      if(!ready.length && !notReady.length){
+        if(appStatus === 'accepted'){
+          return 'No documents summary yet. Tracking page will prompt user to upload required documents.';
+        }
+        return 'Documents summary not captured yet.';
+      }
+
+      const readyText = ready.length ? `Ready: ${ready.join(', ')}.` : 'Ready: none flagged yet.';
+      const notReadyText = notReady.length ? ` Not yet ready: ${notReady.join(', ')}.` : '';
+      return `${readyText}${notReadyText}`;
+    }
+
+    function buildPaymentDisplay(details){
+      const payment = details.payment;
+      if(payment){
+        const status = payment.status || 'pending';
+        const amount = payment.amount != null ? `GHS ${payment.amount}` : 'Amount not set';
+        const label = payment.label || 'Program fee';
+        const source = payment.source || 'service';
+
+        let statusLabel = '';
+        let badgeClass = 'info';
+        if(status === 'pending'){ statusLabel = 'Payment initiated (pending)'; badgeClass = 'warning'; }
+        else if(status === 'paid'){ statusLabel = 'Payment completed'; badgeClass = 'success'; }
+        else if(status === 'cancelled'){ statusLabel = 'Payment cancelled'; badgeClass = 'danger'; }
+        else { statusLabel = `Payment: ${status}`; badgeClass = 'info'; }
+
+        paymentText.innerHTML = `
+          <div class="payment-row">
+            <div>
+              <strong><i class="fa fa-credit-card"></i> ${statusLabel}</strong>
+              <div class="small-text muted" style="margin-top:.15rem;">
+                Amount: <span class="mono">${amount}</span> — ${label} (${source})
+              </div>
+            </div>
+          </div>
+        `;
+        paymentBox.classList.remove('danger','warning','success','info');
+        paymentBox.classList.add(badgeClass);
+      }else{
+        let baseAmount = details.price_amount;
+        let label = details.price_label || 'Program fee not yet configured for this application.';
+        if(baseAmount){
+          paymentText.innerHTML = `
+            <div class="payment-row">
+              <div>
+                <strong><i class="fa fa-credit-card"></i> Payment not yet initiated</strong>
+                <div class="small-text muted" style="margin-top:.15rem;">
+                  Expected amount: <span class="mono">GHS ${baseAmount}</span> — ${label}<br>
+                  When you accept this application, we will create a pending payment record with this amount for tracking.
+                </div>
+              </div>
+            </div>
+          `;
+        }else{
+          paymentText.innerHTML = `
+            <div class="payment-row">
+              <div>
+                <strong><i class="fa fa-credit-card"></i> Payment not yet initiated</strong>
+                <div class="small-text muted" style="margin-top:.15rem;">
+                  No amount has been linked to this application yet. You can still accept and later attach a payment amount.
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        paymentBox.classList.remove('danger','warning','success','info');
+      }
+    }
+
+    function matchesSearch(app, search){
+      if(!search) return true;
+      search = search.toLowerCase();
+      const details = normalizeDetails(app);
+      const name = details.fullname || '';
+      const email = details.email || '';
+      const role = details.role || '';
+      const country = details.country || '';
+      const tracking = app.tracking_id || '';
+      const internal = app.internal_ref || '';
+      const programType = details.program_type || '';
+      const plan = details.plan || app.plan || '';
+      const haystack = [
+        name,
+        email,
+        role,
+        country,
+        tracking,
+        internal,
+        programType,
+        plan
+      ].join(' ').toLowerCase();
+      return haystack.includes(search);
+    }
+
+    function renderSummary(filteredCount){
+      const total = allApplications.length;
+      summaryText.textContent = `${filteredCount} application${filteredCount!==1?'s':''} shown (out of ${total}).`;
+    }
+
+    function renderTable(){
+      const statusVal = filterStatus.value;
+      const planVal = filterPlan.value;
+      const programVal = filterProgramType.value;
+      const searchVal = (searchInput.value || '').trim().toLowerCase();
+
+      const filtered = allApplications.filter(app=>{
+        const details = normalizeDetails(app);
+        const effPlan = details.plan || app.plan || null;
+        const programType = details.program_type || null;
+
+        if(statusVal && app.status !== statusVal) return false;
+        if(planVal && effPlan !== planVal) return false;
+        if(programVal && programType !== programVal) return false;
+        if(!matchesSearch(app, searchVal)) return false;
+        return true;
+      });
+
+      renderSummary(filtered.length);
+
+      if(!filtered.length){
+        appsTbody.innerHTML = '<tr><td colspan="7" class="small-text muted">No applications match your filters.</td></tr>';
+        return;
+      }
+
+      appsTbody.innerHTML = '';
+      for(const app of filtered){
+        const d = normalizeDetails(app);
+
+        const applicantName = d.fullname || 'Unknown user';
+        const applicantEmail = d.email || '—';
+
+        const ptLabel = programTypeLabel(d.program_type);
+        const planText = planLabel(d.plan || app.plan);
+
+        const countryLabel = (d.country || '').toUpperCase();
+        const roleLabel = d.role || '—';
+
+        const tracking = app.tracking_id || '—';
+        const created = fmtDate(app.created_at);
+
+        const tr = document.createElement('tr');
+
+        const tdApplicant = document.createElement('td');
+        tdApplicant.innerHTML = `
+          <div>${applicantName}</div>
+          <div class="muted small-text">${applicantEmail}</div>
+        `;
+
+        const tdProg = document.createElement('td');
+        tdProg.innerHTML = `
+          <div class="badge-plan"><i class="fa fa-layer-group"></i> ${ptLabel}</div>
+          <div class="muted small-text" style="margin-top:.15rem;">${planText}</div>
+        `;
+
+        const tdCR = document.createElement('td');
+        tdCR.innerHTML = `
+          <div>${countryLabel || '—'}</div>
+          <div class="muted small-text">${roleLabel}</div>
+        `;
+
+        const tdStatus = document.createElement('td');
+        tdStatus.innerHTML = `
+          <span class="status-pill ${statusClass(app.status)}">
+            <i class="fa fa-circle"></i> ${statusLabel(app.status)}
+          </span>
+        `;
+
+        const tdTrack = document.createElement('td');
+        tdTrack.innerHTML = tracking !== '—'
+          ? `<span class="mono">${tracking}</span>`
+          : '<span class="muted small-text">Not set</span>';
+
+        const tdCreated = document.createElement('td');
+        tdCreated.className = 'small-text';
+        tdCreated.textContent = created;
+
+        const tdAction = document.createElement('td');
+        const viewBtn = document.createElement('button');
+        viewBtn.className = 'btn outline btn-sm';
+        viewBtn.innerHTML = '<i class="fa fa-eye"></i> View';
+        tdAction.appendChild(viewBtn);
+
+        tr.appendChild(tdApplicant);
+        tr.appendChild(tdProg);
+        tr.appendChild(tdCR);
+        tr.appendChild(tdStatus);
+        tr.appendChild(tdTrack);
+        tr.appendChild(tdCreated);
+        tr.appendChild(tdAction);
+
+        const onSelect = ()=>{
+          document.querySelectorAll('#appsTbody tr').forEach(r=> r.classList.remove('selected'));
+          tr.classList.add('selected');
+          openDetail(app);
+        };
+
+        tr.addEventListener('click', onSelect);
+        viewBtn.addEventListener('click', (ev)=>{
+          ev.stopPropagation();
+          onSelect();
+        });
+
+        appsTbody.appendChild(tr);
+      }
+    }
+
+    function resetDetail(){
+      selectedApp = null;
+      originalDetailState = null;
+      detailTitle.textContent = 'Select an application';
+      detailSubtitle.textContent = 'Click a row to view details, accept, and connect tracking + payment.';
+      detailBadge.textContent = 'applications';
+      detailBadge.className = 'badge';
+      detailTrackingBadge.style.display = 'none';
+      detailTrackingSet.style.display = 'none';
+      detailMeta.innerHTML = '';
+      detailStatus.value = 'submitted';
+      detailTrackingId.value = '';
+      detailAdminNote.value = '';
+      detailDocsStatus.textContent = 'No documents submitted yet.';
+      detailTimeline.innerHTML = '<div class="muted small-text">No timeline entries yet.</div>';
+      paymentText.innerHTML = `
+        <strong><i class="fa fa-credit-card"></i> Payment not yet initiated</strong>
+        <div class="small-text muted" style="margin-top:.15rem;">
+          Once you accept an application, we will lock in a pending payment record with the amount the user is expected to pay. The tracking page will read from this.
+        </div>
+      `;
+      paymentBox.classList.remove('danger','warning','success','info');
+      detailReset.disabled = true;
+      detailSave.disabled = true;
+    }
+
+    function buildTypeLabel(plan, programType){
+      const pLabel = planLabel(plan);
+      const ptLabel = programTypeLabel(programType);
+      if(pLabel && ptLabel && pLabel !== 'Standard'){
+        return `${pLabel} — ${ptLabel}`;
+      }
+      if(pLabel && pLabel !== 'Standard') return pLabel;
+      return ptLabel || 'Application';
+    }
+
+    function renderDetail(app){
+      selectedApp = app;
+      const d = normalizeDetails(app);
+
+      const ptLabel = programTypeLabel(d.program_type);
+      const planText = planLabel(d.plan || app.plan);
+      const titleLabel = d.fullname || 'Unknown user';
+      const subtitleLabel = `${ptLabel} • ${planText} • ${(d.country || '').toUpperCase() || '—'} • ${d.role || '—'}`;
+
+      detailTitle.textContent = titleLabel;
+      detailSubtitle.textContent = subtitleLabel;
+      detailBadge.textContent = ptLabel;
+      detailBadge.className = 'badge';
+
+      const tracking = app.tracking_id || null;
+      if(tracking){
+        detailTrackingBadge.style.display = 'none';
+        detailTrackingSet.style.display = 'inline-flex';
+      }else{
+        detailTrackingBadge.style.display = 'inline-flex';
+        detailTrackingSet.style.display = 'none';
+      }
+
+      detailStatus.value = app.status || 'submitted';
+      detailTrackingId.value = tracking || '';
+      detailAdminNote.value = '';
+
+      detailMeta.innerHTML = '';
+      const emailChip = document.createElement('span');
+      emailChip.className = 'badge';
+      emailChip.innerHTML = `<i class="fa fa-envelope"></i> ${d.email}`;
+      detailMeta.appendChild(emailChip);
+
+      if(d.phone && d.phone !== '—'){
+        const phoneChip = document.createElement('span');
+        phoneChip.className = 'badge';
+        phoneChip.innerHTML = `<i class="fa fa-phone"></i> ${d.phone}`;
+        detailMeta.appendChild(phoneChip);
+      }
+
+      if(d.dob && d.dob !== '—'){
+        const dobChip = document.createElement('span');
+        dobChip.className = 'badge';
+        dobChip.innerHTML = `<i class="fa fa-calendar"></i> DOB: ${d.dob}`;
+        detailMeta.appendChild(dobChip);
+      }
+
+      if(app.internal_ref){
+        const refChip = document.createElement('span');
+        refChip.className = 'badge';
+        refChip.innerHTML = `<i class="fa fa-hashtag"></i> ${app.internal_ref}`;
+        detailMeta.appendChild(refChip);
+      }
+
+      detailDocsStatus.textContent = buildDocumentsStatus(d.documents_summary, app.status);
+      buildPaymentDisplay(d);
+
+      const timeline = Array.isArray(app.progress) ? app.progress : [];
+      if(!timeline.length){
+        detailTimeline.innerHTML = '<div class="muted small-text">No timeline entries yet. Save changes to append a new step.</div>';
+      }else{
+        detailTimeline.innerHTML = timeline.slice().reverse().map(item=>{
+          const step = item.step || item.status || 'update';
+          const at = item.at || item.time || null;
+          const note = item.note || item.message || '';
+          const label = step.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+          const when = at ? fmtDate(at) : '';
+          return `
+            <div class="timeline-item">
+              <strong>${label}</strong>
+              <span>${when ? ' ' + when : ''}${note ? ' — '+note : ''}</span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      originalDetailState = {
+        status: detailStatus.value,
+        tracking_id: detailTrackingId.value
+      };
+      detailReset.disabled = true;
+      detailSave.disabled = true;
+    }
+
+    function openDetail(app){
+      renderDetail(app);
+    }
+
+    detailReset.addEventListener('click', ()=>{
+      if(!selectedApp || !originalDetailState) return;
+      detailStatus.value = originalDetailState.status;
+      detailTrackingId.value = originalDetailState.tracking_id || '';
+      detailAdminNote.value = '';
+      detailReset.disabled = true;
+      detailSave.disabled = true;
+      renderDetail(selectedApp);
+    });
+
+    function generateTrackingId(plan='work'){
+      const prefix = plan === 'express' ? 'ET-EX' :
+                     plan === 'visa' ? 'ET-VS' :
+                     plan === 'flights' ? 'ET-FL' :
+                     plan === 'orientation' ? 'ET-OR' :
+                     'ET-WP';
+      const year = new Date().getFullYear();
+      const random = Math.floor(100000 + Math.random() * 900000);
+      return `${prefix}-${year}-${random}`;
+    }
+
+    detailGenerateId.addEventListener('click', ()=>{
+      if(!selectedApp){
+        showToast('Select an application first.');
+        return;
+      }
+      const d = normalizeDetails(selectedApp);
+      const newId = generateTrackingId(d.plan || selectedApp.plan || 'work');
+      detailTrackingId.value = newId;
+      showToast('Generated tracking ID — save to apply.');
+      detailReset.disabled = false;
+      detailSave.disabled = false;
+    });
+
+    function touchDetail(){
+      if(!originalDetailState) return;
+      if(!selectedApp) return;
+      const dirty =
+        detailStatus.value !== originalDetailState.status ||
+        detailTrackingId.value.trim() !== (originalDetailState.tracking_id || '');
+      detailReset.disabled = !dirty;
+      detailSave.disabled = !dirty;
+    }
+
+    detailStatus.addEventListener('change', touchDetail);
+    detailTrackingId.addEventListener('input', touchDetail);
+
+    detailMarkAccepted.addEventListener('click', async ()=>{
+      if(!selectedApp){
+        showToast('Select an application first.');
+        return;
+      }
+      const d = normalizeDetails(selectedApp);
+      detailStatus.value = 'accepted';
+
+      if(!detailTrackingId.value.trim()){
+        detailTrackingId.value = generateTrackingId(d.plan || selectedApp.plan || 'work');
+      }
+
+      let amount = d.price_amount;
+      if(amount == null){
+        await fetchServicePriceForApplication(selectedApp);
+        const updated = normalizeDetails(selectedApp);
+        amount = updated.price_amount || computeRuleAmountFromDetails(updated);
+      }
+
+      const usedAmount = amount != null ? amount : null;
+      const humanLabel = d.price_label || buildTypeLabel(d.plan || selectedApp.plan, d.program_type || selectedApp.application_type);
+
+      if(!detailAdminNote.value.trim()){
+        const amountText = usedAmount != null
+          ? `Payment of GHS ${usedAmount} initiated.`
+          : 'Payment initiated (amount to be confirmed).';
+        detailAdminNote.value = `Application accepted. Tracking ID assigned. ${amountText}`;
+      }
+
+      const patchedDetails = { ...d };
+      if(usedAmount != null){
+        patchedDetails.price_amount = usedAmount;
+        patchedDetails.payment = {
+          ...(d.payment || {}),
+          amount: usedAmount,
+          currency: (d.payment && d.payment.currency) || 'GHS',
+          label: humanLabel || 'Program fee',
+          status: (d.payment && d.payment.status) || 'pending',
+          source: (d.payment && d.payment.source) || 'service'
+        };
+      }
+      buildPaymentDisplay(patchedDetails);
+
+      showToast('Prepared as accepted — save to persist and lock payment for tracking.');
+      detailReset.disabled = false;
+      detailSave.disabled = false;
+    });
+
+    detailOpenTracking.addEventListener('click', ()=>{
+      if(!selectedApp){
+        showToast('Select an application first.');
+        return;
+      }
+      const tid = selectedApp.tracking_id || detailTrackingId.value.trim();
+      if(!tid){
+        showToast('Assign a tracking ID and save first.');
+        return;
+      }
+      const enc = encodeURIComponent(tid);
+      window.open(`/views/admin/tracking.html?tracking_id=${enc}`,'_blank');
+    });
+
+    detailOpenPublicTracking.addEventListener('click', ()=>{
+      if(!selectedApp){
+        showToast('Select an application first.');
+        return;
+      }
+      const tid = selectedApp.tracking_id || detailTrackingId.value.trim();
+      if(!tid){
+        showToast('Assign a tracking ID and save first.');
+        return;
+      }
+      const enc = encodeURIComponent(tid);
+      window.open(`/views/pages/tracking.html?tracking_id=${enc}`,'_blank');
+    });
+
+    detailSave.addEventListener('click', async ()=>{
+      if(!selectedApp){
+        showToast('Select an application first.');
+        return;
+      }
+      if(!isAdmin){
+        showToast('You are not allowed to update applications.');
+        return;
+      }
+
+      const newStatus = detailStatus.value;
+      const newTrackingId = detailTrackingId.value.trim() || null;
+      const note = detailAdminNote.value.trim();
+
+      detailSave.disabled = true;
+      detailSave.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving...';
+
+      try{
+        const oldProgress = Array.isArray(selectedApp.progress) ? selectedApp.progress : [];
+        const newProgress = [...oldProgress];
+
+        const step =
+          newStatus === 'accepted' ? 'accepted' :
+          newStatus === 'reviewing' ? 'reviewing' :
+          newStatus === 'completed' ? 'completed' :
+          newStatus === 'rejected' ? 'rejected' :
+          'status_update';
+
+        const entry = {
+          step,
+          at:new Date().toISOString()
+        };
+        if(note){
+          entry.note = note;
+        }
+        newProgress.push(entry);
+
+        const oldDetails = selectedApp.details || {};
+        const dNorm = normalizeDetails(selectedApp);
+        const newDetails = { ...oldDetails };
+
+        if(newStatus === 'accepted'){
+          let amount = dNorm.price_amount;
+
+          if(amount == null){
+            await fetchServicePriceForApplication(selectedApp);
+            const afterFetch = normalizeDetails(selectedApp);
+            amount = afterFetch.price_amount || computeRuleAmountFromDetails(afterFetch);
+          }
+
+          if(amount != null){
+            const plan = dNorm.plan || selectedApp.plan;
+            const program = dNorm.program_type || selectedApp.application_type;
+            const label = dNorm.price_label || buildTypeLabel(plan, program);
+
+            newDetails.price_amount = amount;
+            newDetails.service_price = amount;
+            newDetails.price_label = label;
+            newDetails.program_type = program || newDetails.program_type || null;
+
+            newDetails.payment = {
+              ...(dNorm.payment || {}),
+              amount,
+              currency: (dNorm.payment && dNorm.payment.currency) || 'GHS',
+              label,
+              status: (dNorm.payment && dNorm.payment.status) || 'pending',
+              source: (dNorm.payment && dNorm.payment.source) || 'service'
+            };
+          }
+        }
+
+        const updatePayload = {
+          status:newStatus,
+          tracking_id:newTrackingId,
+          details:newDetails,
+          progress:newProgress
+        };
+
+        const { error } = await sb
+          .from('applications')
+          .update(updatePayload)
+          .eq('id', selectedApp.id);
+
+        if(error){
+          console.error(error);
+          showToast('Failed to save application updates.');
+          detailSave.disabled = false;
+          detailSave.innerHTML = '<i class="fa fa-floppy-disk"></i> Save changes';
+          return;
+        }
+
+        showToast('Application updated successfully.');
+
+        selectedApp.status = newStatus;
+        selectedApp.tracking_id = newTrackingId;
+        selectedApp.details = updatePayload.details;
+        selectedApp.progress = updatePayload.progress;
+
+        originalDetailState = {
+          status: newStatus,
+          tracking_id: newTrackingId
+        };
+        detailReset.disabled = true;
+        detailSave.disabled = true;
+        detailSave.innerHTML = '<i class="fa fa-floppy-disk"></i> Save changes';
+
+        renderDetail(selectedApp);
+        renderTable();
+      }catch(err){
+        console.error(err);
+        showToast('Unexpected error while saving.');
+        detailSave.disabled = false;
+        detailSave.innerHTML = '<i class="fa fa-floppy-disk"></i> Save changes';
+      }
+    });
+
+    async function loadApplications(){
+      summaryText.textContent = 'Loading applications...';
+      appsTbody.innerHTML = '<tr><td colspan="7" class="small-text muted">Loading...</td></tr>';
+      resetDetail();
+
+      try{
+        const { data, error } = await sb
+          .from('applications')
+          .select('*')
+          .order('created_at', { ascending:false });
+
+        if(error){
+          console.error(error);
+          summaryText.textContent = 'Failed to load applications.';
+          appsTbody.innerHTML = '<tr><td colspan="7" class="small-text muted">Error loading applications.</td></tr>';
+          return;
+        }
+
+        allApplications = data || [];
+        summaryText.textContent = `Loaded ${allApplications.length} application${allApplications.length!==1?'s':''}.`;
+        renderTable();
+      }catch(err){
+        console.error(err);
+        summaryText.textContent = 'Failed to load applications.';
+        appsTbody.innerHTML = '<tr><td colspan="7" class="small-text muted">Error loading applications.</td></tr>';
+      }
+    }
+
+    reloadBtn.addEventListener('click', ()=>{
+      loadApplications();
+    });
+
+    filterStatus.addEventListener('change', renderTable);
+    filterPlan.addEventListener('change', renderTable);
+    filterProgramType.addEventListener('change', renderTable);
+    searchInput.addEventListener('input', ()=>{
+      renderTable();
+    });
+
+    (async ()=>{
+      const { data: sessionData } = await sb.auth.getSession();
+      currentUser = sessionData?.session?.user || null;
+      if(!currentUser){
+        window.location.href = '/views/admin/login.html';
+        return;
+      }
+      adminEmailEl.textContent = currentUser.email || 'Admin';
+      isAdmin = await detectAdmin(currentUser);
+      if(!isAdmin){
+        adminWarning.style.display = 'block';
+      }
+      loadApplications();
+    })();
+  </script>
+</body>
+</html>

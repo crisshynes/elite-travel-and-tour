@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Register — Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Create your Elite Travel & Tour account to apply, track, and manage your journeys."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/register.css">
+  <link rel="stylesheet" href="/css/index.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <!-- Standard ICO -->
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+<!-- Or PNG -->
+<link rel="icon" href="/favicon.png" type="image/png">
+
+<!-- Optional: SVG -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+</head>
+<body style='margin-top:100px;'>
+  <!-- NAV -->
+  <nav aria-label="Primary">
+    <div class="wrap">
+      <a class="logo" href="/"><img src="/assets/logo/logo.png" alt="Elite Travel & Tour"></a>
+      <ul class="primary">
+        <li><a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a></li>
+        <li><a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+        <li><a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a></li>
+        <li><a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a></li>
+        <li><a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a></li>
+        <li><a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a></li>
+      </ul>
+      <div class="nav-right">
+        <button id="bellBtn" class="btn outline bell" aria-label="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span id="bellCount" class="count hidden">0</span>
+        </button>
+        <span id="authStatus" class="auth-pill" style="display:none;">
+          <i class="fa fa-user-check"></i><span class="auth-text">Guest</span>
+        </span>
+        <button id="loginBtn" class="btn outline"><i class="fa fa-right-to-bracket"></i> Login</button>
+        <button id="profileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i></button>
+        <button id="logoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        <button id="menuToggle" class="menu-toggle" aria-expanded="false"><i class="fa fa-bars"></i></button>
+      </div>
+    </div>
+
+    <!-- Mobile panel -->
+    <div id="mobilePanel" class="mobile-panel">
+      <div class="block">
+        <a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a>
+        <a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a>
+        <a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a>
+        <a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a>
+        <a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a>
+        <a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a>
+      </div>
+      <div class="block">
+        <span class="auth-pill"><i class="fa fa-user"></i><span id="mobileAuthText">Guest</span></span>
+        <div class="toolbar">
+          <button id="mobileLoginBtn" class="btn brand"><i class="fa fa-right-to-bracket"></i> Login</button>
+          <button id="mobileProfileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> Profile</button>
+          <button id="mobileLogoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+   <div id="notifFeed" class="feed hidden">
+  <div class="feed-toolbar">
+    <span class="muted small-text">Notifications</span>
+    <div style="color:var(--brand);display:flex;gap:.25rem;">
+      <button id="markAllReadBtn" class='btn ' style="color:var(--brand);" ><i class="fa fa-check-double"></i> Mark as Read</button>
+      <button id="clearAllNotifBtn" class='btn '><i class="fa fa-trash"></i> Clear</button>
+    </div>
+  </div>
+  <div id="notifList" class="list"></div>
+</div>
+<script type="module" src="/src/js/notifications.js"></script>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <i class="fa fa-info-circle"></i><span id="toastText">Notice</span>
+  </div>
+
+  <!-- MAIN -->
+  <div class="page">
+    <div class="page-inner">
+      <!-- Left hero / pitch -->
+      <section class="hero-panel" aria-label="Why register">
+        <div class="hero-panel-content">
+          <div class="hero-kicker">
+            <i class="fa fa-plane-departure"></i> Start your journey with a secure account
+          </div>
+          <h1 class="hero-title">Create your Elite Travel account.</h1>
+          <p class="hero-sub">
+            With one account you can apply for Work & Pay, track applications, receive admin updates, and manage your payments.
+          </p>
+
+          <ul class="hero-list">
+            <li><i class="fa fa-circle-check"></i><span>Use the same account across services, Work & Pay, and future programs.</span></li>
+            <li><i class="fa fa-circle-check"></i><span>Fast-track support when you contact us using your registered email.</span></li>
+            <li><i class="fa fa-circle-check"></i><span>Phone number is stored for easier contact, but is not verified.</span></li>
+          </ul>
+
+          <div class="hero-strip">
+            <span><i class="fa fa-lock"></i> Supabase secured auth</span>
+            <span><i class="fa fa-id-card"></i> One profile across all journeys</span>
+            <span><i class="fa fa-clock"></i> Quick login for future visits</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right register card -->
+      <section class="register-card card" aria-label="Registration form">
+        <div class="body">
+          <h2 class="page-title">Register</h2>
+          <p class="hint">
+            Fill in your details to create your account. Phone is optional and will not be verified, but helps us contact you.
+            Your role will be set as a normal user; only admins can access the admin dashboard.
+          </p>
+
+          <form id="registerForm" class="form-grid" novalidate>
+            <input class="input" id="name" type="text" placeholder="Full name" autocomplete="name" required>
+            <input class="input" id="email" type="email" placeholder="Email (required)" autocomplete="email" required>
+            <input class="input" id="phone" type="tel" placeholder="Phone (optional)" autocomplete="tel">
+
+            <div class="password-toggle">
+              <input class="input" id="password" type="password" placeholder="Password (min. 6 characters)" minlength="6" required autocomplete="new-password">
+              <i id="togglePass" class="fa fa-eye" aria-label="Toggle password visibility" role="button" tabindex="0"></i>
+            </div>
+
+            <div class="password-toggle">
+              <input class="input" id="confirmPassword" type="password" placeholder="Confirm password" minlength="6" required autocomplete="new-password">
+              <i id="toggleConfirmPass" class="fa fa-eye" aria-label="Toggle confirm password visibility" role="button" tabindex="0"></i>
+            </div>
+            <div>
+              <input type="checkbox" name="agreements" id="agreements" required>
+              <span>By checking this box, I agree to the <a style="color:var(--brand);" href="/views/pages/terms.html">Terms of Service </a></span>and  <a style="color:var(--brand);" href="/views/pages/privacy.html">Privacy Policy </a>
+            </div>
+            <button class="btn brand" type="submit"><i class="fa fa-user-plus"></i> Create account</button>
+          </form>
+
+          <p class="hint" style="margin-top:.6rem;">
+            Already have an account?
+            <a style="color:var(--brand);" href="/views/pages/login.html">Login instead</a>
+          </p>
+
+          <div class="social-register hidden" aria-label="Social signup options">
+            <button class="btn" id="googleRegister"><i class="fa-brands fa-google"></i> Google</button>
+            <button class="btn" id="facebookRegister"><i class="fa-brands fa-facebook"></i> Facebook</button>
+          </div>
+
+          <div id="statusMsg" class="alert info" role="status" aria-live="polite" style="margin-top:.75rem;display:none;"></div>
+
+          <div style="margin-top:1.5rem">
+            <h4 class="section-title">Registration tips</h4>
+            <ul class="hint" style="list-style:none;padding:0;font-size:.85rem;">
+              <li><i class="fa fa-lock"></i> Password must be at least 6 characters. Use a mix of letters and numbers.</li>
+              <li><i class="fa fa-envelope"></i> Use an email you can always access; password resets go there.</li>
+              <li><i class="fa fa-phone"></i> Phone is stored but not verified. We may contact you using this number.</li>
+              <li><i class="fa fa-shield-alt"></i> Admin pages are protected by role. Normal accounts are created as <strong>user</strong>.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <section class="card"><div class="body">
+      <h3 id="confirmTitle">Account created</h3>
+      <p id="confirmText">
+        Your account has been created successfully. We’ll redirect you to the main page so you can start exploring jobs and services.
+      </p>
+      <div class="toolbar" style="margin-top:.6rem; justify-content:flex-end;">
+        <button class="btn brand" id="okBtn"><i class="fa fa-check"></i> Continue</button>
+      </div>
+    </div></section>
+  </div>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="grid">
+      <div>
+        <h4>Elite Travel & Tour</h4>
+        <p>Trusted partner for seamless journeys worldwide.</p>
+        <p class="muted">Visa assistance, Work & Pay programs, and flight bookings with premium support.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/views/pages/services.html">Services</a></li>
+          <li><a href="/views/pages/work-and-pay.html">Work & Pay</a></li>
+          <li><a href="/views/pages/appointment.html">Book Appointment</a></li>
+          <li><a href="/views/pages/contact.html">Contact</a></li>
+          <li><a href="/views/pages/about.html">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><i class="fa fa-phone"></i> +233 59 911 7007</p>
+        <p><i class="fa fa-envelope"></i> info@elitetravel.com</p>
+        <p><i class="fa fa-map-marker-alt"></i> Adabraka Akasanoma rd, Greater Accra, Ghana</p>
+        <div class="newsletter" style="margin-top:.75rem;">
+          <label for="newsletterEmail" class="muted">Subscribe to our newsletter:</label><br>
+          <input id="newsletterEmail" type="email" placeholder="Your email">
+          <button id="subscribeBtn" class="btn brand" style="margin-top:.4rem;"><i class="fa fa-paper-plane"></i> Subscribe</button>
+          <div id="subscribeMsg" class="muted" style="margin-top:.5rem;"></div>
+        </div>
+      </div>
+      <div class="social">
+        <h4>Follow Us</h4>
+        <div class="toolbar">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© <span id="year"></span> Elite Travel & Tour. All rights reserved.</div>
+  </footer>
+
+  <script>
+    // Year + newsletter
+    document.getElementById('year').textContent=new Date().getFullYear();
+    const subscribeBtn=document.getElementById('subscribeBtn');
+    const eemailInput=document.getElementById('newsletterEmail');
+    const subscribeMsg=document.getElementById('subscribeMsg');
+    subscribeBtn?.addEventListener('click',()=>{
+      const eemail=eemailInput.value.trim();
+      if(!eemail){
+        subscribeMsg.textContent="Please enter your email.";
+        subscribeMsg.style.color="red";
+        return;
+      }
+      subscribeMsg.textContent=`Thank you for subscribing, ${eemail}!`;
+      subscribeMsg.style.color="lightgreen";
+      eemailInput.value="";
+    });
+  </script>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    const LANDING_URL = '/views/pages/index.html';
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(message, ms=2500){
+      if(!toast || !toastText) return;
+      toastText.textContent = message;
+      toast.classList.add('show');
+      setTimeout(()=> toast.classList.remove('show'), ms);
+    }
+
+    /* Notification feed toggle */
+    document.addEventListener('click',(e)=>{
+      const feed=document.getElementById('notifFeed');
+      if(!feed) return;
+      if(e.target.closest('#bellBtn')){ feed.classList.toggle('hidden'); }
+      else if(!e.target.closest('#notifFeed')){ feed.classList.add('hidden'); }
+    });
+
+    /* Supabase notifications subscription */
+    function renderNotification(n){
+      const list=document.getElementById('notifList');
+      const bellCount=document.getElementById('bellCount');
+      if(list){
+        const el=document.createElement('div');
+        el.className='item';
+        el.textContent=n.message || n.text;
+        list.prepend(el);
+      }
+      if(bellCount){
+        const count=parseInt(bellCount.textContent||'0',10)+1;
+        bellCount.textContent=String(count);
+        bellCount.classList.remove('hidden');
+      }
+    }
+    let notifChannel;
+    async function subscribeNotifications(userId){
+      if(notifChannel){ await sb.removeChannel(notifChannel); notifChannel=null; }
+      notifChannel=sb.channel(`header-notifs-${userId}`)
+        .on('postgres_changes',{
+          event:'INSERT',
+          schema:'public',
+          table:'notifications',
+          filter:`user_id=eq.${userId}`
+        },payload=>{
+          renderNotification(payload.new);
+        })
+        .subscribe();
+    }
+
+    /* Auth buttons + state */
+    const loginBtn=document.getElementById('loginBtn');
+    const logoutBtn=document.getElementById('logoutBtn');
+    const profileBtn=document.getElementById('profileBtn');
+    const mobileLoginBtn=document.getElementById('mobileLoginBtn');
+    const mobileLogoutBtn=document.getElementById('mobileLogoutBtn');
+    const mobileProfileBtn=document.getElementById('mobileProfileBtn');
+    const authText=document.querySelector('#authStatus .auth-text');
+    const authPill=document.getElementById('authStatus');
+    const mobileAuthText=document.getElementById('mobileAuthText');
+
+    function updateAuthUI(session){
+      const user=session?.user;
+      if(user){
+        authText && (authText.textContent=user.email);
+        authPill && (authPill.style.display='inline-flex');
+        mobileAuthText && (mobileAuthText.textContent=user.email);
+
+        loginBtn?.style.setProperty('display','none');
+        logoutBtn?.style.setProperty('display','inline-flex');
+        profileBtn?.style.setProperty('display','inline-flex');
+
+        mobileLoginBtn?.style.setProperty('display','none');
+        mobileLogoutBtn?.style.setProperty('display','inline-flex');
+        mobileProfileBtn?.style.setProperty('display','inline-flex');
+
+        profileBtn && (profileBtn.onclick=()=>window.location.href='/views/pages/profile.html');
+        mobileProfileBtn && (mobileProfileBtn.onclick=()=>window.location.href='/views/pages/profile.html');
+
+        subscribeNotifications(user.id);
+      } else {
+        authText && (authText.textContent='Guest');
+        authPill && (authPill.style.display='none');
+        mobileAuthText && (mobileAuthText.textContent='Guest');
+
+        loginBtn?.style.setProperty('display','inline-flex');
+        logoutBtn?.style.setProperty('display','none');
+        profileBtn?.style.setProperty('display','none');
+
+        mobileLoginBtn?.style.setProperty('display','inline-flex');
+        mobileLogoutBtn?.style.setProperty('display','none');
+        mobileProfileBtn?.style.setProperty('display','none');
+      }
+    }
+
+    const { data } = await sb.auth.getSession();
+    updateAuthUI(data.session);
+    sb.auth.onAuthStateChange((_event, session)=> updateAuthUI(session));
+
+    loginBtn?.addEventListener('click', ()=> window.location.href='/views/pages/login.html');
+    mobileLoginBtn?.addEventListener('click', ()=> window.location.href='/views/pages/login.html');
+    logoutBtn?.addEventListener('click', async ()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+    mobileLogoutBtn?.addEventListener('click', async ()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+
+    /* Mobile menu toggle */
+    const menuToggle=document.getElementById('menuToggle');
+    const mobilePanel=document.getElementById('mobilePanel');
+    menuToggle?.addEventListener('click', ()=>{
+      const isOpen = mobilePanel.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    mobilePanel?.addEventListener('click', (e)=>{
+      if(e.target.matches('a')) {
+        mobilePanel.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded','false');
+      }
+    });
+
+    /* Register logic */
+    const registerForm=document.getElementById('registerForm');
+    const statusMsg=document.getElementById('statusMsg');
+    const confirmModal=document.getElementById('confirmModal');
+    const okBtn=document.getElementById('okBtn');
+    const togglePass=document.getElementById('togglePass');
+    const toggleConfirmPass=document.getElementById('toggleConfirmPass');
+    const passwordInput=document.getElementById('password');
+    const confirmPasswordInput=document.getElementById('confirmPassword');
+    const nameInput=document.getElementById('name');
+    const emailInput=document.getElementById('email');
+    const phoneInput=document.getElementById('phone');
+    const googleRegister=document.getElementById('googleRegister');
+    const facebookRegister=document.getElementById('facebookRegister');
+
+    function showStatus(text,type='info'){
+      if(!statusMsg) return;
+      statusMsg.style.display=text ? 'block' : 'none';
+      statusMsg.textContent=text || '';
+      statusMsg.className = `alert ${type}`;
+    }
+
+    // Modal focus trap
+    function trapFocus(modal){
+      const focusable = modal.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])');
+      const first = focusable[0];
+      const last  = focusable[focusable.length-1];
+      function keyHandler(e){
+        if(e.key !== 'Tab') return;
+        if(e.shiftKey){
+          if(document.activeElement === first){ e.preventDefault(); last.focus(); }
+        } else {
+          if(document.activeElement === last){ e.preventDefault(); first.focus(); }
+        }
+      }
+      modal.addEventListener('keydown', keyHandler);
+      first && first.focus();
+    }
+    function openModal(m){ m.style.display='flex'; trapFocus(m); }
+    function closeModal(m){ m.style.display='none'; }
+
+    function togglePassword(targetInput, icon){
+      const type = targetInput.getAttribute('type')==='password' ? 'text' : 'password';
+      targetInput.setAttribute('type', type);
+      icon.className = type==='password' ? 'fa fa-eye' : 'fa fa-eye-slash';
+    }
+    togglePass?.addEventListener('click',()=> togglePassword(passwordInput, togglePass));
+    toggleConfirmPass?.addEventListener('click',()=> togglePassword(confirmPasswordInput, toggleConfirmPass));
+
+    // Ensure role-based admin protection can trust this column:
+    // every registered user is explicitly role='user'
+    async function insertUserProfile(userId,name,email,phone){
+      const { error }=await sb.from('users').insert({
+        id:userId,
+        fullname:name,
+        email,
+        phone,
+        role:'user',        // CRITICAL: mark as normal user
+        status:'active',
+        created_from:'register-page'
+      });
+      if(error) throw error;
+    }
+
+    // Register submit
+    registerForm?.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const name=nameInput.value.trim();
+      const email=emailInput.value.trim().toLowerCase();
+      const phone=phoneInput.value.trim();
+      const password=passwordInput.value.trim();
+      const confirmPassword=confirmPasswordInput.value.trim();
+
+      if(!name || !email || !password || !confirmPassword){
+        showStatus('Please fill in name, email, password, and confirm password.','danger');
+        return;
+      }
+      if(password.length<6){
+        showStatus('Password must be at least 6 characters.','danger');
+        return;
+      }
+      if(password !== confirmPassword){
+        showStatus('Passwords do not match. Please re-enter.','danger');
+        return;
+      }
+
+      try{
+        showStatus('Creating account...','info');
+        registerForm.querySelector('button[type="submit"]').disabled=true;
+
+        const { data:signUpData, error }=await sb.auth.signUp({ email, password });
+        if(error){
+          showStatus(error.message || 'Registration failed.','danger');
+          showToast('Registration failed.');
+          return;
+        }
+
+        const userId=signUpData.user?.id;
+        if(userId){
+          try{
+            await insertUserProfile(userId, name, email, phone);
+          }catch(insertError){
+            console.error('User profile insert error:', insertError);
+            showStatus(insertError.message || 'Could not save profile details.','danger');
+            return;
+          }
+        }
+
+        showStatus('Account created. Redirecting...','success');
+        showToast('Welcome to Elite Travel & Tour!');
+        openModal(confirmModal);
+        setTimeout(()=>{ window.location.href=LANDING_URL; },1500);
+      }catch(err){
+        console.error(err);
+        showStatus('Unexpected error during registration.','danger');
+        showToast('Unexpected error.');
+      }finally{
+        registerForm.querySelector('button[type="submit"]').disabled=false;
+      }
+    });
+
+    okBtn?.addEventListener('click',()=>{
+      closeModal(confirmModal);
+      window.location.href=LANDING_URL;
+    });
+    confirmModal?.addEventListener('click',(e)=>{ if(e.target===confirmModal) closeModal(confirmModal); });
+
+    // Social providers (optional)
+    googleRegister?.addEventListener('click', async ()=>{
+      try{
+        showStatus('Opening Google sign up...','info');
+        const { error }=await sb.auth.signInWithOAuth({
+          provider:'google',
+          options:{ redirectTo: window.location.origin + LANDING_URL }
+          
+        });
+        
+        if(error) showStatus(error.message,'danger');
+      }catch(err){
+        showStatus('Google sign up failed.','danger');
+      }
+    });
+
+    facebookRegister?.addEventListener('click', async ()=>{
+      try{
+        showStatus('Opening Facebook sign up...','info');
+        const { error }=await sb.auth.signInWithOAuth({
+          provider:'facebook',
+          options:{ redirectTo: window.location.origin + LANDING_URL }
+        });
+        if(error) showStatus(error.message,'danger');
+      }catch(err){
+        showStatus('Facebook sign up failed.','danger');
+      }
+    });
+
+    // Submit on Enter
+    registerForm?.addEventListener('keydown',(e)=>{
+      if(e.key==='Enter'){
+        e.preventDefault();
+        registerForm.dispatchEvent(new Event('submit',{cancelable:true}));
+      }
+    });
+
+    // If already logged in, redirect to main page
+    (async()=>{
+      const { data:{ session } } = await sb.auth.getSession();
+      if(session){
+        window.location.href=LANDING_URL;
+      }
+    })();
+  </script>
+</body>
+</html>

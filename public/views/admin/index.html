@@ -1,0 +1,1263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Admin — Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Elite Travel & Tour admin dashboard to manage users, jobs, services, payments, applications, notifications, and analytics."/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <style>
+    :root{
+      --brand:#0077cc;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --light:#fff;
+      --muted:#64748b;
+      --bg:#020617;
+      --gray-100:#f3f4f6;
+      --gray-200:#e5e7eb;
+      --gray-300:#d1d5db;
+      --gray-800:#1f2937;
+      --shadow:0 24px 60px rgba(15,23,42,.7);
+      --radius:14px;
+      --success:#16a34a;
+      --danger:#dc2626;
+      --warning:#f59e0b;
+      --info:#0ea5e9;
+      --chip-bg:#0b1220;
+    }
+
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:radial-gradient(circle at top, rgba(59,130,246,.26) 0, transparent 45%), #020617;
+      color:#e5e7eb;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      min-height:0;
+    }
+    @media(max-width:900px){
+      .layout{ grid-template-columns:1fr; }
+    }
+
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(31,41,55,.9);
+      background:radial-gradient(circle at top left, #020c28 0, #020617 60%);
+      padding:.8rem .7rem;
+      display:flex;
+      flex-direction:column;
+      gap:.75rem;
+      box-shadow:0 0 0 1px rgba(15,23,42,.9);
+      overflow:auto;
+      max-height:100vh;
+    }
+    .sidebar-header{
+      display:flex; align-items:center; justify-content:space-between; gap:.5rem;
+      padding:.2rem .1rem .4rem;
+    }
+    .sidebar-header .logo{
+      display:flex; align-items:center; gap:.4rem;
+      font-weight:800; color:#f9fafb; text-decoration:none; font-size:.98rem;
+    }
+    .sidebar-header .logo i{ color:#38bdf8; }
+
+    .side-toggle{
+      display:none; border:none; background:rgba(15,23,42,.8);
+      color:#cbd5f5; padding:.35rem .5rem; border-radius:999px; cursor:pointer;
+    }
+    .side-toggle i{ font-size:.9rem; }
+
+    @media(max-width:900px){
+      .sidebar{
+        position:fixed; inset:0 auto 0 0; width:260px;
+        transform:translateX(-100%);
+        transition:transform .2s ease-out;
+        z-index:60;
+      }
+      .sidebar.open{ transform:translateX(0); }
+      .side-toggle{ display:inline-flex; }
+    }
+
+    .nav-section{ margin-top:.4rem; }
+    .nav-label{
+      font-size:.75rem; text-transform:uppercase; letter-spacing:.08em;
+      color:#64748b; margin:.4rem 0 .2rem; padding:0 .2rem;
+    }
+    .nav-list{ list-style:none; padding:0; margin:0; }
+    .nav-item{ margin-bottom:.2rem; }
+    .nav-link{
+      display:flex; align-items:center; gap:.5rem;
+      padding:.45rem .55rem; border-radius:10px;
+      color:#cbd5f5; text-decoration:none; font-size:.9rem;
+      border:1px solid transparent; cursor:pointer;
+      background:transparent;
+    }
+    .nav-link i{ font-size:.9rem; }
+    .nav-link span.badge{
+      margin-left:auto; font-size:.7rem;
+      background:#0b1220; padding:.05rem .4rem; border-radius:999px;
+      border:1px solid rgba(148,163,184,.7); color:#e2e8f0;
+    }
+    .nav-link:hover{
+      background:rgba(30,64,175,.45);
+      border-color:rgba(37,99,235,.6);
+    }
+    .nav-link.active{
+      background:rgba(37,99,235,.9);
+      border-color:rgba(37,99,235,1);
+      color:#e5e7eb;
+      box-shadow:0 10px 28px rgba(37,99,235,.6);
+    }
+
+    .sidebar-footer{
+      margin-top:auto; padding-top:.5rem;
+      border-top:1px solid rgba(30,64,175,.7);
+      font-size:.8rem; color:#64748b;
+    }
+    .sidebar-footer .chip{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.22rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(37,99,235,.7);
+      margin-top:.35rem; font-size:.78rem;
+    }
+    .sidebar-footer .chip i{ color:#22c55e; }
+
+    /* Main */
+    .main{
+      display:flex; flex-direction:column;
+      min-height:0;
+    }
+    .main-header{
+      padding:.55rem 1rem;
+      border-bottom:1px solid rgba(31,41,55,.9);
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      background:rgba(15,23,42,.96);
+      box-shadow:0 16px 50px rgba(15,23,42,.8);
+      position:sticky; top:0; z-index:40;
+    }
+    .breadcrumbs{
+      display:flex; align-items:center; gap:.35rem; font-size:.85rem; color:#9ca3af;
+    }
+    .breadcrumbs span.current{ color:#e5e7eb; font-weight:500; }
+    .main-header-right{ display:flex; align-items:center; gap:.5rem; }
+    .pill-soft{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.18rem .55rem; border-radius:999px;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      font-size:.78rem; color:#e5e7eb;
+    }
+    .pill-soft i{ color:#38bdf8; }
+
+    .main-body{
+      padding:1rem;
+      overflow:auto;
+    }
+
+    .card{
+      background:#020617;
+      border-radius:var(--radius);
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:var(--shadow);
+      padding:1rem;
+    }
+    .section-title{ font-size:1.15rem; margin-bottom:.4rem; }
+    .muted{ color:var(--muted); }
+    .small-text{ font-size:.8rem; }
+
+    .grid{ display:grid; gap:.9rem; }
+    .grid-2{ display:grid; gap:.8rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .grid-3{ display:grid; gap:.8rem; grid-template-columns:repeat(3,minmax(0,1fr)); }
+    @media(max-width:1024px){ .grid-3{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @media(max-width:700px){
+      .grid-3{ grid-template-columns:1fr; }
+      .grid-2{ grid-template-columns:1fr; }
+    }
+
+    .stat-card{
+      background:#020617;
+      border-radius:12px;
+      border:1px solid rgba(31,41,55,.9);
+      padding:.75rem .8rem;
+      display:grid; gap:.2rem;
+    }
+    .stat-card .label{ font-size:.78rem; color:#9ca3af; }
+    .stat-card .value{ font-size:1.2rem; font-weight:700; }
+    .stat-card .trend{ font-size:.78rem; color:#22c55e; }
+
+    .table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:.85rem;
+    }
+    .table th,.table td{
+      padding:.55rem .45rem; border-bottom:1px solid rgba(31,41,55,.9);
+    }
+    .table th{
+      text-align:left; font-weight:600; color:#9ca3af; font-size:.8rem;
+    }
+    .table tbody tr:hover{
+      background:#020c28;
+    }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.1rem .5rem; border-radius:999px;
+      font-size:.75rem;
+      background:#020c28; border:1px solid rgba(148,163,184,.7); color:#e5e7eb;
+    }
+    .badge.success{ background:rgba(22,163,74,.2); border-color:rgba(22,163,74,.7); color:#bbf7d0; }
+    .badge.danger{ background:rgba(220,38,38,.20); border-color:rgba(220,38,38,.7); color:#fecaca; }
+    .badge.warning{ background:rgba(234,179,8,.18); border-color:rgba(234,179,8,.7); color:#facc15; }
+
+    .chip-row{ display:flex; flex-wrap:wrap; gap:.3rem; }
+    .chip{
+      padding:.18rem .5rem; border-radius:999px;
+      font-size:.78rem;
+      background:var(--chip-bg);
+      border:1px solid rgba(55,65,81,.9);
+      color:#e5e7eb;
+      display:inline-flex; align-items:center; gap:.25rem;
+    }
+
+    .toolbar{ display:flex; gap:.5rem; flex-wrap:wrap; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem;
+      padding:.5rem .9rem; border-radius:999px;
+      border:none; cursor:pointer;
+      font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{ background:var(--brand); color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4); }
+    .btn.brand:hover{ background:var(--brand-600); transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55); }
+    .btn.outline{
+      background:transparent; color:#e5e7eb;
+      border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{ border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7); }
+    .btn-sm{ padding:.25rem .55rem; font-size:.8rem; }
+    .btn[disabled]{ opacity:.5; cursor:not-allowed; }
+
+    .input,.textarea,select{
+      width:100%; box-sizing:border-box;
+      padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.9rem; color:#e5e7eb;
+      transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input::placeholder{ color:#6b7280; }
+    .input:focus,.textarea:focus,select:focus{
+      outline:none; border-color:#38bdf8;
+      box-shadow:0 0 0 2px rgba(56,189,248,.35);
+      background:#020617;
+    }
+
+    .subtabs{
+      display:flex; gap:.4rem; margin-bottom:.5rem;
+    }
+    .subtab-btn{
+      border:none; background:transparent;
+      border-radius:999px; padding:.3rem .7rem;
+      font-size:.8rem; color:#9ca3af; cursor:pointer;
+    }
+    .subtab-btn.active{
+      background:#0b1220; color:#e5e7eb;
+      border:1px solid rgba(37,99,235,.7);
+    }
+
+    .mono{ font-family:"JetBrains Mono","SF Mono",ui-monospace,monospace; font-size:.8rem; }
+
+    .modal{
+      display:none; position:fixed; inset:0;
+      background:rgba(15,23,42,.8);
+      align-items:center; justify-content:center; z-index:1000;
+    }
+    .modal .card{
+      max-width:520px; width:92%;
+      border-radius:var(--radius);
+      border:1px solid rgba(148,163,184,.8);
+      box-shadow:var(--shadow);
+      background:#020617; color:#e5e7eb;
+    }
+    .modal .body{ padding:1rem; }
+
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="/views/admin/index.html" class="logo">
+          <i class="fa-solid fa-compass"></i> <span>Elite Admin</span>
+        </a>
+        <button class="side-toggle" id="sideToggle"><i class="fa fa-xmark"></i></button>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Overview</div>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <button class="nav-link active" data-view="dashboard">
+              <i class="fa fa-gauge-high"></i> <span>Dashboard</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Jobs & Services</div>
+        <ul class="nav-list">
+          <li><button class="nav-link" data-view="jobs"><i class="fa fa-briefcase"></i> <span>Jobs</span></button></li>
+          <li><button class="nav-link" data-view="jobcreate"><i class="fa fa-plus"></i> <span>Create job</span></button></li>
+          <li><button class="nav-link" data-view="services"><i class="fa fa-suitcase"></i> <span>Services</span></button></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Users & Activity</div>
+        <ul class="nav-list">
+          <li><button class="nav-link" data-view="users"><i class="fa fa-users"></i> <span>Users</span></button></li>
+          <li><button class="nav-link" data-view="userdetails"><i class="fa fa-id-card"></i> <span>User details</span></button></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Transactions</div>
+        <ul class="nav-list">
+          <li><button class="nav-link" data-view="payments"><i class="fa fa-credit-card"></i> <span>Payments</span></button></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <div class="nav-label">Content</div>
+        <ul class="nav-list">
+          <li><button class="nav-link" data-view="notifications"><i class="fa fa-bell"></i> <span>Notifications</span></button></li>
+        </ul>
+      </div>
+
+      <div class="sidebar-footer">
+        <div>Session</div>
+        <div class="chip">
+          <i class="fa fa-user-shield"></i> <span id="adminEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <header class="main-header">
+        <div class="breadcrumbs">
+          <button class="side-toggle" id="openSideOnMobile"><i class="fa fa-bars"></i></button>
+          <span>Admin</span> <span>/</span> <span class="current" id="breadcrumbCurrent">Dashboard</span>
+        </div>
+        <div class="main-header-right">
+          <span class="pill-soft"><i class="fa fa-shield-halved"></i> Admin</span>
+          <button class="btn outline" id="adminLogout"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </header>
+
+      <section class="main-body">
+        <!-- Dashboard view -->
+        <section id="view-dashboard" data-view-root>
+          <!-- filled by renderDashboard -->
+        </section>
+
+        <!-- Jobs list -->
+        <section id="view-jobs" data-view-root style="display:none;"></section>
+
+        <!-- Job create -->
+        <section id="view-jobcreate" data-view-root style="display:none;"></section>
+
+        <!-- Users list -->
+        <section id="view-users" data-view-root style="display:none;"></section>
+
+        <!-- User details (drilled from users) -->
+        <section id="view-userdetails" data-view-root style="display:none;"></section>
+
+        <!-- Payments -->
+        <section id="view-payments" data-view-root style="display:none;"></section>
+
+        <!-- Notifications -->
+        <section id="view-notifications" data-view-root style="display:none;"></section>
+
+        <!-- Services -->
+        <section id="view-services" data-view-root style="display:none;"></section>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><i class="fa fa-info-circle"></i><span id="toastText"></span></div>
+
+  <!-- Admin confirm modal -->
+  <div class="modal" id="adminModal">
+    <section class="card"><div class="body">
+      <h3 id="adminModalTitle">Confirm</h3>
+      <p id="adminModalBody" class="muted"></p>
+      <div class="toolbar" style="margin-top:.6rem;justify-content:flex-end;gap:.4rem;">
+        <button class="btn outline btn-sm" id="adminModalCancel">Cancel</button>
+        <button class="btn brand btn-sm" id="adminModalConfirm">Confirm</button>
+      </div>
+    </div></section>
+  </div>
+
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(message,ms=2500){
+      if(!toast || !toastText) return;
+      toastText.textContent=message;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),ms);
+    }
+
+    /* Sidebar mobile */
+    const sidebar=document.getElementById('sidebar');
+    const sideToggle=document.getElementById('sideToggle');
+    const openSideOnMobile=document.getElementById('openSideOnMobile');
+    sideToggle?.addEventListener('click',()=> sidebar.classList.remove('open'));
+    openSideOnMobile?.addEventListener('click',()=> sidebar.classList.add('open'));
+
+    /* Admin auth + role guard */
+    const adminEmailSpan=document.getElementById('adminEmail');
+    const adminLogout=document.getElementById('adminLogout');
+
+    async function isAdminUser(user){
+      if(!user) return false;
+      const metaRole = user.app_metadata?.role || user.user_metadata?.role;
+      if(metaRole==='admin' || metaRole==='superadmin') return true;
+      try{
+        const { data, error }=await sb.from('users').select('role').eq('id',user.id).maybeSingle();
+        if(error || !data) return false;
+        return data.role==='admin' || data.role==='superadmin';
+      }catch{
+        return false;
+      }
+    }
+
+    {
+      const { data }=await sb.auth.getSession();
+      const session=data.session;
+      const user=session?.user;
+      if(!user){
+        showToast('Admin session required.');
+        window.location.href='/views/pages/login.html';
+      }else{
+        const allowed = await isAdminUser(user);
+        if(!allowed){
+          showToast('Your account is not authorized for admin access.');
+          await sb.auth.signOut();
+          window.location.href='/views/pages/login.html';
+        }else{
+          adminEmailSpan.textContent=user.email || 'admin';
+        }
+      }
+      adminLogout?.addEventListener('click',async()=>{
+        await sb.auth.signOut();
+        window.location.href='/views/pages/login.html';
+      });
+    }
+
+    /* Admin modal + focus trap */
+    const adminModal=document.getElementById('adminModal');
+    const adminModalTitle=document.getElementById('adminModalTitle');
+    const adminModalBody=document.getElementById('adminModalBody');
+    const adminModalCancel=document.getElementById('adminModalCancel');
+    const adminModalConfirm=document.getElementById('adminModalConfirm');
+    let adminModalOnConfirm=null;
+
+    function trapFocus(container){
+      const focusable=container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+      const first=focusable[0];
+      const last=focusable[focusable.length-1];
+      function handler(e){
+        if(e.key!=='Tab') return;
+        if(e.shiftKey){
+          if(document.activeElement===first){ e.preventDefault(); last.focus(); }
+        }else{
+          if(document.activeElement===last){ e.preventDefault(); first.focus(); }
+        }
+      }
+      container.addEventListener('keydown',handler);
+      first && first.focus();
+    }
+
+    function openAdminModal(title,body,onConfirm){
+      adminModalTitle.textContent=title;
+      adminModalBody.textContent=body;
+      adminModalOnConfirm=onConfirm || null;
+      adminModal.style.display='flex';
+      trapFocus(adminModal);
+    }
+    function closeAdminModal(){
+      adminModal.style.display='none';
+      adminModalOnConfirm=null;
+    }
+    adminModalCancel.addEventListener('click',closeAdminModal);
+    adminModal.addEventListener('click',(e)=>{ if(e.target===adminModal) closeAdminModal(); });
+    adminModalConfirm.addEventListener('click',async()=>{
+      if(adminModalOnConfirm){
+        try{ await adminModalOnConfirm(); }catch(e){ console.error(e); }
+      }
+      closeAdminModal();
+    });
+
+    /* View wiring */
+    const viewEls=document.querySelectorAll('[data-view-root]');
+    const navLinks=document.querySelectorAll('[data-view]');
+    const breadcrumbCurrent=document.getElementById('breadcrumbCurrent');
+
+    function setView(viewId,label){
+      viewEls.forEach(v=> v.style.display='none');
+      const viewEl=document.getElementById('view-'+viewId);
+      if(viewEl) viewEl.style.display='block';
+      breadcrumbCurrent.textContent=label;
+      navLinks.forEach(btn=> btn.classList.toggle('active', btn.dataset.view===viewId));
+
+      switch(viewId){
+        case 'dashboard': renderDashboard(); break;
+        case 'jobs': renderJobs(); break;
+        case 'jobcreate': renderJobCreate(); break;
+        case 'users': renderUsers(); break;
+        case 'userdetails': renderUserDetails(); break;
+        case 'payments': renderPayments(); break;
+        case 'notifications': renderNotifications(); break;
+        case 'services': renderServices(); break;
+      }
+    }
+
+    navLinks.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const view=btn.dataset.view;
+        const label=btn.textContent.trim();
+        setView(view,label);
+      });
+    });
+
+    /* ========= Dashboard ========= */
+    async function renderDashboard(){
+      const view=document.getElementById('view-dashboard');
+      view.innerHTML=`
+        <h2 class="section-title">Overview</h2>
+        <p class="muted small-text">Quick snapshot of jobs, users, payments, and recent activity.</p>
+        <div class="grid-3" style="margin-top:.7rem;">
+          <div class="stat-card">
+            <div class="label">Total jobs</div>
+            <div class="value" id="statJobs">0</div>
+            <div class="trend" id="statJobsTrend"><i class="fa fa-arrow-up"></i> —</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Active users</div>
+            <div class="value" id="statUsers">0</div>
+            <div class="trend" id="statUsersTrend"><i class="fa fa-arrow-up"></i> —</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Payments (total)</div>
+            <div class="value" id="statPayments">0</div>
+            <div class="trend" id="statPaymentsTrend"><i class="fa fa-arrow-up"></i> —</div>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:1rem;">
+          <div class="card" style="border-radius:12px;">
+            <div class="toolbar" style="justify-content:space-between;align-items:center;">
+              <h3 class="section-title" style="margin:0;">Recent applications</h3>
+              <a href="/views/admin/applications.html" class="btn outline btn-sm"><i class="fa fa-arrow-up-right-from-square"></i> Open applications</a>
+            </div>
+            <table class="table" id="dashAppsTable">
+              <thead><tr><th>Applicant</th><th>Plan</th><th>Status</th><th>Created</th></tr></thead>
+              <tbody><tr><td colspan="4" class="muted small-text">Loading...</td></tr></tbody>
+            </table>
+          </div>
+          <div class="card" style="border-radius:12px;">
+            <div class="toolbar" style="justify-content:space-between;align-items:center;">
+              <h3 class="section-title" style="margin:0;">Recent payments</h3>
+              <button class="btn outline btn-sm" data-view="payments"><i class="fa fa-arrow-up-right-from-square"></i> Open payments</button>
+            </div>
+            <table class="table" id="dashPaysTable">
+              <thead><tr><th>Ref</th><th>User</th><th>Amount</th><th>Status</th></tr></thead>
+              <tbody><tr><td colspan="4" class="muted small-text">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      `;
+
+      try{
+        const [{ count:jobsCount },{ count:usersCount },{ count:paysCount }]=await Promise.all([
+          sb.from('jobs').select('id',{ count:'exact', head:true }),
+          sb.from('users').select('id',{ count:'exact', head:true }),
+          sb.from('payments').select('id',{ count:'exact', head:true }),
+        ]);
+        document.getElementById('statJobs').textContent = jobsCount ?? 0;
+        document.getElementById('statUsers').textContent = usersCount ?? 0;
+        document.getElementById('statPayments').textContent = paysCount ?? 0;
+      }catch(e){
+        console.error(e);
+      }
+
+      const dashAppsTable=document.querySelector('#dashAppsTable tbody');
+      try{
+        const { data:apps }=await sb.from('applications')
+          .select('id,metadata,status,plan,created_at')
+          .order('created_at',{ ascending:false }).limit(5);
+        if(!apps?.length){
+          dashAppsTable.innerHTML='<tr><td colspan="4" class="muted small-text">No recent applications.</td></tr>';
+        }else{
+          dashAppsTable.innerHTML = apps.map(a=>{
+            const meta=a.metadata || {};
+            const name=meta.fullname || meta.name || 'Unknown';
+            const created=new Date(a.created_at).toLocaleDateString();
+            const st=a.status || 'submitted';
+            const badgeClass=st==='approved'?'success':st==='rejected'?'danger':'warning';
+            return `<tr>
+              <td>${name}</td>
+              <td>${a.plan || '—'}</td>
+              <td><span class="badge ${badgeClass}">${st}</span></td>
+              <td>${created}</td>
+            </tr>`;
+          }).join('');
+        }
+      }catch(e){
+        console.error(e);
+        dashAppsTable.innerHTML='<tr><td colspan="4" class="muted small-text">Error loading applications.</td></tr>';
+      }
+
+      const dashPaysTable=document.querySelector('#dashPaysTable tbody');
+      try{
+        const { data:user }=await sb.from('users')
+          .select('email');
+        const { data:pays }=await sb.from('payments')
+          .select('ref,amount,status,created_at,user_email')
+          .order('created_at',{ ascending:false }).limit(5);
+        if(!pays?.length){
+          dashPaysTable.innerHTML='<tr><td colspan="4" class="muted small-text">No recent payments.</td></tr>';
+        }else{
+          dashPaysTable.innerHTML = pays.map(p=>{
+            const st=p.status || 'pending';
+            const badgeClass=st==='success'?'success':st==='failed'?'danger':'warning';
+            return `<tr>
+              <td>${p.ref}</td>
+              <td>${p.user_email || user.session?.email || '—'}</td>
+              <td>${p.amount}</td>
+              <td><span class="badge ${badgeClass}">${st}</span></td>
+            </tr>`;
+          }).join('');
+        }
+      }catch(e){
+        console.error(e);
+        dashPaysTable.innerHTML='<tr><td colspan="4" class="muted small-text">Error loading payments.</td></tr>';
+      }
+
+      // make the small "open payments" button respect setView
+      const openPayBtn=view.querySelector('[data-view="payments"]');
+      openPayBtn?.addEventListener('click',()=>{
+        setView('payments','Payments');
+      });
+    }
+
+    /* ========= Jobs list ========= */
+    async function renderJobs(){
+      const view=document.getElementById('view-jobs');
+      view.innerHTML=`
+        <h2 class="section-title">Jobs</h2>
+        <p class="muted small-text">Manage all jobs created for Work & Pay, Express, or other roles.</p>
+        <div class="toolbar" style="margin:.6rem 0;">
+          <button class="btn brand" id="jobsCreateBtn"><i class="fa fa-plus"></i> New job</button>
+          <button class="btn outline" id="jobsRefreshBtn"><i class="fa fa-rotate"></i> Refresh</button>
+        </div>
+        <div class="subtabs">
+          <button class="subtab-btn active" data-filter="all">All</button>
+          <button class="subtab-btn" data-filter="active">Active</button>
+          <button class="subtab-btn" data-filter="archived">Archived</button>
+        </div>
+        <table class="table" id="jobsTable">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Country</th>
+              <th>Plan</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="6" class="muted small-text">Loading jobs...</td></tr></tbody>
+        </table>
+      `;
+
+      const tbody=view.querySelector('#jobsTable tbody');
+      const filterBtns=view.querySelectorAll('.subtab-btn');
+
+      let jobsCache=[];
+
+      async function loadJobs(){
+        tbody.innerHTML='<tr><td colspan="6" class="muted small-text">Loading jobs...</td></tr>';
+        try{
+          const { data:rows,error }=await sb.from('jobs')
+            .select('id,title,country,plan,status,created_at')
+            .order('created_at',{ ascending:false });
+          if(error) throw error;
+          jobsCache=rows || [];
+          renderFiltered('all');
+        }catch(e){
+          console.error(e);
+          tbody.innerHTML='<tr><td colspan="6" class="muted small-text">Failed to load jobs.</td></tr>';
+        }
+      }
+
+      function renderFiltered(filter){
+        const filtered = jobsCache.filter(j=>{
+          if(filter==='active') return j.status==='active';
+          if(filter==='archived') return j.status==='archived';
+          return true;
+        });
+        if(!filtered.length){
+          tbody.innerHTML='<tr><td colspan="6" class="muted small-text">No jobs match this filter.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = filtered.map(j=>{
+          const created=j.created_at?new Date(j.created_at).toLocaleDateString():'—';
+          const st=j.status || 'draft';
+          const badgeClass=st==='active'?'success':st==='archived'?'danger':'warning';
+          return `<tr data-id="${j.id}">
+            <td>${j.title}</td>
+            <td>${j.country || '—'}</td>
+            <td>${j.plan || '—'}</td>
+            <td><span class="badge ${badgeClass}">${st}</span></td>
+            <td>${created}</td>
+            <td>
+              <button class="btn outline btn-sm" data-action="toggle"><i class="fa fa-toggle-on"></i></button>
+            </td>
+          </tr>`;
+        }).join('');
+      }
+
+      filterBtns.forEach(btn=>{
+        btn.addEventListener('click',()=>{
+          filterBtns.forEach(b=>b.classList.remove('active'));
+          btn.classList.add('active');
+          renderFiltered(btn.dataset.filter);
+        });
+      });
+
+      view.querySelector('#jobsRefreshBtn').addEventListener('click',loadJobs);
+      view.querySelector('#jobsCreateBtn').addEventListener('click',()=> setView('jobcreate','Create job'));
+
+      tbody.addEventListener('click',(e)=>{
+        const btn=e.target.closest('button[data-action]');
+        if(!btn) return;
+        const tr=btn.closest('tr');
+        const id=tr.dataset.id;
+        const job=jobsCache.find(j=>String(j.id)===String(id));
+        if(!job) return;
+
+        if(btn.dataset.action==='toggle'){
+          const nextStatus=job.status==='active'?'archived':'active';
+          openAdminModal(
+            'Change job status',
+            `Do you want to mark "${job.title}" as ${nextStatus}?`,
+            async()=>{
+              const { error }=await sb.from('jobs').update({ status:nextStatus }).eq('id',job.id);
+              if(error) showToast(error.message);
+              else { showToast('Job updated'); loadJobs(); }
+            }
+          );
+        }
+      });
+
+      loadJobs();
+    }
+
+    /* ========= Job create ========= */
+    function renderJobCreate(){
+      const view=document.getElementById('view-jobcreate');
+      view.innerHTML=`
+        <h2 class="section-title">Create job</h2>
+        <p class="muted small-text">Create a new job that will appear under Work & Pay or Express programs.</p>
+        <form id="jobCreateForm" class="grid" style="margin-top:.8rem;">
+          <div class="grid" style="gap:.5rem;">
+            <input class="input" id="jobTitle" placeholder="Job title (e.g., Warehouse worker, Hotel staff)" required>
+            <input class="input" id="jobCountry" placeholder="Country (e.g., Canada, UK, Czech)">
+          </div>
+          <div class="grid" style="gap:.5rem;">
+            <select class="input" id="jobPlan">
+              <option value="">Plan (optional)</option>
+              <option value="work">Work & Pay</option>
+              <option value="express">Express</option>
+            </select>
+            <select class="input" id="jobStatus">
+              <option value="active">Active</option>
+              <option value="draft">Draft</option>
+            </select>
+          </div>
+          <textarea class="textarea" id="jobDesc" placeholder="Short description"></textarea>
+          <div class="toolbar">
+            <button class="btn brand" type="submit"><i class="fa fa-save"></i> Save job</button>
+            <button class="btn outline" type="button" id="jobCancel"><i class="fa fa-xmark"></i> Cancel</button>
+          </div>
+        </form>
+        <p class="muted small-text" id="jobCreateStatus" style="margin-top:.5rem;"></p>
+      `;
+      const form=view.querySelector('#jobCreateForm');
+      const statusEl=view.querySelector('#jobCreateStatus');
+      const cancelBtn=view.querySelector('#jobCancel');
+
+      function setStatus(msg,type='muted'){
+        statusEl.textContent=msg;
+        statusEl.className=`small-text ${type}`;
+      }
+
+      form.addEventListener('submit',async(e)=>{
+        e.preventDefault();
+        const title=document.getElementById('jobTitle').value.trim();
+        const country=document.getElementById('jobCountry').value.trim();
+        const plan=document.getElementById('jobPlan').value || null;
+        const status=document.getElementById('jobStatus').value || 'active';
+        const description=document.getElementById('jobDesc').value.trim();
+        if(!title){
+          setStatus('Job title is required.','danger');
+          return;
+        }
+        try{
+          setStatus('Saving job...','muted');
+          const { error }=await sb.from('jobs').insert({
+            title,
+            country,
+            plan,
+            status,
+            description
+          });
+          if(error) throw error;
+          setStatus('Job created successfully.','success');
+          showToast('Job created.');
+          form.reset();
+        }catch(err){
+          setStatus(err.message || 'Failed to create job.','danger');
+        }
+      });
+
+      cancelBtn.addEventListener('click',()=> setView('jobs','Jobs'));
+    }
+
+    /* ========= Users ========= */
+    async function renderUsers(){
+      const view=document.getElementById('view-users');
+      view.innerHTML=`
+        <h2 class="section-title">Users</h2>
+        <p class="muted small-text">View and manage registered users. Use admin/users.html for deep inspection.</p>
+        <div class="toolbar" style="margin:.6rem 0;">
+          <input class="input" id="userSearch" placeholder="Search by email or name" style="max-width:260px;">
+          <button class="btn outline" id="usersRefresh"><i class="fa fa-rotate"></i> Refresh</button>
+          <a class="btn outline btn-sm" href="/views/admin/users.html"><i class="fa fa-arrow-up-right-from-square"></i> Open full users page</a>
+        </div>
+        <table class="table" id="usersTable">
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Phone</th><th>Status</th><th>Joined</th><th></th></tr>
+          </thead>
+          <tbody><tr><td colspan="6" class="muted small-text">Loading users...</td></tr></tbody>
+        </table>
+      `;
+      const tbody=view.querySelector('#usersTable tbody');
+      const refreshBtn=view.querySelector('#usersRefresh');
+      const searchInput=view.querySelector('#userSearch');
+
+      let usersCache=[];
+
+      async function loadUsers(){
+        tbody.innerHTML='<tr><td colspan="6" class="muted small-text">Loading users...</td></tr>';
+        try{
+          const { data:rows,error }=await sb.from('users')
+            .select('id,fullname,email,phone,status,created_at')
+            .order('created_at',{ ascending:false }).limit(200);
+          if(error) throw error;
+          usersCache=rows || [];
+          renderList(usersCache);
+        }catch(e){
+          console.error(e);
+          tbody.innerHTML='<tr><td colspan="6" class="muted small-text">Failed to load users.</td></tr>';
+        }
+      }
+
+      function renderList(list){
+        if(!list.length){
+          tbody.innerHTML='<tr><td colspan="6" class="muted small-text">No users found.</td></tr>';
+          return;
+        }
+        tbody.innerHTML=list.map(u=>{
+          const joined=u.created_at?new Date(u.created_at).toLocaleDateString():'—';
+          const name=u.fullname || u.name || '(no name)';
+          const st=(u.status || 'active');
+          const badgeClass=st==='active'?'success':'warning';
+          return `<tr data-id="${u.id}">
+            <td>${name}</td>
+            <td>${u.email || '—'}</td>
+            <td>${u.phone || '—'}</td>
+            <td><span class="badge ${badgeClass}">${st}</span></td>
+            <td>${joined}</td>
+            <td>
+              <button class="btn outline btn-sm" data-action="view"><i class="fa fa-eye"></i></button>
+            </td>
+          </tr>`;
+        }).join('');
+      }
+
+      searchInput.addEventListener('input',()=>{
+        const q=searchInput.value.trim().toLowerCase();
+        if(!q) return renderList(usersCache);
+        const filtered=usersCache.filter(u=>{
+          const name=(u.fullname || u.name || '').toLowerCase();
+          const email=(u.email || '').toLowerCase();
+          return email.includes(q) || name.includes(q);
+        });
+        renderList(filtered);
+      });
+
+      tbody.addEventListener('click',(e)=>{
+        const btn=e.target.closest('button[data-action]');
+        if(!btn) return;
+        const tr=btn.closest('tr');
+        const id=tr.dataset.id;
+        const user=usersCache.find(u=>String(u.id)===String(id));
+        if(!user) return;
+        if(btn.dataset.action==='view'){
+          localStorage.setItem('adminSelectedUserId',id);
+          setView('userdetails','User details');
+        }
+      });
+
+      refreshBtn.addEventListener('click',loadUsers);
+      loadUsers();
+    }
+
+    /* ========= User details view ========= */
+    async function renderUserDetails(){
+      const view=document.getElementById('view-userdetails');
+      const userId=localStorage.getItem('adminSelectedUserId');
+      if(!userId){
+        view.innerHTML=`
+          <h2 class="section-title">User details</h2>
+          <p class="muted small-text">No user selected from the Users view. Go back to Users and click a user.</p>
+          <button class="btn outline" id="udBack"><i class="fa fa-arrow-left"></i> Back to users</button>
+        `;
+        view.querySelector('#udBack')?.addEventListener('click',()=> setView('users','Users'));
+        return;
+      }
+
+      view.innerHTML=`
+        <h2 class="section-title">User details</h2>
+        <p class="muted small-text">Summary of the selected user, their account status, and journeys.</p>
+        <div id="udContent" class="grid-2" style="margin-top:.7rem;">
+          <div class="muted small-text">Loading user…</div>
+        </div>
+        <div class="toolbar" style="margin-top:.8rem;">
+          <button class="btn outline" id="udBack"><i class="fa fa-arrow-left"></i> Back to users</button>
+          <a class="btn outline btn-sm" href="/views/admin/users.html" target="_blank"><i class="fa fa-arrow-up-right-from-square"></i> Open users admin</a>
+        </div>
+      `;
+
+      const content=document.getElementById('udContent');
+      view.querySelector('#udBack')?.addEventListener('click',()=> setView('users','Users'));
+
+      try{
+        const [{ data:user, error:errUser }, { count:appsCount }, { count:paysCount }] = await Promise.all([
+          sb.from('users').select('*').eq('id',userId).maybeSingle(),
+          sb.from('applications').select('id',{ count:'exact', head:true }).eq('user_id',userId),
+          sb.from('payments').select('id',{ count:'exact', head:true }).eq('user_id',userId)
+        ]);
+        if(errUser || !user){
+          content.innerHTML='<div class="muted small-text">User not found.</div>';
+          return;
+        }
+        const name=user.fullname || user.name || '(no name)';
+        const email=user.email || '—';
+        const phone=user.phone || '—';
+        const status=user.status || 'active';
+        const role=user.role || 'user';
+        const country=user.country || '—';
+        const joined=user.created_at ? new Date(user.created_at).toLocaleString() : '—';
+        const lastLogin=user.last_login_at ? new Date(user.last_login_at).toLocaleString() : '—';
+
+        content.innerHTML=`
+          <div>
+            <h3 class="section-title" style="margin-bottom:.3rem;">Account</h3>
+            <p><strong>Name:</strong> ${name}</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>Country:</strong> ${country}</p>
+            <p><strong>Status:</strong> ${status}</p>
+          </div>
+          <div>
+            <h3 class="section-title" style="margin-bottom:.3rem;">Activity</h3>
+            <p><strong>Role:</strong> ${role}</p>
+            <p><strong>Joined:</strong> ${joined}</p>
+            <p><strong>Last login:</strong> ${lastLogin}</p>
+            <p><strong>Applications:</strong> ${appsCount ?? 0}</p>
+            <p><strong>Payments:</strong> ${paysCount ?? 0}</p>
+          </div>
+        `;
+      }catch(e){
+        console.error(e);
+        content.innerHTML='<div class="muted small-text">Failed to load user details.</div>';
+      }
+    }
+
+    /* ========= Payments ========= */
+    async function renderPayments(){
+      const view=document.getElementById('view-payments');
+      view.innerHTML=`
+        <h2 class="section-title">Payments</h2>
+        <p class="muted small-text">Review payments from gateways or manual entries.</p>
+        <div class="toolbar" style="margin:.6rem 0;">
+          <select class="input" id="payFilterStatus" style="max-width:200px;">
+            <option value="">All statuses</option>
+            <option value="success">Success</option>
+            <option value="pending">Pending</option>
+            <option value="failed">Failed</option>
+          </select>
+          <button class="btn outline" id="payRefresh"><i class="fa fa-rotate"></i> Refresh</button>
+        </div>
+        <table class="table" id="payTable">
+          <thead><tr><th>Ref</th><th>Email</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody><tr><td colspan="5" class="muted small-text">Loading payments...</td></tr></tbody>
+        </table>
+      `;
+      const tbody=view.querySelector('#payTable tbody');
+      const filterSel=view.querySelector('#payFilterStatus');
+      const refreshBtn=view.querySelector('#payRefresh');
+      let paysCache=[];
+
+      async function loadPays(){
+        tbody.innerHTML='<tr><td colspan="5" class="muted small-text">Loading payments...</td></tr>';
+        try{
+          const { data:rows,error }=await sb.from('payments')
+            .select('ref,user_email,amount,status,created_at')
+            .order('created_at',{ ascending:false }).limit(100);
+          if(error) throw error;
+          paysCache=rows || [];
+          renderFilter();
+        }catch(e){
+          console.error(e);
+          tbody.innerHTML='<tr><td colspan="5" class="muted small-text">Failed to load payments.</td></tr>';
+        }
+      }
+
+      function renderFilter(){
+        const f=filterSel.value;
+        const list=paysCache.filter(p=> !f || p.status===f);
+        if(!list.length){
+          tbody.innerHTML='<tr><td colspan="5" class="muted small-text">No payments for this filter.</td></tr>';
+          return;
+        }
+        tbody.innerHTML=list.map(p=>{
+          const dt=p.created_at ? new Date(p.created_at).toLocaleString() : '—';
+          const st=p.status || 'pending';
+          const badgeClass=st==='success'?'success':st==='failed'?'danger':'warning';
+          return `<tr>
+            <td>${p.ref}</td>
+            <td>${p.user_email || '—'}</td>
+            <td>${p.amount}</td>
+            <td><span class="badge ${badgeClass}">${st}</span></td>
+            <td>${dt}</td>
+          </tr>`;
+        }).join('');
+      }
+
+      filterSel.addEventListener('change',renderFilter);
+      refreshBtn.addEventListener('click',loadPays);
+      loadPays();
+    }
+
+    /* ========= Notifications ========= */
+    async function renderNotifications(){
+      const view=document.getElementById('view-notifications');
+      view.innerHTML=`
+        <h2 class="section-title">Notifications</h2>
+        <p class="muted small-text">Send or review notifications delivered to users.</p>
+        <form class="grid" id="notifForm" style="margin:.6rem 0;gap:.5rem;">
+          <div class="grid" style="gap:.5rem;">
+            <input class="input" id="notifEmail" placeholder="Target email (or blank for broadcast)">
+            <input class="input" id="notifTitle" placeholder="Title (optional)">
+          </div>
+          <textarea class="textarea" id="notifMessage" placeholder="Notification message"></textarea>
+          <div class="toolbar">
+            <button class="btn brand" type="submit"><i class="fa fa-paper-plane"></i> Send</button>
+            <button class="btn outline" type="button" id="notifRefresh"><i class="fa fa-rotate"></i> Refresh</button>
+          </div>
+        </form>
+        <p class="muted small-text" id="notifStatus"></p>
+        <table class="table" id="notifTable" style="margin-top:.7rem;">
+          <thead><tr><th>To</th><th>Title</th><th>Message</th><th>Date</th></tr></thead>
+          <tbody><tr><td colspan="4" class="muted small-text">Loading...</td></tr></tbody>
+        </table>
+      `;
+      const form=view.querySelector('#notifForm');
+      const statusEl=view.querySelector('#notifStatus');
+      const tableBody=view.querySelector('#notifTable tbody');
+
+      function setStatus(msg,type='muted'){
+        statusEl.textContent=msg;
+        statusEl.className=`small-text ${type}`;
+      }
+
+      async function loadNotifs(){
+        tableBody.innerHTML='<tr><td colspan="4" class="muted small-text">Loading...</td></tr>';
+        try{
+          const { data:rows,error }=await sb.from('notifications')
+            .select('user_email,title,message,created_at')
+            .order('created_at',{ ascending:false }).limit(50);
+          if(error) throw error;
+          if(!rows?.length){
+            tableBody.innerHTML='<tr><td colspan="4" class="muted small-text">No notifications yet.</td></tr>';
+            return;
+          }
+          tableBody.innerHTML=rows.map(n=>{
+            const dt=n.created_at ? new Date(n.created_at).toLocaleString() : '—';
+            return `<tr>
+              <td>${n.user_email || 'broadcast'}</td>
+              <td>${n.title || '—'}</td>
+              <td>${n.message || '—'}</td>
+              <td>${dt}</td>
+            </tr>`;
+          }).join('');
+        }catch(e){
+          console.error(e);
+          tableBody.innerHTML='<tr><td colspan="4" class="muted small-text">Failed to load notifications.</td></tr>';
+        }
+      }
+
+      form.addEventListener('submit',async(e)=>{
+        e.preventDefault();
+        const email=document.getElementById('notifEmail').value.trim();
+        const title=document.getElementById('notifTitle').value.trim();
+        const message=document.getElementById('notifMessage').value.trim();
+        if(!message){
+          setStatus('Message is required.','danger');
+          return;
+        }
+        try{
+          setStatus('Sending notification...','muted');
+          const payload={
+            title: title || null,
+            message,
+            user_email: email || null
+          };
+          const { error }=await sb.from('notifications').insert(payload);
+          if(error) throw error;
+          setStatus('Notification queued.','success');
+          showToast('Notification queued');
+          form.reset();
+          loadNotifs();
+        }catch(err){
+          console.error(err);
+          setStatus(err.message || 'Failed to send notification.','danger');
+        }
+      });
+
+      view.querySelector('#notifRefresh').addEventListener('click',loadNotifs);
+      loadNotifs();
+    }
+
+    /* ========= Services ========= */
+    async function renderServices(){
+      const view=document.getElementById('view-services');
+      view.innerHTML=`
+        <h2 class="section-title">Services</h2>
+        <p class="muted small-text">Manage services used on the public site (visa, flights, tours, Work & Pay, Express, etc.).</p>
+        <div class="toolbar" style="margin:.6rem 0;">
+          <button class="btn brand" id="svcCreateBtn"><i class="fa fa-plus"></i> New service</button>
+          <button class="btn outline" id="svcRefreshBtn"><i class="fa fa-rotate"></i> Refresh</button>
+        </div>
+        <table class="table" id="svcTable">
+          <thead><tr><th>Title</th><th>Category</th><th>Active</th><th>Updated</th><th></th></tr></thead>
+          <tbody><tr><td colspan="5" class="muted small-text">Loading...</td></tr></tbody>
+        </table>
+      `;
+      const tbody=view.querySelector('#svcTable tbody');
+      const refreshBtn=view.querySelector('#svcRefreshBtn');
+      const createBtn=view.querySelector('#svcCreateBtn');
+      let svcCache=[];
+
+      async function loadServices(){
+        tbody.innerHTML='<tr><td colspan="5" class="muted small-text">Loading...</td></tr>';
+        try{
+          const { data:rows,error }=await sb.from('services')
+            .select('id,title,category,is_active,updated_at')
+            .order('updated_at',{ ascending:false });
+          if(error) throw error;
+          svcCache=rows || [];
+          if(!svcCache.length){
+            tbody.innerHTML='<tr><td colspan="5" class="muted small-text">No services yet.</td></tr>';
+            return;
+          }
+          tbody.innerHTML=svcCache.map(s=>{
+            const date=s.updated_at?new Date(s.updated_at).toLocaleDateString():'—';
+            const activeLabel=s.is_active?'Yes':'No';
+            const badgeClass=s.is_active?'success':'danger';
+            return `<tr data-id="${s.id}">
+              <td>${s.title}</td>
+              <td>${s.category || '—'}</td>
+              <td><span class="badge ${badgeClass}">${activeLabel}</span></td>
+              <td>${date}</td>
+              <td><button class="btn outline btn-sm" data-action="toggle"><i class="fa fa-toggle-on"></i></button></td>
+            </tr>`;
+          }).join('');
+        }catch(e){
+          console.error(e);
+          tbody.innerHTML='<tr><td colspan="5" class="muted small-text">Failed to load services.</td></tr>';
+        }
+      }
+
+      refreshBtn.addEventListener('click',loadServices);
+      createBtn.addEventListener('click',()=> showToast('Service creation UI to be added (similar to jobs).'));
+
+      tbody.addEventListener('click',(e)=>{
+        const btn=e.target.closest('button[data-action="toggle"]');
+        if(!btn) return;
+        const tr=btn.closest('tr');
+        const id=tr.dataset.id;
+        const svc=svcCache.find(s=>String(s.id)===String(id));
+        if(!svc) return;
+        const next=!svc.is_active;
+        openAdminModal(
+          'Toggle service',
+          `Do you want to mark "${svc.title}" as ${next?'active':'inactive'}?`,
+          async()=>{
+            const { error }=await sb.from('services').update({ is_active:next }).eq('id',id);
+            if(error) showToast(error.message);
+            else { showToast('Service updated'); loadServices(); }
+          }
+        );
+      });
+
+      loadServices();
+    }
+
+    // Boot to dashboard
+    setView('dashboard','Dashboard');
+  </script>
+</body>
+</html>

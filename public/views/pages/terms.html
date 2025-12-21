@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Terms & Conditions — Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Elite Travel & Tour Terms & Conditions"/>
+  <link rel="stylesheet" href="/icons/fontawesome.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Standard ICO -->
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+<!-- Or PNG -->
+<link rel="icon" href="/favicon.png" type="image/png">
+
+<!-- Optional: SVG -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+   
+    /* Terms layout */
+    .terms-layout { display:grid; grid-template-columns:280px 1fr; gap:1rem; align-items:start;box-shadow:var(--shadow); }
+    .toc { background:var(--bg); box-shadow:var(--shadow); border-radius:12px; padding:1rem; position:sticky; top:80px; }
+    .toc h3 { margin:0 0 .75rem; font-size:1.1rem; }
+    .toc a { display:flex; align-items:center; gap:.5rem; padding:.4rem .5rem; border-radius:8px; text-decoration:none; color:var(--light); }
+    .toc a:hover { background:var(--light); color:var(--brand); }
+    .toc a.active { background:#eaf4ff; color:#0b4d78; border:1px solid #cfe6ff; }
+
+    .terms-section { background:var(--bg); border:1px solid var(--light); border-radius:12px; padding:1rem; }
+    .terms-section h3 { margin-bottom:.75rem; }
+    .terms-section ul { list-style:disc; padding-left:1.5rem; }
+    .terms-section li { margin-bottom:.5rem; }
+
+    /* Info banners */
+    .banner { display:flex; gap:.75rem; align-items:center; background:#f7fbff; box-shadow:var(--shadow); color:#0b4d78; padding:.75rem; border-radius:10px; margin-bottom:1rem; }
+    .banner i { color:var(--brand); }
+/* 
+    /* Modal */
+    /* .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); align-items:center; justify-content:center; z-index:1000; }
+    .modal .card { max-width:520px; width:92%; }
+    .toolbar { display:flex; gap:.5rem; flex-wrap:wrap; } */
+
+    /* Footer */
+    /* footer { background:var(--dark); color:#eee; padding:2rem 1rem; margin-top:2rem; }
+    footer .grid { display:grid; gap:1rem; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
+    footer a { color:#eee; text-decoration:none; }
+    footer a:hover { text-decoration:underline; }
+    footer .social i { margin-right:.5rem; }
+    footer .legal { text-align:center; margin-top:1rem; color:#999; font-size:.9rem; } */
+
+    /* Buttons */
+    /* .btn { display:inline-flex; align-items:center; gap:.5rem; background:#222; color:#fff; padding:.55rem .85rem; border-radius:8px; text-decoration:none; border:none; cursor:pointer; font-weight:700; }
+    .btn.brand { background:var(--brand); }
+    .btn.brand:hover { background:var(--brand-600); }
+    .btn.outline { background:transparent; color:#222; border:1px solid var(--gray-300); }
+    .btn.outline:hover { border-color:var(--brand); color:var(--brand); }
+    .btn.ghost { background:transparent; color:#004b80; }  */
+
+    /* Anchors highlight on target */
+    :target { scroll-margin-top:90px; }
+
+    /* Small screens */
+    @media (max-width:900px){
+      .terms-layout { grid-template-columns:1fr; }
+      .toc { position:static; }
+    }
+  </style>
+</head>
+<body>
+  
+  
+  <nav aria-label="Primary">
+  <div class="wrap">
+    <a class="logo" href="/"><img src="/assets/logo/logo.png" alt="Elite Travel & Tour"></a>
+    <ul class="primary">
+      <li><a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a></li>
+      <li><a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+      <li><a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a></li>
+      <li><a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a></li>
+      <li><a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a></li>
+      <li><a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a></li>
+    </ul>
+    <div class="nav-right">
+      <button id="bellBtn" class="btn outline bell" aria-label="Notifications">
+        <i class="fa-regular fa-bell"></i>
+        <span id="bellCount" class="count hidden">0</span>
+      </button>
+      <span id="authStatus" class="auth-pill" style="display:none;">
+        <i class="fa fa-user-check"></i><span class="auth-text">Guest</span>
+      </span>
+      <button id="loginBtn" class="btn outline"><i class="fa fa-right-to-bracket"></i> Login</button>
+      <button id="profileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> </button>
+      <button id="logoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> Logout</button>
+      <button id="menuToggle" class="menu-toggle" aria-expanded="false"><i class="fa fa-bars"></i></button>
+    </div>
+  </div>
+
+  <!-- Mobile panel -->
+  <div id="mobilePanel" class="mobile-panel">
+    <div class="block">
+      <a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a>
+      <a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a>
+      <a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a>
+      <a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a>
+      <a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a>
+      <a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a>
+    </div>
+    <div class="block">
+      <span class="auth-pill"><i class="fa fa-user"></i><span id="mobileAuthText">Guest</span></span>
+      <div class="toolbar">
+        <button id="mobileLoginBtn" class="btn brand"><i class="fa fa-right-to-bracket"></i> Login</button>
+        <button id="mobileProfileBtn" class="btn outline" style="display:none"><i class="fa fa-user">Profile</i> </button>
+        <button id="mobileLogoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> Logout</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+ <div id="notifFeed" class="feed hidden">
+  <div class="feed-toolbar">
+    <span class="muted small-text">Notifications</span>
+    <div style="color:var(--brand);display:flex;gap:.25rem;">
+      <button id="markAllReadBtn" class='btn ' style="color:var(--brand);" ><i class="fa fa-check-double"></i> Mark as Read</button>
+      <button id="clearAllNotifBtn" class='btn '><i class="fa fa-trash"></i> Clear</button>
+    </div>
+  </div>
+  <div id="notifList" class="list"></div>
+</div>
+<script type="module" src="/src/js/notifications.js"></script>
+
+  <main class="container">
+    <section class="card"><div class="body">
+      <h2 class="page-title">Terms & Conditions</h2>
+      <p class="muted">Please read these Terms & Conditions carefully. By using our services, you acknowledge and agree to the terms below.</p>
+    </div></section>
+
+    <div class="terms-layout">
+      <!-- Table of contents -->
+      <aside class="toc" aria-label="Table of contents">
+        <h3>Contents</h3>
+        <a href="#general" id="toc-general"><i class="fa fa-circle-dot"></i> General</a>
+        <a href="#services" id="toc-services"><i class="fa fa-circle-dot"></i> Services</a>
+        <a href="#payments" id="toc-payments"><i class="fa fa-circle-dot"></i> Payments</a>
+        <a href="#privacy" id="toc-privacy"><i class="fa fa-circle-dot"></i> Privacy</a>
+        <a href="#conduct" id="toc-conduct"><i class="fa fa-circle-dot"></i> User Conduct</a>
+        <a href="#liability" id="toc-liability"><i class="fa fa-circle-dot"></i> Liability</a>
+        <a href="#law" id="toc-law"><i class="fa fa-circle-dot"></i> Governing Law</a>
+        <a href="#contact" id="toc-contact"><i class="fa fa-circle-dot"></i> Contact</a>
+        <hr style="border:none;border-top:1px solid var(--gray-200);margin:.75rem 0;">
+        <button id="printBtn" class="btn outline" style="width:100%"><i class="fa fa-print"></i> Print terms</button>
+      </aside>
+
+      <!-- Terms sections -->
+      <section>
+        <div class="banner"><i class="fa fa-info-circle"></i><div>These terms were last updated on <strong>December 1, 2025</strong>. Changes may occur periodically to reflect regulatory updates and service improvements.</div></div>
+
+        <div class="terms-section" id="general">
+          <h3>General Terms</h3>
+          <ul>
+            <li>By using Elite Travel & Tour services, you agree to these Terms & Conditions.</li>
+            <li>We reserve the right to update these terms at any time. Material changes will be communicated on this page.</li>
+            <li>Users must be at least 18 years old or have verifiable parental/guardian consent.</li>
+            <li>You must provide accurate and complete information during registration and applications.</li>
+            <li>Accounts are personal; do not share credentials or allow unauthorized access to your account.</li>
+          </ul>
+        </div>
+
+        <div class="terms-section" id="services">
+          <h3>Services</h3>
+          <ul>
+            <li>Visa assistance is subject to embassy requirements and regulations; outcomes and timelines are determined by third-party authorities.</li>
+            <li>Flight bookings depend on airline availability and policies, including fees for changes or cancellations.</li>
+            <li>Work & Pay programs require compliance with host country labor and immigration laws; eligibility documents must be verified.</li>
+            <li>Service timelines vary by country, season, and provider capacity; we provide realistic estimates but cannot guarantee exact dates.</li>
+            <li>Ancillary services (tour packages, concierge, coverage) may require separate agreements with verified partners.</li>
+          </ul>
+        </div>
+
+        <div class="terms-section" id="payments">
+          <h3>Payments</h3>
+          <ul>
+            <li>All payments are securely processed through approved gateways. Keep your payment references for support and verification.</li>
+            <li>Refunds are subject to service-specific policies and third-party rules (e.g., airline fare conditions, embassy fees).</li>
+            <li>Chargebacks or fraudulent transactions may result in account suspension and investigation.</li>
+            <li>Currency conversions and bank charges may apply; the user is responsible for any charges levied by their financial institution.</li>
+            <li>Invoices and receipts are issued for all completed transactions; contact support for reprint requests.</li>
+          </ul>
+        </div>
+
+        <div class="terms-section" id="privacy">
+          <h3>Privacy & Data Protection</h3>
+          <ul>
+            <li>Your personal data is handled in accordance with applicable privacy laws and our commitment to confidentiality.</li>
+            <li>We maintain secure storage and access controls for user information and process data only for service fulfillment.</li>
+            <li>Data may be shared with verified partners solely to deliver requested services and meet regulatory requirements.</li>
+            <li>Users may request deletion or correction of their data, subject to legal obligations and retention policies.</li>
+            <li>Communication preferences may be managed via your account settings; essential service notices may still be sent.</li>
+          </ul>
+        </div>
+
+        <div class="terms-section" id="conduct">
+          <h3>User Conduct</h3>
+          <ul>
+            <li>Do not misuse services, provide false information, or attempt to circumvent verification processes.</li>
+            <li>Treat staff, partners, and other users with respect; harassment or abuse will result in account action.</li>
+            <li>Users are responsible for maintaining account security and reporting suspected unauthorized access.</li>
+            <li>Any attempt to manipulate outcomes (e.g., false documents) will lead to immediate suspension and potential legal action.</li>
+          </ul>
+        </div>
+
+        <div class="terms-section" id="liability">
+          <h3>Liability</h3>
+          <ul>
+            <li>Elite Travel & Tour is not liable for delays caused by third parties (embassies, airlines, or partner agencies).</li>
+            <li>We are not responsible for decisions made by embassies or airlines; our role is assistance and facilitation.</li>
+            <li>Users must comply with destination laws and regulations; failure to do so may affect service outcomes.</li>
+            <li>Our liability is limited to the value of services purchased and does not cover indirect or consequential losses.</li>
+          </ul>
+        </div>
+
+        <div class="terms-section" id="law">
+          <h3>Governing Law</h3>
+          <ul>
+            <li>These terms are governed by the laws of Ghana.</li>
+            <li>Disputes shall be resolved in Ghanaian courts with jurisdiction in the appropriate venue.</li>
+            <li>International users must comply with local laws in addition to these terms and applicable Ghanaian regulations.</li>
+          </ul>
+        </div>
+
+        <div class="terms-section" id="contact">
+          <h3>Contact</h3>
+          <ul>
+            <li>Email: info@elitetravel.com</li>
+            <li>Phone: +233 59 911 7007</li>
+            <li>Address: Tema, Greater Accra, Ghana</li>
+          </ul>
+          <div class="toolbar" style="margin-top:.5rem;">
+            <a href="/views/pages/contact.html" class="btn brand"><i class="fa fa-envelope"></i> Contact support</a>
+            <a href="/views/pages/appointment.html" class="btn outline"><i class="fa fa-calendar"></i> Book a consult</a>
+          </div>
+        </div>
+
+        <!-- Acceptance banner -->
+        <div class="banner" role="status" aria-live="polite">
+          <i class="fa fa-shield-halved"></i>
+          <div>By continuing to use our services, you acknowledge the latest Terms & Conditions and agree to comply with all requirements.</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Modal for Quick Info -->
+  <div class="modal" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+    <section class="card"><div class="body">
+      <h3 id="infoTitle">Terms Update</h3>
+      <p>These Terms & Conditions were last updated on December 1, 2025. Please review any changes and contact support if you have questions.</p>
+      <div class="toolbar">
+        <button class="btn brand" id="closeInfo"><i class="fa fa-check"></i> Close</button>
+        <button class="btn outline" id="printFromModal"><i class="fa fa-print"></i> Print</button>
+      </div>
+    </div></section>
+  </div>
+ <!-- Footer -->
+  <footer id="footer">
+    <div class="grid">
+      <div>
+        <h4>Elite Travel & Tour</h4>
+        <p>Trusted partner for seamless journeys worldwide.</p>
+        <p class="muted">Visa assistance, Work & Pay programs, and flight bookings with premium support.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/views/pages/services.html">Services</a></li>
+          <li><a href="/views/pages/work-and-pay.html">Work & Pay</a></li>
+          <li><a href="/views/pages/appointment.html">Book Appointment</a></li>
+          <li><a href="/views/pages/contact.html">Contact</a></li>
+          <li><a href="/views/pages/about.html">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><i class="fa fa-phone"></i> +233 59 911 7007</p>
+        <p><i class="fa fa-envelope"></i> info@elitetravel.com</p>
+        <p><i class="fa fa-map-marker-alt"></i> Tema, Greater Accra, Ghana</p>
+        <!-- Newsletter -->
+      <div class="newsletter">
+        <label for="newsletterEmail" class="muted">Subscribe to our newsletter:</label><br>
+        <input id="newsletterEmail" type="email" placeholder="Your email">
+        <button id="subscribeBtn"><i class="fa fa-paper-plane"></i> Subscribe</button>
+      </div>
+      <div id="subscribeMsg" class="muted" style="margin-top:.5rem;"></div>
+      </div>
+      <div>
+      <h4>Resources</h4>
+      <ul class="list">
+        <li><a href="/views/pages/profile.html">Profile</a></li>
+        <li><a href="/views/pages/tracking.html">Tracking</a></li>
+        <li><a href="/views/pages/privacy.html">Privacy Policy</a></li>
+        <li><a href="/views/pages/terms.html">Terms of Service</a></li>
+      </ul>
+    </div>
+      <div class="social">
+        <h4>Follow Us</h4>
+        <div class="toolbar">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+    
+  <!-- Footer bottom -->
+  <div class="footer-bottom">© <span id="year"></span> Elite Travel & Tour. All rights reserved.</div>
+  </footer>
+  <script>
+    // Dynamic year
+    document.getElementById('year').textContent=new Date().getFullYear();
+
+    // Newsletter subscription demo
+    const subscribeBtn=document.getElementById('subscribeBtn');
+    const eemailInput=document.getElementById('newsletterEmail');
+    const subscribeMsg=document.getElementById('subscribeMsg');
+    subscribeBtn.addEventListener('click',()=>{
+      const eemail=eemailInput.value.trim();
+      if(!eemail){ subscribeMsg.textContent="Please enter your email."; subscribeMsg.style.color="red"; return; }
+      subscribeMsg.textContent=`Thank you for subscribing, ${eemail}!`;
+      subscribeMsg.style.color="lightgreen";
+      eemailInput.value="";
+    });
+  </script>
+   <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"><i class="fa fa-info-circle"></i><span id="toastText">Notice</span></div>
+
+  
+ <script type="module">
+  import { sb } from '/src/js/supabase.js';
+
+// --- Notification feed toggle
+  document.addEventListener('click',(e)=>{
+    const feed=document.getElementById('notifFeed');
+    if(!feed) return;
+    if(e.target.closest('#bellBtn')){ feed.classList.toggle('hidden'); }
+    else if(!e.target.closest('#notifFeed')){ feed.classList.add('hidden'); }
+  });
+
+  
+  // --- Supabase notifications subscription
+  function renderNotification(n){
+    const list=document.getElementById('notifList');
+    const bellCount=document.getElementById('bellCount');
+    if(list){
+      const el=document.createElement('div');
+      el.className='item';
+      el.textContent=n.message || n.text;
+      list.prepend(el);
+    }
+    if(bellCount){
+      const count=parseInt(bellCount.textContent||'0',10)+1;
+      bellCount.textContent=String(count);
+      bellCount.classList.remove('hidden');
+    }
+  }
+
+  let channel;
+  async function subscribeNotifications(userId){
+    if(channel){ await sb.removeChannel(channel); channel=null; }
+    channel=sb.channel(`header-notifs-${userId}`)
+      .on('postgres_changes',{
+        event:'INSERT',
+        schema:'public',
+        table:'notifications',
+        filter:`user_id=eq.${userId}`
+      },payload=>{
+        renderNotification(payload.new);
+      })
+      .subscribe();
+  }
+
+  /* =========================================
+     Auth buttons
+  ========================================== */
+  const loginBtn=document.getElementById('loginBtn');
+  const logoutBtn=document.getElementById('logoutBtn');
+  const profileBtn=document.getElementById('profileBtn');
+  const mobileLoginBtn=document.getElementById('mobileLoginBtn');
+  const mobileLogoutBtn=document.getElementById('mobileLogoutBtn');
+  const mobileProfileBtn=document.getElementById('mobileProfileBtn');
+  const authText=document.querySelector('#authStatus .auth-text');
+  const mobileAuthText=document.getElementById('mobileAuthText');
+
+  function updateAuthUI(session){
+    const user=session?.user;
+    if(user){
+      if(authText) authText.textContent=user.email;
+      if(mobileAuthText) mobileAuthText.textContent=user.email;
+
+      loginBtn?.style.setProperty('display','none');
+      logoutBtn?.style.setProperty('display','inline-flex');
+      profileBtn?.style.setProperty('display','inline-flex');
+
+      mobileLoginBtn?.style.setProperty('display','none');
+      mobileLogoutBtn?.style.setProperty('display','inline-flex');
+      mobileProfileBtn?.style.setProperty('display','inline-flex');
+
+      profileBtn?.addEventListener('click',()=>window.location.href=`/views/pages/user/profile.html?id=${user.id}`);
+      mobileProfileBtn?.addEventListener('click',()=>window.location.href=`/views/pages/user/profile.html?id=${user.id}`);
+    } else {
+      if(authText) authText.textContent='Guest';
+      if(mobileAuthText) mobileAuthText.textContent='Guest';
+
+      loginBtn?.style.setProperty('display','inline-flex');
+      logoutBtn?.style.setProperty('display','none');
+      profileBtn?.style.setProperty('display','none');
+
+      mobileLoginBtn?.style.setProperty('display','inline-flex');
+      mobileLogoutBtn?.style.setProperty('display','none');
+      mobileProfileBtn?.style.setProperty('display','none');
+    }
+  }
+
+  // Initial session check
+  const { data } = await sb.auth.getSession();
+  updateAuthUI(data.session);
+
+  // Listen for auth changes
+  sb.auth.onAuthStateChange((_event, session)=>{
+    updateAuthUI(session);
+  });
+
+  // Login buttons redirect to login page
+  loginBtn?.addEventListener('click', ()=> window.location.href='/views/pages/login.html');
+  mobileLoginBtn?.addEventListener('click', ()=> window.location.href='/views/pages/login.html');
+
+  // Logout buttons sign out via Supabase
+  logoutBtn?.addEventListener('click', async ()=>{
+    await sb.auth.signOut();
+    updateAuthUI(null);
+    window.location.href='/views/pages/login.html';
+  });
+  mobileLogoutBtn?.addEventListener('click', async ()=>{
+    await sb.auth.signOut();
+    updateAuthUI(null);
+    window.location.href='/views/pages/login.html';
+  });
+
+  /* =========================================
+     Toast notifications
+  ========================================== */
+  const toast = document.getElementById('toast');
+  const toastText = document.getElementById('toastText');
+  function showToast(message, ms=2500){
+    toastText.textContent = message;
+    toast.classList.add('show');
+    setTimeout(()=> toast.classList.remove('show'), ms);
+  }
+
+  /* =========================================
+     Mobile menu toggle
+  ========================================== */
+  const menuToggle = document.getElementById('menuToggle');
+  const mobilePanel = document.getElementById('mobilePanel');
+  menuToggle?.addEventListener('click', ()=>{
+    const isOpen = mobilePanel.classList.toggle('open');
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+  mobilePanel?.addEventListener('click', (e)=>{
+    if(e.target.matches('a')) {
+      mobilePanel.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded','false');
+    }
+  });
+
+    // TOC active state on scroll
+    const sections = ['general','services','payments','privacy','conduct','liability','law','contact'];
+    const tocLinks = sections.map(id => ({ id, el: document.getElementById('toc-'+id) }));
+
+    function setActiveTOC(currentId){
+      tocLinks.forEach(l => l.el.classList.toggle('active', l.id === currentId));
+    }
+
+    const observer = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          setActiveTOC(entry.target.id);
+        }
+      });
+    }, { rootMargin:'-60% 0px -35% 0px', threshold:0.01 });
+
+    sections.forEach(id=>{
+      const el = document.getElementById(id);
+      if(el) observer.observe(el);
+    });
+
+    // Print buttons
+    const printBtn = document.getElementById('printBtn');
+    const printFromModal = document.getElementById('printFromModal');
+    printBtn?.addEventListener('click', ()=> window.print());
+    printFromModal?.addEventListener('click', ()=> window.print());
+
+    // Modal open on load, close handlers
+    const infoModal = document.getElementById('infoModal');
+    const closeInfo = document.getElementById('closeInfo');
+
+    window.addEventListener('load', ()=> {
+      infoModal.style.display = 'flex';
+    });
+    closeInfo?.addEventListener('click', ()=> { infoModal.style.display='none'; });
+    infoModal.addEventListener('click', (e)=> { if(e.target===infoModal) infoModal.style.display='none'; });
+
+    // Keyboard accessibility: trap focus inside modal
+    function trapFocus(modal){
+      const focusable = modal.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])');
+      const first = focusable[0];
+      const last  = focusable[focusable.length-1];
+      function keyHandler(e){
+        if(e.key !== 'Tab') return;
+        if(e.shiftKey){
+          if(document.activeElement === first){ e.preventDefault(); last.focus(); }
+        } else {
+          if(document.activeElement === last){ e.preventDefault(); first.focus(); }
+        }
+      }
+      modal.addEventListener('keydown', keyHandler);
+      first && first.focus();
+    }
+    trapFocus(infoModal);
+  </script>
+</body>
+</html>

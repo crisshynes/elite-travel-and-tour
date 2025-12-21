@@ -1,0 +1,72 @@
+<aside class="sidebar" id="adminSidebar">
+  <style>
+    .sidebar {
+      background:#1f1f1f;
+      color:#eee;
+      width:240px;
+      min-height:100vh;
+      position:fixed;
+      top:0;
+      left:0;
+      display:flex;
+      flex-direction:column;
+      padding:1rem 0;
+      transition:transform .3s ease;
+    }
+    .sidebar.collapsed { transform:translateX(-100%); }
+    .sidebar nav { display:flex; flex-direction:column; gap:.5rem; }
+    .sidebar nav a {
+      color:#eee;
+      text-decoration:none;
+      padding:.75rem 1rem;
+      display:flex;
+      align-items:center;
+      gap:.75rem;
+      border-radius:6px;
+      transition:background .2s;
+    }
+    .sidebar nav a:hover { background:#333; }
+    .sidebar nav a.active { background:#0077cc; color:#fff; }
+    .sidebar nav i { width:20px; text-align:center; }
+    .toggle-btn {
+      position:absolute;
+      top:1rem;
+      right:-40px;
+      background:#0077cc;
+      color:#fff;
+      border:none;
+      border-radius:6px;
+      padding:.5rem;
+      cursor:pointer;
+    }
+    @media(max-width:768px){
+      .sidebar { transform:translateX(-100%); }
+      .sidebar.show { transform:translateX(0); }
+    }
+  </style>
+
+  <button class="toggle-btn" id="sidebarToggle" aria-label="Toggle sidebar"><i class="fa fa-bars"></i></button>
+
+  <nav aria-label="Admin navigation">
+    <a href="/views/pages/admin/index.html"><i class="fa fa-dashboard"></i> Dashboard</a>
+    <a href="/views/pages/admin/users.html"><i class="fa fa-user"></i> Users</a>
+    <a href="/views/pages/admin/jobs.html"><i class="fa fa-briefcase"></i> Jobs</a>
+    <a href="/views/pages/admin/job-create.html"><i class="fa fa-plus"></i> Post Job</a>
+    <a href="/views/pages/admin/applications.html"><i class="fa fa-wrench"></i> Applications</a>
+    <a href="/views/pages/admin/payments.html"><i class="fa fa-credit-card"></i> Payments</a>
+    <a href="/views/pages/admin/testimonials.html"><i class="fa fa-comments"></i> Testimonials</a>
+    <a href="/views/pages/admin/notifications.html"><i class="fa fa-bell"></i> Notifications</a>
+  </nav>
+</aside>
+
+<script>
+  const sidebar=document.getElementById('adminSidebar');
+  const toggle=document.getElementById('sidebarToggle');
+  toggle.addEventListener('click',()=> sidebar.classList.toggle('show'));
+
+  // Highlight active link
+  const links=sidebar.querySelectorAll('nav a');
+  links.forEach(link=>{
+    if(link.href===location.href){ link.classList.add('active'); }
+  });
+</script>

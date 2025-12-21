@@ -1,0 +1,1358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Elite Travel & Tour — Payment</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Secure payment portal for Elite Travel & Tour — program, service, application, job, and appointments payments."/>
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Standard ICO -->
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+<!-- Or PNG -->
+<link rel="icon" href="/favicon.png" type="image/png">
+
+<!-- Optional: SVG -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+    :root{
+      --brand:#0077cc;
+      --brand-600:#0060a3;
+      --brand-700:#004b80;
+      --dark:#020617;
+      --muted:#64748b;
+      --border:#1f2937;
+      --bg:#020617;
+      --light:#f9fafb;
+      --danger:#f97373;
+      --success:#22c55e;
+      --warning:#fbbf24;
+    }
+
+    body{
+      background:#020617;
+      color:#e5e7eb;
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial;
+    }
+
+    /* Header */
+    nav {
+      position:sticky; top:0; background:#020617; z-index:1000;
+      padding:.5rem 1rem; box-shadow:0 2px 18px rgba(0,0,0,0.65);
+      border-bottom:1px solid rgba(31,41,55,.9);
+    }
+    nav .wrap { max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:.75rem; }
+    nav .logo { display:flex; align-items:center; gap:.5rem; font-weight:800; color:#e5e7eb; text-decoration:none; white-space:nowrap; }
+    nav .logo img { height:40px; width:auto; border-radius:6px; }
+    nav ul.primary { display:flex; gap:1rem; list-style:none; margin:0; padding:0; }
+    nav a { text-decoration:none; color:#cbd5f5; font-weight:600; padding:.4rem .6rem; border-radius:6px; display:inline-flex; align-items:center; gap:.4rem; font-size:.9rem; }
+    nav a:hover, nav a.active { color:#f9fafb; background:rgba(37,99,235,.22); }
+
+    .nav-right{ display:flex; gap:.5rem; align-items:center; }
+    .btn-nav{
+      display:inline-flex; align-items:center; gap:.4rem;
+      padding:.4rem .7rem;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      background:transparent;
+      color:#e5e7eb;
+      cursor:pointer;
+      font-size:.82rem;
+    }
+    .btn-nav:hover{
+      border-color:#38bdf8;
+      color:#38bdf8;
+      background:rgba(15,23,42,.8);
+    }
+    .auth-pill{
+      display:inline-flex; align-items:center; gap:.4rem;
+      padding:.2rem .6rem;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      background:#020617;
+      color:#cbd5f5;
+      font-size:.8rem;
+      max-width:33vw;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .auth-pill i{ color:#22c55e; }
+
+    .menu-toggle { display:none; border:none; background:#020617; color:#e5e7eb; padding:.45rem .6rem; border-radius:999px; box-shadow:0 0 0 1px rgba(31,41,55,.9); }
+    .menu-toggle i { font-size:1.1rem; }
+    .mobile-panel { display:none; background:#020617; border-top:1px solid rgba(31,41,55,.9); box-shadow:0 16px 30px rgba(0,0,0,.75); }
+    .mobile-panel.open { display:block; }
+    .mobile-panel .block { max-width:1100px; margin:0 auto; display:flex; flex-direction:column; padding:.75rem 1rem; gap:.25rem; }
+    .mobile-panel a { padding:.55rem .75rem; border-radius:8px; color:#e5e7eb; font-weight:600; font-size:.9rem; text-decoration:none; }
+    .mobile-panel a:hover { background:#020c28; color:#38bdf8; }
+    @media (max-width:880px){
+      nav ul.primary{ display:none; }
+      .menu-toggle{ display:inline-flex; }
+      .auth-pill.desktop-only{ display:none; }
+    }
+
+    .chip-inline{
+      display:inline-flex; align-items:center; gap:.3rem;
+      padding:.2rem .6rem;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      background:#020617;
+      color:#e5e7eb;
+      font-size:.78rem;
+    }
+
+    main.payment-main{
+      max-width:1100px;
+      margin:1.5rem auto 2.5rem;
+      padding:0 1rem;
+    }
+    .payment-layout{
+      display:grid;
+      grid-template-columns: minmax(0,1.4fr) minmax(0,1fr);
+      gap:1rem;
+    }
+    @media(max-width:900px){
+      .payment-layout{ grid-template-columns: 1fr; }
+    }
+    .card{
+      background:#020617;
+      border-radius:14px;
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:0 24px 60px rgba(15,23,42,.7);
+      padding:1rem;
+    }
+    .section-title{ font-size:1.2rem; margin-bottom:.35rem; }
+    .muted{ color:#64748b; }
+
+    .summary-header{ display:flex; gap:.75rem; align-items:flex-start; }
+    .summary-cover{ width:88px; height:88px; border-radius:12px; overflow:hidden; border:1px solid rgba(31,41,55,.9); background:#020617; flex-shrink:0; }
+    .summary-cover img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .summary-pills{ display:flex; flex-wrap:wrap; gap:.35rem; margin-top:.35rem; }
+    .pill{
+      padding:.15rem .55rem; border-radius:999px; font-size:.78rem;
+      border:1px solid rgba(148,163,184,.7); background:#020617; color:#e5e7eb;
+      display:inline-flex; align-items:center; gap:.3rem;
+    }
+
+    .amount-row{
+      display:flex; justify-content:space-between; align-items:center; margin-top:.6rem; padding-top:.6rem;
+      border-top:1px dashed rgba(55,65,81,.9); gap:.75rem; flex-wrap:wrap;
+    }
+    .price-main{ font-size:1.35rem; font-weight:700; color:#e5e7eb; }
+    .price-sub{ font-size:.82rem; color:#9ca3af; }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.3rem; padding:.12rem .5rem; border-radius:999px;
+      font-size:.75rem; background:rgba(15,118,110,.15); border:1px solid rgba(20,184,166,.7); color:#ccfbf1;
+    }
+
+    .form-grid{ display:grid; gap:.7rem; }
+    .form-grid-2{ display:grid; gap:.7rem; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    @media(max-width:700px){ .form-grid-2{ grid-template-columns:1fr; } }
+
+    label{ display:block; font-size:.84rem; color:#9ca3af; margin-bottom:.2rem; }
+    .input, textarea, select{
+      width:100%; box-sizing:border-box; padding:.55rem .7rem; border-radius:10px;
+      border:1px solid rgba(148,163,184,.7); background:#020617;
+      font-size:.9rem; color:#e5e7eb; transition:border-color .12s, box-shadow .12s, background .12s;
+    }
+    .input:focus, textarea:focus, select:focus{
+      outline:none; border-color:#38bdf8; box-shadow:0 0 0 2px rgba(56,189,248,.35); background:#020617;
+    }
+    textarea{ min-height:80px; resize:vertical; }
+
+    .method-options{ display:flex; flex-direction:column; gap:.35rem; }
+    .method-option{
+      display:flex; align-items:flex-start; gap:.5rem; padding:.45rem .6rem; border-radius:10px;
+      border:1px solid rgba(55,65,81,.9); background:#020617; cursor:pointer;
+    }
+    .method-option input{ margin-top:.2rem; }
+    .method-option.active{ border-color:#38bdf8; box-shadow:0 0 0 1px rgba(56,189,248,.4); }
+    .method-option strong{ font-size:.9rem; }
+    .method-option .muted{ font-size:.8rem; }
+
+    .btn{
+      display:inline-flex; align-items:center; gap:.45rem; padding:.55rem .95rem;
+      border-radius:999px; border:none; cursor:pointer; font-weight:600; font-size:.9rem;
+      text-decoration:none; transition:all .15s ease-out;
+    }
+    .btn.brand{
+      background:#0077cc; color:#f9fafb; box-shadow:0 10px 26px rgba(37,99,235,.4);
+    }
+    .btn.brand:hover{
+      background:#0060a3; transform:translateY(-1px); box-shadow:0 16px 40px rgba(37,99,235,.55);
+    }
+    .btn.outline{
+      background:transparent; color:#e5e7eb; border-radius:999px; border:1px solid rgba(148,163,184,.7);
+    }
+    .btn.outline:hover{
+      border-color:#38bdf8; color:#38bdf8; background:rgba(15,23,42,.7);
+    }
+    .btn[disabled]{ opacity:.6; cursor:not-allowed; box-shadow:none; transform:none; }
+
+    .toast{
+      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
+      background:#020617; color:#e5e7eb; padding:.75rem 1rem; border-radius:999px;
+      box-shadow:0 16px 40px rgba(15,23,42,.85); z-index:2000; display:none; max-width:90vw; font-size:.9rem;
+    }
+    .toast.show{ display:flex; align-items:center; gap:.6rem; }
+    .toast i{ color:#38bdf8; }
+
+    .info-box{
+      font-size:.8rem; color:#9ca3af; border-radius:10px; border:1px dashed rgba(148,163,184,.6);
+      padding:.45rem .55rem; margin-top:.5rem;
+    }
+    .sub-note{ font-size:.78rem; color:#9ca3af; margin-top:.25rem; }
+
+    .modal{
+      position:fixed; inset:0; background:rgba(15,23,42,.8); display:none;
+      align-items:center; justify-content:center; z-index:1000;
+    }
+    .modal .card{ max-width:420px; width:92%; }
+
+    footer { background:var(--dark); color:#eee; padding:2rem 1rem; border-top:1px solid rgba(31,41,55,.8); }
+    footer .grid { max-width:1100px; margin:0 auto; display:grid; gap:1rem; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
+    footer a { color:#eee; text-decoration:none; }
+    footer a:hover { text-decoration:underline; }
+    footer .social i { margin-right:.5rem; }
+    .footer-bottom { max-width:1100px; margin:1rem auto 0; text-align:center; color:#9ca3af; font-size:.9rem; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <nav aria-label="Primary">
+    <div class="wrap">
+      <a class="logo" href="/"><img src="/assets/logo/logo.png" alt="Elite Travel & Tour"></a>
+      <ul class="primary">
+        <li><a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a></li>
+        <li><a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+        <li><a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a></li>
+        <li><a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a></li>
+        <li><a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a></li>
+        <li><a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a></li>
+      </ul>
+      <div class="nav-right">
+        <span id="authStatus" class="auth-pill desktop-only" style="display:none;">
+          <i class="fa fa-user-check"></i><span class="auth-text" id="userEmail">Guest</span>
+        </span>
+        <button id="loginBtn" class="btn-nav"><i class="fa fa-right-to-bracket"></i> Login</button>
+        <button id="profileBtn" class="btn-nav" style="display:none;"><i class="fa fa-user"></i></button>
+        <button id="logoutBtn" class="btn-nav" style="display:none;"><i class="fa fa-right-from-bracket"></i></button>
+        <button id="menuToggle" class="menu-toggle" aria-expanded="false"><i class="fa fa-bars"></i></button>
+      </div>
+    </div>
+
+    <!-- Mobile panel -->
+    <div id="mobilePanel" class="mobile-panel">
+      <div class="block">
+        <a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a>
+        <a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a>
+        <a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a>
+        <a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a>
+        <a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a>
+        <a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a>
+      </div>
+      <div class="block">
+        <span class="auth-pill"><i class="fa fa-user"></i><span id="mobileAuthText">Guest</span></span>
+        <div class="form-grid-2" style="margin-top:.5rem;">
+          <button id="mobileLoginBtn" class="btn brand"><i class="fa fa-right-to-bracket"></i> Login</button>
+          <button id="mobileLogoutBtn" class="btn outline" style="display:none;"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Summary + Form -->
+  <main class="payment-main">
+    <h1 class="section-title" style="margin-bottom:.2rem;">Secure payment</h1>
+    <p class="muted" style="font-size:.88rem;margin-bottom:.8rem;">
+      Pay for your Elite application, program, service, job, or appointment. Amount can be pre‑set or auto‑computed based on your plan.
+    </p>
+
+    <div class="payment-layout">
+      <!-- SUMMARY -->
+      <section class="card" id="summaryCard">
+        <h2 class="section-title">Payment summary</h2>
+        <p class="muted" id="summarySubtitle">Loading details...</p>
+
+        <div class="summary-header" style="margin-top:.55rem;">
+          <div class="summary-cover" id="summaryCover">
+            <img src="/assets/services/default.jpg" alt="Item cover"
+                 onerror="this.onerror=null;this.src='/assets/services/default.jpg'">
+          </div>
+          <div>
+            <div style="font-size:1rem;font-weight:600;" id="summaryTitle">—</div>
+            <div class="muted" style="font-size:.85rem;margin-top:.15rem;" id="summaryDesc">—</div>
+            <div class="summary-pills" id="summaryPills"></div>
+          </div>
+        </div>
+
+        <div class="amount-row">
+          <div>
+            <div class="price-main" id="summaryAmount">GHS 0.00</div>
+            <div class="price-sub" id="summaryAmountNote">Amount to be paid via selected method.</div>
+          </div>
+          <div style="text-align:right;">
+            <span class="badge" id="summaryTypeBadge"><i class="fa fa-credit-card"></i> Payment</span>
+            <div class="price-sub" id="summaryRefHint">You’ll receive updates after admin confirmation.</div>
+          </div>
+        </div>
+
+        <div class="info-box" id="infoBox">
+          After successful payment, our team will verify your transaction in the admin payments panel. Once confirmed, your tracking status will update.
+        </div>
+      </section>
+
+      <!-- FORM -->
+      <section class="card">
+        <h2 class="section-title">Payment details</h2>
+        <p class="muted" id="payIntro">
+          Choose your payment method. You can pay online via Paystack or use Mobile Money (automatic PIN entry or manual transfer with reference).
+        </p>
+
+        <form id="paymentForm" class="form-grid" style="margin-top:.6rem;">
+          <div>
+            <label>Payment method</label>
+            <div class="method-options" id="methodOptions">
+              <label class="method-option active">
+                <input type="radio" name="channel" value="paystack" checked>
+                <div>
+                  <strong>Paystack (card / mobile wallet)</strong>
+                  <div class="muted">Secure online payment. You’ll be redirected to Paystack or our secure checkout page.</div>
+                </div>
+              </label>
+              <label class="method-option">
+                <input type="radio" name="channel" value="momo_auto">
+                <div>
+                  <strong>Mobile Money (automatic + PIN)</strong>
+                  <div class="muted">Enter your MoMo number and PIN in a secure popup. Complete the process for admin review.</div>
+                </div>
+              </label>
+              <label class="method-option">
+                <input type="radio" name="channel" value="momo_manual">
+                <div>
+                  <strong>Mobile Money (manual transfer)</strong>
+                  <div class="muted">Send money to our MoMo number yourself, then enter the transaction reference for admin verification.</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div>
+              <label for="payerName">Full name</label>
+              <input id="payerName" class="input" placeholder="Name on payment" required>
+            </div>
+            <div>
+              <label for="payerPhone">Mobile number</label>
+              <input id="payerPhone" class="input" placeholder="e.g., 024..." required>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div>
+              <label for="payerEmail">Email address</label>
+              <input id="payerEmail" type="email" class="input" placeholder="you@example.com" required>
+            </div>
+            <div>
+              <label for="amountInput">Amount</label>
+              <input id="amountInput" type="number" step="0.01" class="input" required>
+            </div>
+          </div>
+
+          <!-- MoMo automatic fields (collected in popup) -->
+          <div id="momoAutoFields" style="display:none;">
+            <p class="sub-note">
+              Automatic MoMo will ask for your MoMo number and PIN in a secure popup. Today, we’re experiencing issues with this channel. Your details will still be saved for admin to assist.
+            </p>
+          </div>
+
+          <!-- MoMo manual fields -->
+          <div id="momoManualFields" style="display:none;">
+            <label>Pay to this MoMo number</label>
+            <input class="input" value="+233 59 911 7007 (Samuel Aning)" readonly>
+            <p class="sub-note">
+              Use your own MoMo app/shortcode to send the exact amount. Then paste your transaction ID / reference below.
+            </p>
+            <label for="manualTxnRef">MoMo transaction ID / Reference</label>
+            <input id="manualTxnRef" class="input" placeholder="Enter the reference you received after MoMo payment">
+          </div>
+
+          <div>
+            <label for="userNote">Additional note (optional)</label>
+            <textarea id="userNote" placeholder="Any extra details or special instructions for this payment."></textarea>
+          </div>
+
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.7rem;flex-wrap:wrap;gap:.5rem;">
+            <button type="button" class="btn outline" id="cancelBtn">
+              <i class="fa fa-arrow-left"></i> Back
+            </button>
+            <button type="submit" class="btn brand" id="payBtn">
+              <i class="fa fa-lock"></i> Proceed to pay
+            </button>
+          </div>
+
+          <p id="formStatus" class="muted" style="margin-top:.4rem;font-size:.82rem;"></p>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <!-- MoMo PIN popup -->
+  <div class="modal" id="momoPinModal" aria-hidden="true">
+    <section class="card">
+      <h3 style="margin-top:0;">Enter MoMo details</h3>
+      <p class="muted" style="font-size:.86rem;">
+        Enter the Mobile Money number and PIN to complete the payments.
+      </p>
+      <div class="form-grid" style="margin-top:.5rem;">
+        <div>
+          <label for="modalMomoNumber">MoMo number</label>
+          <input id="modalMomoNumber" class="input" placeholder="MoMo wallet number">
+        </div>
+        <div>
+          <label for="modalMomoName">Account name (optional)</label>
+          <input id="modalMomoName" class="input" placeholder="Name on MoMo account">
+        </div>
+        <div>
+          <label for="modalMomoPin">MoMo PIN</label>
+          <input id="modalMomoPin" class="input" type="password" maxlength="6" placeholder="PIN">
+          <p class="sub-note">
+            Today, automatic MoMo is experiencing issues. We’ll save your details and let admin assist you to complete payment.
+          </p>
+        </div>
+      </div>
+      <div style="margin-top:.7rem;display:flex;justify-content:flex-end;gap:.5rem;">
+        <button class="btn outline" id="momoPinCancel"><i class="fa fa-xmark"></i> Cancel</button>
+        <button class="btn brand" id="momoPinConfirm"><i class="fa fa-check"></i> Confirm</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Payment issue modal -->
+  <div class="modal" id="issueModal">
+    <section class="card">
+      <h3 style="margin-top:0;">Payment issue detected</h3>
+      <p class="muted" id="issueText" style="font-size:.86rem;">
+        We are currently having an issue with our payment methods. Please contact our MoMo line directly for directions. Your details have been saved and an admin will assist you.
+      </p>
+      <div class="info-box" style="margin-top:.4rem;">
+        <strong>MoMo contact:</strong><br>
+        <span>+233 59 911 7007 — Samuel Aning</span>
+      </div>
+      <div style="margin-top:.7rem;display:flex;justify-content:flex-end;gap:.5rem;">
+        <button class="btn outline" id="issueCloseBtn"><i class="fa fa-check"></i> OK</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"><i class="fa fa-info-circle"></i><span id="toastText">Notice</span></div>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="grid">
+      <div>
+        <h4>Elite Travel & Tour</h4>
+        <p>Trusted partner for seamless journeys worldwide.</p>
+        <p class="muted">Visa assistance, Work & Pay programs, and flight bookings with premium support.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/views/pages/services.html">Services</a></li>
+          <li><a href="/views/pages/work-and-pay.html">Work & Pay</a></li>
+          <li><a href="/views/pages/appointment.html">Book Appointment</a></li>
+          <li><a href="/views/pages/contact.html">Contact</a></li>
+          <li><a href="/views/pages/about.html">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><i class="fa fa-phone"></i> +233 59 911 7007</p>
+        <p><i class="fa fa-envelope"></i> info@elitetravel.com</p>
+        <p><i class="fa fa-map-marker-alt"></i> Adabraka Akasanoma rd, Greater Accra, Ghana</p>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul class="list">
+          <li><a href="/views/pages/profile.html">Profile</a></li>
+          <li><a href="/views/pages/tracking.html">Tracking</a></li>
+          <li><a href="/views/pages/privacy.html">Privacy Policy</a></li>
+          <li><a href="/views/pages/terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="social">
+        <h4>Follow Us</h4>
+        <div class="form-grid-2">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© <span id="year"></span> Elite Travel & Tour. All rights reserved.</div>
+  </footer>
+
+  <!-- Paystack inline script -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+    import { CFG } from './config.js';
+
+    /* Toast */
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(msg,ms=2500){
+      toastText.textContent=msg;
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'),ms);
+    }
+
+    /* Year */
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* Header auth + mobile */
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const profileBtn = document.getElementById('profileBtn');
+    const authStatus = document.getElementById('authStatus');
+    const userEmailSpan = document.getElementById('userEmail');
+
+    const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    const mobileAuthText = document.getElementById('mobileAuthText');
+
+    const menuToggle=document.getElementById('menuToggle');
+    const mobilePanel=document.getElementById('mobilePanel');
+
+    menuToggle?.addEventListener('click',()=>{
+      const isOpen=mobilePanel.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded',String(isOpen));
+    });
+    mobilePanel?.addEventListener('click',(e)=>{
+      if(e.target.matches('a')){
+        mobilePanel.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded','false');
+      }
+    });
+
+    function updateAuthUI(session){
+      const user = session?.user || null;
+      if(user){
+        authStatus.style.display='inline-flex';
+        userEmailSpan.textContent=user.email;
+        mobileAuthText.textContent=user.email;
+        loginBtn.style.display='none';
+        logoutBtn.style.display='inline-flex';
+        profileBtn.style.display='inline-flex';
+        mobileLoginBtn.style.display='none';
+        mobileLogoutBtn.style.display='inline-flex';
+      }else{
+        authStatus.style.display='none';
+        userEmailSpan.textContent='Guest';
+        mobileAuthText.textContent='Guest';
+        loginBtn.style.display='inline-flex';
+        logoutBtn.style.display='none';
+        profileBtn.style.display='none';
+        mobileLoginBtn.style.display='inline-flex';
+        mobileLogoutBtn.style.display='none';
+      }
+    }
+
+    loginBtn?.addEventListener('click',()=> window.location.href='/views/pages/login.html');
+    mobileLoginBtn?.addEventListener('click',()=> window.location.href='/views/pages/login.html');
+
+    async function handleLogout(){
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    }
+    logoutBtn?.addEventListener('click', handleLogout);
+    mobileLogoutBtn?.addEventListener('click', handleLogout);
+    profileBtn?.addEventListener('click',()=> window.location.href='/views/pages/profile.html');
+
+    const { data: sessionData } = await sb.auth.getSession();
+    const session = sessionData.session || null;
+    const user = session?.user || null;
+    updateAuthUI(session);
+    sb.auth.onAuthStateChange((_evt,newSession)=> updateAuthUI(newSession));
+
+    if(!user){
+      showToast('Please log in to make a payment.');
+      window.location.href='/views/pages/login.html';
+    }
+
+    /* Elements */
+    const summarySubtitle=document.getElementById('summarySubtitle');
+    const summaryCover=document.getElementById('summaryCover');
+    const summaryTitle=document.getElementById('summaryTitle');
+    const summaryDesc=document.getElementById('summaryDesc');
+    const summaryPills=document.getElementById('summaryPills');
+    const summaryAmount=document.getElementById('summaryAmount');
+    const summaryAmountNote=document.getElementById('summaryAmountNote');
+    const summaryTypeBadge=document.getElementById('summaryTypeBadge');
+    const infoBox=document.getElementById('infoBox');
+    const summaryRefHint=document.getElementById('summaryRefHint');
+
+    const methodOptions=document.getElementById('methodOptions');
+    const payerName=document.getElementById('payerName');
+    const payerPhone=document.getElementById('payerPhone');
+    const payerEmail=document.getElementById('payerEmail');
+    const amountInput=document.getElementById('amountInput');
+    const userNote=document.getElementById('userNote');
+    const paymentForm=document.getElementById('paymentForm');
+    const payBtn=document.getElementById('payBtn');
+    const cancelBtn=document.getElementById('cancelBtn');
+    const formStatus=document.getElementById('formStatus');
+
+    const momoAutoFields=document.getElementById('momoAutoFields');
+    const momoManualFields=document.getElementById('momoManualFields');
+    const manualTxnRef=document.getElementById('manualTxnRef');
+
+    const momoPinModal=document.getElementById('momoPinModal');
+    const modalMomoNumber=document.getElementById('modalMomoNumber');
+    const modalMomoName=document.getElementById('modalMomoName');
+    const modalMomoPin=document.getElementById('modalMomoPin');
+    const momoPinCancel=document.getElementById('momoPinCancel');
+    const momoPinConfirm=document.getElementById('momoPinConfirm');
+
+    const issueModal=document.getElementById('issueModal');
+    const issueCloseBtn=document.getElementById('issueCloseBtn');
+
+    /* Query params */
+    const urlParams=new URLSearchParams(window.location.search);
+    const typeParam=urlParams.get('type') || 'generic';  // 'job' | 'service' | 'application' | 'appointment' | 'generic'
+    const jobId=urlParams.get('job_id');
+    const serviceId=urlParams.get('service_id');
+    const serviceNameParam=urlParams.get('service');
+    const appointmentId=urlParams.get('appointment_id');
+    const redirectFrom=urlParams.get('from');
+    const applicationId=urlParams.get('application_id') || null;
+    const trackingId=urlParams.get('tracking') || null;
+    const passedAmount=urlParams.get('amount');
+    const passedCurrency=urlParams.get('currency') || 'GHS';
+    const passedLabel=urlParams.get('label') || null;
+    const passedProgramType=urlParams.get('program_type') || null;
+    const passedPlan=urlParams.get('plan') || null;
+
+    /* Context */
+    let paymentContext = {
+      type:typeParam,           // job | service | application | appointment | generic
+      jobId:jobId || null,
+      serviceId:serviceId || null,
+      serviceName:serviceNameParam || null,
+      appointmentId:appointmentId || null,
+      applicationId:applicationId,
+      trackingId:trackingId,
+      title:null,
+      description:null,
+      cover:null,
+      amount:passedAmount ? Number(passedAmount) : null,
+      currency:passedCurrency || 'GHS',
+      metadata:{
+        program_type: passedProgramType || null,
+        plan: passedPlan || null,
+        payment_label: passedLabel || null
+      }
+    };
+
+    /* Image helpers */
+    const DEFAULT_SERVICE_IMG = '/assets/services/default.jpg';
+    const DEFAULT_JOB_IMG = '/assets/jobs/default-cover.jpg';
+    const DEFAULT_APPT_IMG = '/assets/appointments/default-cover.jpg';
+
+    function safeUrl(u){
+      if(!u || typeof u !== 'string') return null;
+      const trimmed = u.trim();
+      if(!trimmed) return null;
+      if(trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('/')) return trimmed;
+      return trimmed;
+    }
+
+    function resolveBestImage({ icon, banner, cover_image, logo, image_url }){
+      const candidates = [
+        safeUrl(icon),
+        safeUrl(banner),
+        safeUrl(cover_image),
+        safeUrl(logo),
+        safeUrl(image_url)
+      ].filter(Boolean);
+      return candidates.length ? candidates[0] : null;
+    }
+
+    /* Rules */
+    function computeDefaultAmount(ctx){
+      const meta = ctx.metadata || {};
+      const programRaw = (meta.program_type || '').toLowerCase();
+      const planRaw = (meta.plan || '').toLowerCase();
+      const labelRaw = (meta.payment_label || ctx.title || '').toLowerCase();
+
+      const isExpress =
+        programRaw.includes('express') ||
+        planRaw.includes('express') ||
+        labelRaw.includes('express');
+
+      const isWorkAndPay =
+        programRaw.includes('work & pay') ||
+        programRaw.includes('work-and-pay') ||
+        programRaw.includes('work and pay') ||
+        planRaw.includes('work') ||
+        planRaw.includes('w&p') ||
+        labelRaw.includes('work & pay') ||
+        labelRaw.includes('work-and-pay');
+
+      const isFlight =
+        programRaw.includes('flight') ||
+        labelRaw.includes('flight');
+
+      const isTour =
+        programRaw.includes('tour') ||
+        programRaw.includes('orientation') ||
+        labelRaw.includes('tour') ||
+        labelRaw.includes('orientation');
+
+      if(isExpress) return 6000;
+      if(isWorkAndPay) return 3000;
+      if(isFlight) return 500;
+      if(isTour) return 500;
+
+      return null;
+    }
+
+    /* Loaders */
+    async function loadJob(id){
+      const { data, error } = await sb
+        .from('jobs')
+        .select('id,title,country,city,plan,description,metadata')
+        .eq('id',id)
+        .single();
+      if(error) throw error;
+      const m=data.metadata || {};
+      const location =
+        data.city && data.country
+          ? `${data.city}, ${data.country}`
+          : data.country || data.city || null;
+
+      paymentContext.title = data.title;
+      paymentContext.description = m.short_desc || data.description || location || null;
+
+      const best = resolveBestImage({
+        icon: m.icon,
+        banner: m.banner,
+        cover_image: m.cover_image,
+        logo: m.logo,
+        image_url: m.image_url
+      });
+      paymentContext.cover = best || DEFAULT_JOB_IMG;
+
+      paymentContext.metadata = {
+        ...paymentContext.metadata,
+        job_id:data.id,
+        job_title:data.title,
+        job_plan:data.plan || null,
+        job_location:location,
+        job_company:m.company || null,
+        job_type:m.job_type || null,
+        raw_job_metadata:m
+      };
+    }
+
+    async function loadService(id){
+      const { data, error } = await sb
+        .from('services')
+        .select('id,title,category,tags,price,short_desc,banner,metadata')
+        .eq('id',id)
+        .single();
+      if(error) throw error;
+      const m=data.metadata || {};
+
+      paymentContext.title = data.title;
+      paymentContext.description = data.short_desc || data.category || null;
+
+      const best = resolveBestImage({
+        icon: m.icon,
+        banner: m.banner || data.banner,
+        cover_image: m.cover_image,
+        logo: m.logo,
+        image_url: m.image_url
+      });
+      paymentContext.cover = best || DEFAULT_SERVICE_IMG;
+
+      if(paymentContext.amount == null && data.price != null){
+        paymentContext.amount = Number(data.price);
+        paymentContext.currency = m.currency || paymentContext.currency || 'GHS';
+      }
+
+      paymentContext.metadata = {
+        ...paymentContext.metadata,
+        service_id:data.id,
+        service_title:data.title,
+        service_category:data.category || null,
+        service_tags:Array.isArray(data.tags)?data.tags:(data.tags? [data.tags] : []),
+        raw_service_metadata:m
+      };
+    }
+
+    async function loadAppointment(id){
+      const { data, error } = await sb
+        .from('appointments')
+        .select('id,user_id,name,email,type,status,date,notes,created_at,updated_at,metadata,location,service,channel')
+        .eq('id',id)
+        .single();
+      if(error) throw error;
+      const m = data.metadata || {};
+
+      paymentContext.title = data.service || data.type || 'Appointment payment';
+      paymentContext.description = data.location || m.short_desc || 'Complete payment for your appointment.';
+
+      const best = resolveBestImage({
+        icon: m.icon,
+        banner: m.banner,
+        cover_image: m.cover_image,
+        logo: m.logo,
+        image_url: m.image_url
+      });
+      paymentContext.cover = best || DEFAULT_APPT_IMG;
+
+      if(paymentContext.amount == null && m.price != null){
+        paymentContext.amount = Number(m.price);
+        paymentContext.currency = m.currency || paymentContext.currency || 'GHS';
+      }
+
+      paymentContext.metadata = {
+        ...paymentContext.metadata,
+        appointment_id:data.id,
+        appointment_type:data.type || null,
+        appointment_channel:data.channel || null,
+        appointment_location:data.location || null,
+        raw_appointment_metadata:m
+      };
+    }
+
+    async function loadApplicationPayment(){
+      if(!paymentContext.applicationId && !paymentContext.trackingId) return;
+      try{
+        let query = sb
+          .from('applications')
+          .select('id,tracking_id,status,plan,application_type,details,created_at,service_slug,service_id,metadata')
+          .limit(1);
+        if(paymentContext.applicationId){
+          query = query.eq('id', paymentContext.applicationId);
+        }else{
+          query = query.eq('tracking_id', paymentContext.trackingId);
+        }
+        const { data, error } = await query.maybeSingle();
+        if(error) throw error;
+        if(!data) return;
+
+        const d = data.details || {};
+        const payment = d.payment || null;
+        const priceAmount = d.price_amount || d.service_price || null;
+        const priceLabel = d.price_label || 'Program fee';
+
+        const m = d || {};
+        const best = resolveBestImage({
+          icon: m.icon,
+          banner: m.banner,
+          cover_image: m.cover_image,
+          logo: m.logo,
+          image_url: m.image_url
+        });
+
+        paymentContext.title = paymentContext.title || d.title || 'Application payment';
+        paymentContext.description = paymentContext.description || d.description || 'Complete payment for this application.';
+        paymentContext.cover = paymentContext.cover || best || DEFAULT_SERVICE_IMG;
+
+        if(payment){
+          paymentContext.amount = payment.amount ?? paymentContext.amount ?? priceAmount ?? null;
+          paymentContext.currency = payment.currency || paymentContext.currency || 'GHS';
+          paymentContext.metadata.payment_status = payment.status || 'pending';
+          paymentContext.metadata.payment_label = payment.label || priceLabel;
+          paymentContext.metadata.payment_source = payment.source || 'service';
+        }else{
+          if(paymentContext.amount == null && priceAmount != null){
+            paymentContext.amount = priceAmount;
+          }
+          paymentContext.metadata.payment_label = paymentContext.metadata.payment_label || priceLabel;
+          paymentContext.metadata.payment_status = 'pending';
+        }
+
+        paymentContext.metadata.program_type = paymentContext.metadata.program_type || d.program_type || data.application_type || null;
+        paymentContext.metadata.plan = paymentContext.metadata.plan || d.plan || data.plan || null;
+        paymentContext.metadata.application_id = data.id;
+        paymentContext.metadata.tracking_id = data.tracking_id;
+        paymentContext.metadata.service_id = data.service_id || paymentContext.metadata.service_id || null;
+        paymentContext.metadata.service_slug = data.service_slug || paymentContext.metadata.service_slug || null;
+        paymentContext.metadata.raw_application_metadata = data.metadata || {};
+
+        summarySubtitle.textContent = 'Payment initiated from your application. Amount may be locked by admin.';
+        summaryTypeBadge.innerHTML = `<i class="fa fa-file-signature"></i> Application payment`;
+      }catch(e){
+        console.warn('Failed to load application payment context', e);
+      }
+    }
+
+    async function loadContext(){
+      try{
+        if(paymentContext.applicationId || paymentContext.trackingId){
+          paymentContext.type = 'application';
+        }else if(paymentContext.appointmentId){
+          paymentContext.type = 'appointment';
+        }else if(paymentContext.serviceId){
+          paymentContext.type = 'service';
+        }else if(paymentContext.jobId){
+          paymentContext.type = 'job';
+        }
+
+        if(paymentContext.type === 'job'){
+          if(paymentContext.jobId){
+            summarySubtitle.textContent = 'Payment for selected job.';
+            await loadJob(paymentContext.jobId);
+          }else{
+            summarySubtitle.textContent = 'Job payment.';
+            paymentContext.cover = paymentContext.cover || DEFAULT_JOB_IMG;
+          }
+        }else if(paymentContext.type === 'service'){
+          if(paymentContext.serviceId){
+            summarySubtitle.textContent = 'Service payment.';
+            await loadService(paymentContext.serviceId);
+          }else{
+            summarySubtitle.textContent = 'Service payment.';
+            paymentContext.title = paymentContext.title || serviceNameParam || 'Service payment';
+            paymentContext.cover = paymentContext.cover || DEFAULT_SERVICE_IMG;
+            paymentContext.description = paymentContext.description || 'Complete payment for the selected service.';
+          }
+        }else if(paymentContext.type === 'appointment'){
+          summarySubtitle.textContent = 'Payment for your appointment.';
+          if(paymentContext.appointmentId){
+            await loadAppointment(paymentContext.appointmentId);
+          }else{
+            paymentContext.title = paymentContext.title || 'Appointment payment';
+            paymentContext.cover = paymentContext.cover || DEFAULT_APPT_IMG;
+            paymentContext.description = paymentContext.description || 'Complete payment for your appointment.';
+          }
+        }else if(paymentContext.type === 'application'){
+          summarySubtitle.textContent = 'Payment for your Elite application.';
+          if(paymentContext.metadata.service_id && !paymentContext.cover){
+            try{ await loadService(paymentContext.metadata.service_id); }catch(_){}
+          }
+        }else{
+          summarySubtitle.textContent = 'General payment.';
+          paymentContext.title = paymentContext.title || 'General payment';
+          paymentContext.cover = paymentContext.cover || DEFAULT_SERVICE_IMG;
+        }
+
+        if(paymentContext.applicationId){
+          paymentContext.metadata.application_id = paymentContext.applicationId;
+        }
+        if(paymentContext.trackingId){
+          paymentContext.metadata.tracking_id = paymentContext.trackingId;
+        }
+        if(paymentContext.appointmentId){
+          paymentContext.metadata.appointment_id = paymentContext.appointmentId;
+        }
+
+        const ruleAmount = computeDefaultAmount(paymentContext);
+        if(paymentContext.amount == null && ruleAmount != null){
+          paymentContext.amount = ruleAmount;
+          paymentContext.currency = 'GHS';
+          paymentContext.metadata.payment_label = paymentContext.metadata.payment_label || 'Program fee';
+        }
+
+        summaryTitle.textContent = paymentContext.title || 'Payment';
+        summaryDesc.textContent = paymentContext.description || 'Complete payment for this request.';
+
+        function pickCover(){
+          const c = safeUrl(paymentContext.cover);
+          if(c) return c;
+          if(paymentContext.type === 'job') return DEFAULT_JOB_IMG;
+          if(paymentContext.type === 'appointment') return DEFAULT_APPT_IMG;
+          return DEFAULT_SERVICE_IMG;
+        }
+        const coverSrc = pickCover();
+        summaryCover.innerHTML =
+          `<img src="${coverSrc}" alt="Cover"
+                onerror="this.onerror=null;this.src='${DEFAULT_SERVICE_IMG}'">`;
+
+        summaryPills.innerHTML = '';
+        const pill = (icon, text) => summaryPills.insertAdjacentHTML('beforeend',
+          `<span class="pill"><i class="${icon}"></i> ${text}</span>`
+        );
+        if(paymentContext.metadata.job_plan) pill('fa fa-layer-group', paymentContext.metadata.job_plan);
+        if(paymentContext.metadata.job_company) pill('fa fa-building', paymentContext.metadata.job_company);
+        if(paymentContext.metadata.job_location) pill('fa fa-location-dot', paymentContext.metadata.job_location);
+        if(paymentContext.metadata.job_type) pill('fa fa-briefcase', paymentContext.metadata.job_type);
+        if(paymentContext.metadata.service_category) pill('fa fa-tag', paymentContext.metadata.service_category);
+        if(paymentContext.metadata.program_type) pill('fa fa-globe', paymentContext.metadata.program_type);
+        if(paymentContext.metadata.plan) pill('fa fa-layer-group', paymentContext.metadata.plan);
+        if(paymentContext.metadata.appointment_id) pill('fa fa-calendar-check', `Appointment #${paymentContext.metadata.appointment_id}`);
+
+        const amt = Number(paymentContext.amount || 0);
+        summaryAmount.textContent = `${paymentContext.currency} ${amt.toLocaleString(undefined,{minimumFractionDigits:2, maximumFractionDigits:2})}`;
+        summaryAmountNote.textContent = paymentContext.metadata.payment_label
+          ? `Pay for: ${paymentContext.metadata.payment_label}`
+          : 'Amount to be paid via selected method.';
+        summaryTypeBadge.innerHTML = `<i class="fa fa-credit-card"></i> ${paymentContext.type.charAt(0).toUpperCase()+paymentContext.type.slice(1)} payment`;
+
+        amountInput.value = amt > 0 ? amt : '';
+        payerEmail.value = user?.email || payerEmail.value;
+
+        if(paymentContext.type === 'application'){
+          infoBox.textContent = 'This payment is linked to your application. Admin may lock the amount. After success, your tracking will update.';
+          summaryRefHint.textContent = 'Reference will show in your application payments.';
+        }else if(paymentContext.type === 'appointment'){
+          infoBox.textContent = 'This payment confirms your appointment. Admin will finalize your booking.';
+          summaryRefHint.textContent = 'You’ll receive a booking confirmation after payment.';
+        }else{
+          infoBox.textContent = 'After successful payment, our team will verify your transaction.';
+          summaryRefHint.textContent = 'Keep your reference — admin will confirm it shortly.';
+        }
+      }catch(err){
+        console.error(err);
+        showToast('Failed to load payment context.');
+      }
+    }
+
+    await loadApplicationPayment();
+    await loadContext();
+
+    /* Method selection */
+    function getSelectedChannel(){
+      const checked = methodOptions.querySelector('input[name="channel"]:checked');
+      return checked ? checked.value : 'paystack';
+    }
+    function updateMethodUI(){
+      const selected = getSelectedChannel();
+      methodOptions.querySelectorAll('.method-option').forEach(lbl=>{
+        const input = lbl.querySelector('input[name="channel"]');
+        lbl.classList.toggle('active', input && input.checked);
+      });
+      momoAutoFields.style.display = selected === 'momo_auto' ? 'block' : 'none';
+      momoManualFields.style.display = selected === 'momo_manual' ? 'block' : 'none';
+    }
+    methodOptions.addEventListener('change', updateMethodUI);
+    updateMethodUI();
+
+    /* Cancel/back */
+    cancelBtn.addEventListener('click',()=>{
+      if(redirectFrom) window.location.href = redirectFrom;
+      else if(window.history.length > 1) window.history.back();
+      else window.location.href='/views/pages/services.html';
+    });
+
+    /* Focus trap + modals */
+    function trapFocus(modal){
+      const focusable=modal.querySelectorAll('a[href],button,textarea,input,select,[tabindex]:not([tabindex="-1"])');
+      if(!focusable.length) return;
+      const first=focusable[0], last=focusable[focusable.length-1];
+      function keyHandler(e){
+        if(e.key!=='Tab') return;
+        if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } }
+        else { if(document.activeElement===last){ e.preventDefault(); first.focus(); } }
+      }
+      modal.addEventListener('keydown',keyHandler);
+      first.focus();
+    }
+    function openMomoPinModal(){
+      momoPinModal.style.display='flex';
+      trapFocus(momoPinModal);
+    }
+    function closeMomoPinModal(){ momoPinModal.style.display='none'; }
+    momoPinCancel.addEventListener('click', closeMomoPinModal);
+
+    function openIssueModal(text){
+      document.getElementById('issueText').textContent = text || document.getElementById('issueText').textContent;
+      issueModal.style.display='flex';
+      trapFocus(issueModal);
+    }
+    function closeIssueModal(){ issueModal.style.display='none'; }
+    issueCloseBtn.addEventListener('click', closeIssueModal);
+
+    /* Persistence helpers: aligned to schema */
+    async function persistPaymentAttempt(payload){
+      const enriched = {
+        ...payload,
+        metadata: {
+          ...(payload.metadata || {}),
+          title: paymentContext.title,
+          description: paymentContext.description,
+          cover: paymentContext.cover
+        }
+      };
+      const { data, error } = await sb.from('payments')
+        .insert(enriched)
+        .select('id, ref')
+        .single();
+      if(error) throw error;
+      return data; // { id, ref }
+    }
+
+    /* Paystack integration: Inline checkout (plain functions for callback/onClose) */
+    const PAYSTACK_PUBLIC_KEY = CFG.PAYSTACK_PUBLIC_KEY; // public key only
+
+    function launchPaystack(amountGhs, email, name, phone, meta, ref){
+      if(!window.PaystackPop){
+        throw new Error('Paystack unavailable.');
+      }
+      const amountPesewas = Math.round(Number(amountGhs) * 100);
+
+      if(!email || !Number.isFinite(amountPesewas) || amountPesewas <= 0){
+        throw new Error('Invalid email or amount for Paystack.');
+      }
+
+      const customFields = [
+        { display_name: 'Name', variable_name: 'payer_name', value: String(name || '') },
+        { display_name: 'Phone', variable_name: 'payer_phone', value: String(phone || '') },
+        { display_name: 'Plan', variable_name: 'plan', value: String(meta?.plan || '') },
+        { display_name: 'Program', variable_name: 'program_type', value: String(meta?.program_type || '') },
+        { display_name: 'Tracking', variable_name: 'tracking_id', value: String(meta?.tracking_id || '') },
+        { display_name: 'Application', variable_name: 'application_id', value: String(meta?.application_id || '') }
+      ];
+
+      const handler = window.PaystackPop.setup({
+        key: PAYSTACK_PUBLIC_KEY,
+        email: String(email),
+        amount: amountPesewas,
+        currency: 'GHS',
+        ref: String(ref),
+        metadata: { custom_fields: customFields },
+
+        callback: function(response){
+          sb.from('payments')
+            .update({
+              status: 'success',
+              metadata: {
+                ...(paymentContext.metadata || {}),
+                paystack_ref: response.reference
+              }
+            })
+            .eq('ref', response.reference)
+            .then(function(){ /* recorded */ })
+            .catch(function(err){ console.error('Post-success update failed', err); });
+
+          showToast('Payment successful. Thank you!', 3200);
+          if(paymentContext.trackingId){
+            setTimeout(function(){
+            //  window.location.href = '/views/pages/tracking.html?tracking=' + encodeURIComponent(paymentContext.trackingId);
+            }, 1200);
+          }
+        },
+
+        onClose: function(){
+          showToast('Payment window closed.');
+        }
+      });
+
+      handler.openIframe();
+    }
+
+    /* Channels: aligned to schema */
+    async function createPaystackPayment(amountVal, name, phone, email, note){
+      const ref = `ET-${Date.now()}`;
+      const payload = {
+        user_id: user.id,
+        ref,
+        status: 'pending',
+        amount: Number(amountVal),
+        currency: paymentContext.currency || 'GHS',
+        channel: 'paystack',
+        note,
+        application_id: paymentContext.metadata.application_id || null,
+        metadata: {
+          ...paymentContext.metadata,
+          payer_name: name,
+          payer_phone: phone,
+          payer_email: email,
+          from: redirectFrom || null
+        },
+        created_at: new Date().toISOString()
+      };
+      await persistPaymentAttempt(payload);
+
+      try{
+        launchPaystack(amountVal, email, name, phone, paymentContext.metadata, ref);
+      }catch(err){
+        console.error(err);
+        openIssueModal('We’re having issues with Paystack at the moment. Your details are saved; admin will assist.');
+        await sb.from('payments').update({ status: 'failed' }).eq('ref', ref);
+        throw err;
+      }
+    }
+
+    async function createMomoManualPayment(amountVal, name, phone, email, note, txnRef){
+      const ref = `MM-${Date.now()}`;
+      const payload = {
+        user_id: user.id,
+        ref,
+        status: 'pending',
+        amount: Number(amountVal),
+        currency: paymentContext.currency || 'GHS',
+        channel: 'momo_manual',
+        note,
+        application_id: paymentContext.metadata.application_id || null,
+        metadata: {
+          ...paymentContext.metadata,
+          payer_name: name,
+          payer_phone: phone,
+          payer_email: email,
+          manual_txn_ref: txnRef,
+          from: redirectFrom || null
+        },
+        created_at: new Date().toISOString()
+      };
+      await persistPaymentAttempt(payload);
+      showToast('MoMo manual saved. Admin will verify your reference.', 3200);
+    }
+
+    async function createMomoAutoPayment(amountVal, name, phone, email, note, momoNumber, momoName, momoPin){
+      const ref = `MA-${Date.now()}`;
+      const payload = {
+        user_id: user.id,
+        ref,
+        status: 'pending',
+        amount: Number(amountVal),
+        currency: paymentContext.currency || 'GHS',
+        channel: 'momo_auto',
+        note,
+        application_id: paymentContext.metadata.application_id || null,
+        metadata: {
+          ...paymentContext.metadata,
+          payer_name: name,
+          payer_phone: phone,
+          payer_email: email,
+          momo_number: momoNumber,
+          momo_name: momoName || null,
+          momo_pin_entered: !!momoPin,
+          from: redirectFrom || null
+        },
+        created_at: new Date().toISOString()
+      };
+      await persistPaymentAttempt(payload);
+
+      showToast('We’re having issues with automatic MoMo today. Admin will contact you.', 3600);
+      openIssueModal('We are currently having an issue with MoMo automatic processing. Your details have been saved and admin will assist.');
+    }
+
+    /* Submit payment */
+    paymentForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      formStatus.textContent = '';
+      formStatus.style.color = '#9ca3af';
+
+      const channel = getSelectedChannel();
+      const name = payerName.value.trim();
+      const phone = payerPhone.value.trim();
+      const email = payerEmail.value.trim();
+      const amountVal = parseFloat(amountInput.value);
+      const note = userNote.value.trim();
+      const txnRef = manualTxnRef.value.trim();
+
+      if(!name || !phone || !email || isNaN(amountVal) || amountVal <= 0){
+        formStatus.textContent = 'Please fill all required fields and a valid amount.';
+        formStatus.style.color = '#fecaca';
+        return;
+      }
+
+      if(channel === 'momo_manual' && !txnRef){
+        formStatus.textContent = 'Enter your MoMo transaction ID / reference.';
+        formStatus.style.color = '#fecaca';
+        return;
+      }
+
+      payBtn.disabled = true;
+      payBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Processing...';
+      formStatus.textContent = 'Creating payment record...';
+      formStatus.style.color = '#9ca3af';
+
+      try{
+        if(channel === 'paystack'){
+          await createPaystackPayment(amountVal, name, phone, email, note);
+        }else if(channel === 'momo_manual'){
+          await createMomoManualPayment(amountVal, name, phone, email, note, txnRef);
+        }else if(channel === 'momo_auto'){
+          openMomoPinModal();
+        }else{
+          throw new Error('Unknown payment channel.');
+        }
+
+        if(channel !== 'momo_auto' && paymentContext.trackingId){
+          setTimeout(()=>{
+            window.location.href = `/views/pages/tracking.html?tracking=${encodeURIComponent(paymentContext.trackingId)}`;
+          }, 10000);
+        }
+      }catch(err){
+        console.error(err);
+        const msg = err.message || 'Failed to create payment.';
+        formStatus.textContent = msg;
+        formStatus.style.color = '#fecaca';
+        showToast('Failed to create payment. Try again.', 3200);
+        openIssueModal('We are currently having an issue with our payment methods. Please contact our MoMo line for directions.');
+      }finally{
+        if(getSelectedChannel() !== 'momo_auto'){
+          payBtn.disabled = false;
+          payBtn.innerHTML = '<i class="fa fa-lock"></i> Proceed to pay';
+        }
+      }
+    });
+
+    /* Momo auto popup confirm (save + show issue; no charge) */
+    momoPinConfirm.addEventListener('click', async ()=>{
+      const name = payerName.value.trim();
+      const phone = payerPhone.value.trim();
+      const email = payerEmail.value.trim();
+      const amountVal = parseFloat(amountInput.value);
+      const note = userNote.value.trim();
+
+      const momoNumber = modalMomoNumber.value.trim();
+      const momoName = modalMomoName.value.trim();
+      const momoPin = modalMomoPin.value.trim();
+
+      if(!momoNumber || !momoPin){
+        showToast('Enter MoMo number and PIN.', 3000);
+        return;
+      }
+      if(isNaN(amountVal) || amountVal <= 0){
+        showToast('Enter a valid amount before confirming.', 3000);
+        return;
+      }
+
+      payBtn.disabled = true;
+      payBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Processing...';
+      formStatus.textContent = 'Saving MoMo automatic payment...';
+      formStatus.style.color = '#9ca3af';
+
+      try{
+        await createMomoAutoPayment(amountVal, name, phone, email, note, momoNumber, momoName, momoPin);
+        closeMomoPinModal();
+        if(paymentContext.trackingId){
+          setTimeout(()=>{
+           window.location.href = `/views/pages/tracking.html?tracking=${encodeURIComponent(paymentContext.trackingId)}`;
+          }, 10000);
+        }
+      }catch(err){
+        console.error(err);
+        const msg = err.message || 'Failed to save MoMo auto payment.';
+        showToast(msg, 3500);
+        formStatus.textContent = msg;
+        formStatus.style.color = '#fecaca';
+        openIssueModal('We are currently having an issue with MoMo automatic processing. Please contact our MoMo line. Your details have been captured.');
+      }finally{
+        payBtn.disabled = false;
+        payBtn.innerHTML = '<i class="fa fa-lock"></i> Proceed to pay';
+      }
+    });
+  </script>
+</body>
+</html>

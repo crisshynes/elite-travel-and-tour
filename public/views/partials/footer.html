@@ -1,0 +1,121 @@
+<!-- Footer -->
+<footer id="footer">
+  <style>
+    #footer {
+      background:#222;
+      color:#eee;
+      padding:2rem 1rem;
+      margin-top:2rem;
+      font-size:.95rem;
+    }
+    #footer .grid {
+      display:grid;
+      gap:2rem;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    }
+    #footer h4 { margin-bottom:.75rem; color:#fff; }
+    #footer p.muted { color:#aaa; }
+    #footer ul { list-style:none; padding:0; margin:0; }
+    #footer ul li { margin-bottom:.5rem; }
+    #footer ul a { color:#eee; text-decoration:none; transition:color .2s; }
+    #footer ul a:hover { color:#0077cc; }
+    #footer .newsletter { margin-top:1rem; }
+    #footer .newsletter input { padding:.5rem; border-radius:6px; border:none; width:70%; }
+    #footer .newsletter button { padding:.5rem 1rem; margin-left:.5rem; border:none; border-radius:6px; background:#0077cc; color:#fff; cursor:pointer; }
+    #footer .newsletter button:hover { background:#005fa3; }
+    #footer .social .toolbar a {
+      color:#eee;
+      margin-right:.5rem;
+      font-size:1.2rem;
+      transition:color .2s;
+    }
+    #footer .social .toolbar a:hover { color:#0077cc; }
+    #footer .footer-bottom { text-align:center; margin-top:2rem; color:#999; font-size:.85rem; }
+    @media(max-width:600px){
+      #footer .newsletter input{width:100%; margin-bottom:.5rem;}
+      #footer .newsletter button{width:100%; margin-left:0;}
+    }
+  </style>
+
+  <div class="grid">
+    <!-- Brand -->
+    <div>
+      <h4>Elite Travel & Tour</h4>
+      <p>Trusted partner for seamless journeys worldwide.</p>
+      <p class="muted">Visa assistance, Work & Pay programs, and flight bookings with premium support.</p>
+    </div>
+
+    <!-- Quick Links -->
+    <div>
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="/views/pages/services.html">Services</a></li>
+        <li><a href="/views/pages/work-and-pay.html">Work & Pay</a></li>
+        <li><a href="/views/pages/appointment.html">Book Appointment</a></li>
+        <li><a href="/views/pages/contact.html">Contact</a></li>
+        <li><a href="/views/pages/about.html">About</a></li>
+      </ul>
+    </div>
+
+    <!-- Contact -->
+    <div>
+      <h4>Contact</h4>
+      <p><i class="fa fa-phone"></i> +233 20 123 4567</p>
+      <p><i class="fa fa-envelope"></i> info@elitetravel.com</p>
+      <p><i class="fa fa-map-marker-alt"></i> Tema, Greater Accra, Ghana</p>
+      <!-- Newsletter -->
+      <div class="newsletter">
+        <label for="newsletterEmail" class="muted">Subscribe to our newsletter:</label><br>
+        <input id="newsletterEmail" type="email" placeholder="Your email">
+        <button id="subscribeBtn"><i class="fa fa-paper-plane"></i> Subscribe</button>
+      </div>
+      <div id="subscribeMsg" class="muted" style="margin-top:.5rem;"></div>
+    </div>
+
+    <!-- Resources -->
+    <div>
+      <h4>Resources</h4>
+      <ul class="list">
+        <li><a href="/views/pages/profile.html">Profile</a></li>
+        <li><a href="/views/pages/tracking.html">Tracking</a></li>
+        <li><a href="/views/pages/privacy.html">Privacy Policy</a></li>
+        <li><a href="/views/pages/terms.html">Terms of Service</a></li>
+      </ul>
+    </div>
+
+    <!-- Social -->
+    <div class="social">
+      <h4>Follow Us</h4>
+      <div class="toolbar">
+        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+        <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+        <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Footer bottom -->
+  <div class="footer-bottom">© <span id="year"></span> Elite Travel & Tour. All rights reserved.</div>
+
+  <script>
+    // Dynamic year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Newsletter subscription demo
+    const subscribeBtn = document.getElementById('subscribeBtn');
+    const emailInput = document.getElementById('newsletterEmail');
+    const subscribeMsg = document.getElementById('subscribeMsg');
+    subscribeBtn.addEventListener('click', () => {
+      const email = emailInput.value.trim();
+      if (!email) {
+        subscribeMsg.textContent = "Please enter your email.";
+        subscribeMsg.style.color = "red";
+        return;
+      }
+      subscribeMsg.textContent = `Thank you for subscribing, ${email}!`;
+      subscribeMsg.style.color = "lightgreen";
+      emailInput.value = "";
+    });
+  </script>
+</footer>

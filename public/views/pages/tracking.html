@@ -1,0 +1,2012 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Tracking — Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Track your Elite Travel & Tour Work & Pay, Express, visa and other programs in real time, view your payment amount, and upload required documents securely."/>
+  <link rel="stylesheet" href="/icons/fontawesome.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Standard ICO -->
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+<!-- Or PNG -->
+<link rel="icon" href="/favicon.png" type="image/png">
+
+<!-- Optional: SVG -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+    #bellBtn{ position:relative; }
+    #bellBtn .count{
+      position:absolute;
+      top:-4px;
+      right:-4px;
+      min-width:16px;
+      height:16px;
+      border-radius:999px;
+      background:var(--warning);
+      color:#fff;
+      font-size:.7rem;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    #bellBtn .hidden{ display:none; }
+
+    .tracking-card {
+      max-width:960px;
+      margin:1.5rem auto;
+      border-radius:var(--radius);
+      background:var(--bg);
+      box-shadow:var(--shadow);
+      border:1px solid var(--gray-200);
+    }
+    .tracking-card .body{
+      padding:1rem 1rem 1.2rem;
+    }
+
+    .search-bar {
+      display:flex;
+      gap:.5rem;
+      margin-bottom:1rem;
+      flex-wrap:wrap;
+    }
+    .search-bar input {
+      flex:1;
+      border:1px solid var(--gray-300);
+      border-radius:8px;
+      padding:.55rem .7rem;
+      font-size:.9rem;
+    }
+
+    .meta {
+      margin-bottom:1rem;
+      display:flex;
+      flex-wrap:wrap;
+      gap:.5rem;
+    }
+    .pill {
+      display:inline-flex;
+      align-items:center;
+      gap:.35rem;
+      padding:.25rem .6rem;
+      border-radius:999px;
+      border:1px solid var(--gray-200);
+      background:var(--bg);
+      font-size:.9rem;
+    }
+
+    .grid-layout{
+      display:grid;
+      grid-template-columns:minmax(0,1.4fr) minmax(0,1.2fr);
+      gap:1rem;
+      align-items:flex-start;
+    }
+    @media(max-width:900px){
+      .grid-layout{ grid-template-columns:1fr; }
+    }
+
+    .timeline {
+      list-style:none;
+      padding:0;
+      margin:1rem 0 0;
+      position:relative;
+    }
+    .timeline::before {
+      content:"";
+      position:absolute;
+      left:20px;
+      top:0;
+      bottom:0;
+      width:4px;
+      background:#eee;
+    }
+    .timeline li {
+      position:relative;
+      margin-bottom:1.8rem;
+      padding-left:60px;
+    }
+    .timeline li::before {
+      content:"";
+      position:absolute;
+      left:10px;
+      top:4px;
+      width:20px;
+      height:20px;
+      border-radius:50%;
+      background:var(--warning);
+      border:3px solid #fff;
+      box-shadow:0 0 0 3px #eee;
+    }
+    .timeline li.active::before {
+      background:var(--brand);
+      box-shadow:0 0 0 3px rgba(0,119,204,.25);
+    }
+    .timeline li .title {
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      gap:.4rem;
+    }
+    .timeline li .title span.badge {
+      font-size:.75rem;
+      padding:.1rem .45rem;
+      border-radius:999px;
+      background:#e9f4ff;
+      color:#0a4d7a;
+      border:1px solid #cfe6ff;
+    }
+    .timeline li .desc {
+      color:var(--muted);
+      font-size:.9rem;
+      margin-top:.1rem;
+    }
+    .timeline li .time {
+      color:#999;
+      font-size:.8rem;
+      margin-top:.1rem;
+    }
+
+    .status-box {
+      margin-top:1rem;
+      padding:.75rem;
+      border-radius:8px;
+      border:1px solid var(--gray-200);
+      background:var(--bg);
+      cursor:pointer;
+      transition:box-shadow .15s ease, transform .1s ease;
+    }
+    .status-box strong {
+      display:flex;
+      align-items:center;
+      gap:.4rem;
+    }
+    .status-box:hover{
+      box-shadow:0 8px 24px rgba(15,23,42,.12);
+      transform:translateY(-1px);
+    }
+
+    .status-box.pending {
+      border-color:#ffe082;
+      background: #ffd0384c;
+    }
+    .status-box.in-progress {
+      border-color:var(--brand);
+      background:#e3f2fd32;
+    }
+    .status-box.completed {
+      border-color:var(--bg);
+      /* background:#a5d6a7; */
+    }
+
+    .hint {
+      font-size:.85rem;
+      margin-top:.4rem;
+      color:var(--muted);
+    }
+
+    @media(max-width:600px){
+      .timeline li{padding-left:52px;}
+      .timeline::before{left:16px;}
+    }
+
+    /* Document upload panel */
+    .doc-card{
+      margin-top:1rem;
+      border-radius:var(--radius);
+      border:1px solid var(--gray-200);
+      background:var(--bg);
+      padding:.85rem .9rem 1rem;
+      box-shadow:var(--shadow);
+    }
+    .doc-card h3{
+      margin:0 0 .2rem;
+      font-size:1.05rem;
+    }
+    .doc-header-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:.5rem;
+      flex-wrap:wrap;
+    }
+    .doc-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:.7rem;
+      margin-top:.5rem;
+    }
+    @media(max-width:700px){
+      .doc-grid{ grid-template-columns:1fr; }
+    }
+    .doc-item label{
+      font-size:.85rem;
+      font-weight:600;
+      display:flex;
+      align-items:center;
+      gap:.35rem;
+      margin-bottom:.2rem;
+    }
+    .doc-item input[type="file"]{
+      width:100%;
+      border-radius:8px;
+      border:1px solid var(--gray-300);
+      padding:.3rem .4rem;
+      background:#0b4d78;
+      font-size:.85rem;
+    }
+    .doc-note{
+      font-size:.83rem;
+      color:var(--muted);
+      margin-top:.3rem;
+    }
+    .doc-meta{
+      font-size:.82rem;
+      color:var(--warning);
+      margin-top:.5rem;
+    }
+    .doc-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:.3rem;
+      padding:.15rem .45rem;
+      border-radius:999px;
+      border:1px solid var(--gray-200);
+      background:var(--brand);
+      font-size:.78rem;
+    }
+    .doc-list{
+      margin-top:.4rem;
+      display:flex;
+      flex-wrap:wrap;
+      gap:.25rem;
+    }
+
+    .pay-chip{
+      display:inline-flex;
+      align-items:center;
+      gap:.35rem;
+      padding:.22rem .55rem;
+      border-radius:999px;
+      border:1px solid var(--chip-border);
+      background:var(--chip-bg);
+      font-size:.8rem;
+      color:#0b4d78;
+    }
+    .pay-chip i{color:var(--brand);}
+
+    /* Toast override (just in case) */
+    .toast.show{
+      display:flex;
+      align-items:center;
+      gap:.6rem;
+    }
+
+    /* Info modal */
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.85);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:80;
+    }
+
+    /* Documents overview modal */
+    .docs-modal-card{
+      background:#020617;
+      border-radius:14px;
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:0 20px 60px rgba(0,0,0,.8);
+      padding:1rem 1rem 1.1rem;
+      max-width:520px;
+      width:92%;
+      max-height:80vh;
+      display:flex;
+      flex-direction:column;
+      gap:.5rem;
+    }
+    .docs-modal-card header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:.5rem;
+    }
+    .docs-modal-card h3{
+      margin:0;
+      font-size:1rem;
+    }
+    .docs-modal-card .close-btn{
+      border:none;
+      background:transparent;
+      color:#e5e7eb;
+      cursor:pointer;
+      padding:.25rem .4rem;
+      border-radius:999px;
+    }
+    .docs-modal-card .close-btn:hover{
+      background:rgba(15,23,42,.9);
+    }
+    .docs-modal-body{
+      font-size:.86rem;
+      color:#cbd5f5;
+      overflow:auto;
+      margin-top:.25rem;
+      border-radius:10px;
+      border:1px solid rgba(31,41,55,.9);
+      padding:.5rem .6rem;
+      background:rgba(15,23,42,.85);
+    }
+    .docs-modal-body ul{
+      padding-left:1.1rem;
+      margin:.35rem 0;
+    }
+    .docs-modal-body li{
+      margin-bottom:.25rem;
+    }
+    .docs-doc-tag{
+      display:inline-flex;
+      align-items:center;
+      gap:.3rem;
+      padding:.08rem .45rem;
+      border-radius:999px;
+      font-size:.75rem;
+      border:1px solid rgba(148,163,184,.7);
+      background:#020617;
+      color:#e5e7eb;
+    }
+    .docs-doc-tag.ready{
+      border-color:#22c55e;
+      color:#bbf7d0;
+    }
+    .docs-doc-tag.missing{
+      border-color:#f97373;
+      color:#fecaca;
+    }
+  </style>
+</head>
+<body>
+  <nav aria-label="Primary">
+    <div class="wrap">
+      <a class="logo" href="/"><img src="/assets/logo/logo.png" alt="Elite Travel & Tour"></a>
+      <ul class="primary">
+        <li><a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a></li>
+        <li><a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+        <li><a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a></li>
+        <li><a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a></li>
+        <li><a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a></li>
+        <li><a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a></li>
+      </ul>
+      <div class="nav-right">
+        <button id="bellBtn" class="btn outline" aria-label="Notifications">
+          <i class="fa-regular fa-bell"></i><span id="bellCount" class="count hidden">0</span>
+        </button>
+        <span id="authStatus" class="auth-pill" style="display:none;">
+          <i class="fa fa-user-check"></i><span class="auth-text">Guest</span>
+        </span>
+        <button id="loginBtn" class="btn outline"><i class="fa fa-right-to-bracket"></i> Login</button>
+        <button id="profileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i></button>
+        <button id="logoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i></button>
+        <button id="menuToggle" class="menu-toggle" aria-expanded="false"><i class="fa fa-bars"></i></button>
+      </div>
+    </div>
+
+    <div id="mobilePanel" class="mobile-panel">
+      <div class="block">
+        <a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a>
+        <a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a>
+        <a href="/views/pages/work-and-pay.html"><i class="fa fa-briefcase"></i> Work & Pay</a>
+        <a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a>
+        <a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a>
+        <a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a>
+      </div>
+      <div class="block">
+        <span class="auth-pill"><i class="fa fa-user"></i><span id="mobileAuthText">Guest</span></span>
+        <div class="toolbar">
+          <button id="mobileLoginBtn" class="btn brand"><i class="fa fa-right-to-bracket"></i> Login</button>
+          <button id="mobileProfileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> Profile</button>
+          <button id="mobileLogoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Notifications feed -->
+  <div id="notifFeed" class="feed hidden">
+    <div class="feed-toolbar">
+      <h4>Notifications</h4>
+    </div>
+    <div id="notifList" class="list"></div>
+  </div>
+  <script type="module" src="/src/js/notifications.js"></script>
+
+  <main class="container">
+    <section class="card tracking-card">
+      <div class="body">
+        <h1 class="page-title">Track your application</h1>
+        <p class="muted">
+          Enter your tracking ID to see where you are in the process, view your payment amount, and upload documents
+          once payment is confirmed.
+        </p>
+
+        <div class="search-bar">
+          <input id="trackId" placeholder="Enter your tracking ID (e.g., ET-WP-2025-123456)">
+          <button class="btn brand" id="trackBtn"><i class="fa fa-location-crosshairs"></i> Track</button>
+          <button class="btn outline" id="clearBtn"><i class="fa fa-eraser"></i> Clear</button>
+        </div>
+        <p id="statusHint" class="hint">Enter your tracking ID to view your status.</p>
+
+        <div class="meta" id="metaBox" style="display:none;">
+          <span class="pill"><i class="fa fa-hashtag"></i> <span id="metaTrack">—</span></span>
+          <span class="pill"><i class="fa fa-user"></i> <span id="metaName">Applicant</span></span>
+          <span class="pill"><i class="fa fa-layer-group"></i> <span id="metaType">Program</span></span>
+          <span class="pill"><i class="fa fa-clock"></i> <span id="metaSubmitted">—</span></span>
+          <span class="pill pay-chip" id="payInfoPill" style="display:none;">
+            <i class="fa fa-credit-card"></i> <span id="payInfoText">Payment: —</span>
+          </span>
+        </div>
+
+        <div class="grid-layout">
+          <!-- Left: Status + timeline -->
+          <div>
+            <div id="statusBox" class="status-box" style="display:none;">
+              <strong><i class="fa fa-circle-info"></i> <span id="statusLabel">Status</span></strong>
+              <p id="statusDesc" class="muted" style="margin:.25rem 0 0;"></p>
+              <p id="statusExtra" class="muted" style="margin:.25rem 0 0;"></p>
+              <div id="payRow" style="display:none;margin-top:.6rem;align-items:center;gap:.5rem;flex-wrap:wrap;">
+                <button class="btn brand btn-sm" id="payNowBtn"><i class="fa fa-credit-card"></i> Pay now</button>
+                <span class="muted" style="font-size:.85rem;">You will be redirected to a secure payment page.</span>
+              </div>
+            </div>
+
+            <ul class="timeline" id="timeline">
+              <li data-stage="application">
+                <div class="title">
+                  <span>Application</span>
+                  <span class="badge">Step 1</span>
+                </div>
+                <p class="desc">We receive your application and log it into our system.</p>
+                <div class="time">—</div>
+              </li>
+              <li data-stage="accepted">
+                <div class="title">
+                  <span>Accepted</span>
+                  <span class="badge">Step 2</span>
+                </div>
+                <p class="desc">Admin accepts your application and assigns a tracking ID with a specific program.</p>
+                <div class="time">—</div>
+              </li>
+              <li data-stage="paid">
+                <div class="title">
+                  <span>Payment</span>
+                  <span class="badge">Step 3</span>
+                </div>
+                <p class="desc">You pay the program amount so we can proceed.</p>
+                <div class="time">—</div>
+              </li>
+              <li data-stage="documents">
+                <div class="title">
+                  <span>Documents</span>
+                  <span class="badge">Step 4</span>
+                </div>
+                <p class="desc">You upload required documents for your program and destination.</p>
+                <div class="time">—</div>
+              </li>
+              <li data-stage="visa_processing">
+                <div class="title">
+                  <span>Visa & Process</span>
+                  <span class="badge">Step 5</span>
+                </div>
+                <p class="desc">We handle visa, routing, booking, and related processes.</p>
+                <div class="time">—</div>
+              </li>
+              <li data-stage="completed">
+                <div class="title">
+                  <span>Completed / Departure</span>
+                  <span class="badge">Step 6</span>
+                </div>
+                <p class="desc">Your process for this application is completed (departure or formal closure).</p>
+                <div class="time">—</div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Right: Documents -->
+          <div>
+            <div class="doc-card" id="docCard" style="display:none;">
+              <div class="doc-header-row">
+                <div>
+                  <h3><i class="fa fa-folder-open"></i> Documents for this application</h3>
+                  <p class="muted" id="docCardText">
+                    You can upload your documents here after your payment is confirmed.
+                  </p>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.35rem;">
+                  <span id="docStatusPill" class="doc-pill"><i class="fa fa-lock"></i> Locked until payment</span>
+                  <button type="button" class="btn outline btn-sm" id="viewDocsBtn" style="display:none;">
+                    <i class="fa fa-eye"></i> View uploaded documents
+                  </button>
+                </div>
+              </div>
+
+              <form id="docForm" style="margin-top:.6rem;">
+                <div class="doc-grid">
+                  <div class="doc-item">
+                    <label><i class="fa fa-id-card"></i> National ID</label>
+                    <input type="file" id="fileNationalId" accept=".jpg,.jpeg,.png,.pdf">
+                  </div>
+                  <div class="doc-item">
+                    <label><i class="fa fa-passport"></i> Passport bio page</label>
+                    <input type="file" id="filePassport" accept=".jpg,.jpeg,.png,.pdf">
+                  </div>
+                  <div class="doc-item">
+                    <label><i class="fa fa-stethoscope"></i> Medical report</label>
+                    <input type="file" id="fileMedical" accept=".jpg,.jpeg,.png,.pdf">
+                  </div>
+                  <div class="doc-item">
+                    <label><i class="fa fa-shield-halved"></i> Police clearance</label>
+                    <input type="file" id="filePolice" accept=".jpg,.jpeg,.png,.pdf">
+                  </div>
+                  <div class="doc-item">
+                    <label><i class="fa fa-file"></i> Birth certificate</label>
+                    <input type="file" id="fileBirth" accept=".jpg,.jpeg,.png,.pdf">
+                  </div>
+                  <div class="doc-item">
+                    <label><i class="fa fa-user-shield"></i> Guarantor / Sponsor letter</label>
+                    <input type="file" id="fileGuarantor" accept=".jpg,.jpeg,.png,.pdf">
+                  </div>
+                  <div class="doc-item">
+                    <label><i class="fa fa-school"></i> Educational certificates (optional)</label>
+                    <input type="file" id="fileEducation" accept=".jpg,.jpeg,.png,.pdf">
+                  </div>
+                  <div class="doc-item">
+                    <label><i class="fa fa-briefcase"></i> Work experience / CV (optional)</label>
+                    <input type="file" id="fileCV" accept=".jpg,.jpeg,.png,.pdf">
+                  </div>
+                  <div class="doc-item">
+                    <label><i class="fa fa-money-check-dollar"></i> Bank statement / Proof of funds</label>
+                    <input type="file" id="fileBank" accept=".jpg,.jpeg,.png,.pdf">
+                  </div>
+                  <div class="doc-item">
+                    <label><i class="fa fa-file-signature"></i> Visa forms / Application forms</label>
+                    <input type="file" id="fileVisaForms" accept=".jpg,.jpeg,.png,.pdf">
+                  </div>
+                  <div class="doc-item">
+                    <label><i class="fa fa-plane-departure"></i> Flight itinerary / Booking (optional)</label>
+                    <input type="file" id="fileItinerary" accept=".jpg,.jpeg,.png,.pdf">
+                  </div>
+                  <div class="doc-item">
+                    <label><i class="fa fa-building"></i> Accommodation / Tenancy proof (optional)</label>
+                    <input type="file" id="fileAccommodation" accept=".jpg,.jpeg,.png,.pdf">
+                  </div>
+                </div>
+
+                <div class="doc-note">
+                  You can upload one file per field (max 5MB each). If you have combined PDFs, use the closest matching field.
+                  Once submitted, our team will review and contact you if anything is missing.
+                </div>
+
+                <div class="toolbar" style="margin-top:.7rem;">
+                  <button type="submit" class="btn brand" id="docSubmitBtn">
+                    <i class="fa fa-cloud-upload-alt"></i> Submit documents
+                  </button>
+                </div>
+              </form>
+
+              <div class="doc-meta" id="docMeta" style="display:none;">
+                <strong>Uploaded:</strong>
+                <div class="doc-list" id="docList"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- Status info modal -->
+  <div class="modal" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <section class="card"><div class="body">
+      <h3 id="modalTitle">Tracking Info</h3>
+      <p id="modalDesc"></p>
+      <div class="toolbar">
+        <button class="btn brand" id="closeModal"><i class="fa fa-check"></i> Close</button>
+        <button class="btn outline" id="printStatus"><i class="fa fa-print"></i> Print</button>
+      </div>
+    </div></section>
+  </div>
+
+  <!-- Documents overview modal -->
+  <div class="modal" id="docsModal" aria-hidden="true">
+    <div class="docs-modal-card">
+      <header>
+        <h3><i class="fa fa-file"></i> Your uploaded documents</h3>
+        <button class="close-btn" id="docsModalClose"><i class="fa fa-xmark"></i></button>
+      </header>
+      <div class="small-text muted">
+        This is a full overview of the documents you've uploaded for this application, including categories, file names, and upload times.
+      </div>
+      <div class="docs-modal-body" id="docsModalBody">
+        <div class="muted small-text">No documents uploaded yet for this application.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="grid">
+      <div>
+        <h4>Elite Travel & Tour</h4>
+        <p>Trusted partner for seamless journeys worldwide.</p>
+        <p class="muted">Visa assistance, Work & Pay programs, and flight bookings with premium support.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/views/pages/services.html">Services</a></li>
+          <li><a href="/views/pages/work-and-pay.html">Work & Pay</a></li>
+          <li><a href="/views/pages/appointment.html">Book Appointment</a></li>
+          <li><a href="/views/pages/contact.html">Contact</a></li>
+          <li><a href="/views/pages/about.html">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><i class="fa fa-phone"></i> +233 59 911 7007</p>
+        <p><i class="fa fa-envelope"></i> info@elitetravel.com</p>
+        <p><i class="fa fa-map-marker-alt"></i> Adabraka Akasanoma rd, Greater Accra, Ghana</p>
+        <div class="newsletter">
+          <label for="newsletterEmail" class="muted">Subscribe to our newsletter:</label><br>
+          <input id="newsletterEmail" type="email" placeholder="Your email">
+          <button id="subscribeBtn"><i class="fa fa-paper-plane"></i> Subscribe</button>
+        </div>
+        <div id="subscribeMsg" class="muted" style="margin-top:.5rem;"></div>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul class="list">
+          <li><a href="/views/pages/profile.html">Profile</a></li>
+          <li><a href="/views/pages/tracking.html">Tracking</a></li>
+          <li><a href="/views/pages/privacy.html">Privacy Policy</a></li>
+          <li><a href="/views/pages/terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="social">
+        <h4>Follow Us</h4>
+        <div class="toolbar">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© <span id="year"></span> Elite Travel & Tour. All rights reserved.</div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"><i class="fa fa-info-circle"></i><span id="toastText">Notice</span></div>
+
+  <!-- Scripts -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    let currentUser = null;
+    let currentTrackingApplication = null;
+    let trackingChannel = null;
+    let notifChannel = null;
+    let currentDocsRows = [];
+
+    /* Footer + newsletter */
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const subscribeBtn = document.getElementById('subscribeBtn');
+    const eemailInput = document.getElementById('newsletterEmail');
+    const subscribeMsg = document.getElementById('subscribeMsg');
+    subscribeBtn?.addEventListener('click', () => {
+      const eemail = eemailInput.value.trim();
+      if (!eemail) {
+        subscribeMsg.textContent = 'Please enter your email.';
+        subscribeMsg.style.color = 'red';
+        return;
+      }
+      subscribeMsg.textContent = `Thank you for subscribing, ${eemail}!`;
+      subscribeMsg.style.color = 'lightgreen';
+      eemailInput.value = '';
+    });
+
+    /* Toast */
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toastText');
+    function showToast(message, ms = 2500) {
+      if (!toast || !toastText) return;
+      toastText.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), ms);
+    }
+
+    /* Notifications feed */
+    document.addEventListener('click', (e) => {
+      const feed = document.getElementById('notifFeed');
+      if (!feed) return;
+      if (e.target.closest('#bellBtn')) {
+        feed.classList.toggle('hidden');
+      } else if (!e.target.closest('#notifFeed')) {
+        feed.classList.add('hidden');
+      }
+    });
+
+    function renderNotification(n) {
+      const list = document.getElementById('notifList');
+      const bellCount = document.getElementById('bellCount');
+      if (list) {
+        const el = document.createElement('div');
+        el.className = 'item';
+        el.textContent = n.message || n.text || '';
+        list.prepend(el);
+      }
+      if (bellCount) {
+        const count = parseInt(bellCount.textContent || '0', 10) + 1;
+        bellCount.textContent = String(count);
+        bellCount.classList.remove('hidden');
+      }
+    }
+
+    async function subscribeNotifications(userId) {
+      if (notifChannel) {
+        await sb.removeChannel(notifChannel);
+        notifChannel = null;
+      }
+      notifChannel = sb
+        .channel(`header-notifs-${userId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${userId}`
+          },
+          (payload) => {
+            renderNotification(payload.new);
+          }
+        )
+        .subscribe();
+    }
+
+    /* Auth */
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const profileBtn = document.getElementById('profileBtn');
+    const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+    const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+    const mobileProfileBtn = document.getElementById('mobileProfileBtn');
+    const authText = document.querySelector('#authStatus .auth-text');
+    const mobileAuthText = document.getElementById('mobileAuthText');
+    const authStatus = document.getElementById('authStatus');
+
+    function updateAuthUI(session) {
+      const user = session?.user;
+      currentUser = user || null;
+
+      if (user) {
+        if (authText) authText.textContent = user.email;
+        authStatus?.style.setProperty('display', 'none');
+        if (mobileAuthText) mobileAuthText.textContent = user.email;
+
+        loginBtn?.style.setProperty('display', 'inline-flex');
+        loginBtn?.style.setProperty('display', 'none');
+        logoutBtn?.style.setProperty('display', 'inline-flex');
+        profileBtn?.style.setProperty('display', 'inline-flex');
+
+        mobileLoginBtn?.style.setProperty('display', 'none');
+        mobileLogoutBtn?.style.setProperty('display', 'inline-flex');
+        mobileProfileBtn?.style.setProperty('display', 'inline-flex');
+
+        profileBtn.onclick = () => (window.location.href = '/views/pages/profile.html');
+        mobileProfileBtn.onclick = () => (window.location.href = '/views/pages/profile.html');
+
+        subscribeNotifications(user.id);
+      } else {
+        if (authText) authText.textContent = 'Guest';
+        authStatus?.style.setProperty('display', 'none');
+        if (mobileAuthText) mobileAuthText.textContent = 'Guest';
+
+        loginBtn?.style.setProperty('display', 'inline-flex');
+        logoutBtn?.style.setProperty('display', 'none');
+        profileBtn?.style.setProperty('display', 'none');
+
+        mobileLoginBtn?.style.setProperty('display', 'inline-flex');
+        mobileLogoutBtn?.style.setProperty('display', 'none');
+        mobileProfileBtn?.style.setProperty('display', 'none');
+      }
+    }
+
+    {
+      const { data } = await sb.auth.getSession();
+      updateAuthUI(data.session);
+      const u = data.session?.user;
+      if (u) subscribeNotifications(u.id);
+    }
+    sb.auth.onAuthStateChange((_event, session) => updateAuthUI(session));
+
+    loginBtn?.addEventListener('click', () => (window.location.href = '/views/pages/login.html'));
+    mobileLoginBtn?.addEventListener('click', () => (window.location.href = '/views/pages/login.html'));
+
+    async function handleLogout() {
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href = '/views/pages/login.html';
+    }
+    logoutBtn?.addEventListener('click', handleLogout);
+    mobileLogoutBtn?.addEventListener('click', handleLogout);
+
+    /* Mobile menu */
+    const menuToggle = document.getElementById('menuToggle');
+    const mobilePanel = document.getElementById('mobilePanel');
+    menuToggle?.addEventListener('click', () => {
+      const isOpen = mobilePanel.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    mobilePanel?.addEventListener('click', (e) => {
+      if (e.target.matches('a')) {
+        mobilePanel.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    /* Tracking UI refs */
+    const trackBtn = document.getElementById('trackBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const trackIdInput = document.getElementById('trackId');
+    const metaBox = document.getElementById('metaBox');
+    const metaTrack = document.getElementById('metaTrack');
+    const metaName = document.getElementById('metaName');
+    const metaType = document.getElementById('metaType');
+    const metaSubmitted = document.getElementById('metaSubmitted');
+    const payInfoPill = document.getElementById('payInfoPill');
+    const payInfoText = document.getElementById('payInfoText');
+
+    const statusBox = document.getElementById('statusBox');
+    const statusLabel = document.getElementById('statusLabel');
+    const statusDesc = document.getElementById('statusDesc');
+    const statusExtra = document.getElementById('statusExtra');
+    const statusHint = document.getElementById('statusHint');
+    const payRow = document.getElementById('payRow');
+    const payNowBtn = document.getElementById('payNowBtn');
+    const timeline = document.getElementById('timeline');
+
+    const infoModal = document.getElementById('infoModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDesc = document.getElementById('modalDesc');
+    const closeModal = document.getElementById('closeModal');
+    const printStatus = document.getElementById('printStatus');
+
+    const docCard = document.getElementById('docCard');
+    const docCardText = document.getElementById('docCardText');
+    const docStatusPill = document.getElementById('docStatusPill');
+    const docForm = document.getElementById('docForm');
+    const docSubmitBtn = document.getElementById('docSubmitBtn');
+    const docMeta = document.getElementById('docMeta');
+    const docList = document.getElementById('docList');
+    const viewDocsBtn = document.getElementById('viewDocsBtn');
+
+    const fileNationalId = document.getElementById('fileNationalId');
+    const filePassport = document.getElementById('filePassport');
+    const fileMedical = document.getElementById('fileMedical');
+    const filePolice = document.getElementById('filePolice');
+    const fileBirth = document.getElementById('fileBirth');
+    const fileGuarantor = document.getElementById('fileGuarantor');
+    const fileEducation = document.getElementById('fileEducation');
+    const fileCV = document.getElementById('fileCV');
+    const fileBank = document.getElementById('fileBank');
+    const fileVisaForms = document.getElementById('fileVisaForms');
+    const fileItinerary = document.getElementById('fileItinerary');
+    const fileAccommodation = document.getElementById('fileAccommodation');
+
+    const docsModal = document.getElementById('docsModal');
+    const docsModalBody = document.getElementById('docsModalBody');
+    const docsModalClose = document.getElementById('docsModalClose');
+
+    function setStatusMessage(msg, type = 'muted') {
+      if (!statusHint) return;
+      statusHint.textContent = msg;
+      statusHint.style.color =
+        type === 'success' ? '#2e7d32' :
+        type === 'danger'  ? '#c62828' :
+        '#667085';
+    }
+
+    /* Program + plan labels */
+    function planLabel(plan){
+      if(plan === 'work') return 'Work & Pay';
+      if(plan === 'express') return 'Express';
+      if(plan === 'visa') return 'Visa-only';
+      if(plan === 'flights') return 'Flights-only';
+      if(plan === 'orientation') return 'Orientation-only';
+      return plan || 'Standard';
+    }
+
+    function programTypeLabel(pt){
+      if(pt === 'work') return 'Work programs';
+      if(pt === 'visa') return 'Visa & Requirements';
+      if(pt === 'flights') return 'Flights & Routing';
+      if(pt === 'orientation') return 'Orientation & Soft Landing';
+      return 'General';
+    }
+
+    /* -----------------------------------------------------------
+       BUILD TYPE LABEL
+    ----------------------------------------------------------- */
+    function buildTypeLabel(plan, applicationType, jobTitle, programType){
+      const pLabel = planLabel(plan);
+      const ptLabel = programTypeLabel(programType);
+      const typeLabel = applicationType || 'application';
+
+      let base = '';
+
+      if (pLabel && pLabel !== 'Standard') base = pLabel;
+      if (jobTitle) base = base ? `${base} — ${jobTitle}` : jobTitle;
+      if (!base) base = ptLabel || 'Application';
+
+      return `${base} (${typeLabel})`;
+    }
+
+    /* -----------------------------------------------------------
+       NORMALIZE DETAILS — AUTO-INFER SERVICE SLUG
+    ----------------------------------------------------------- */
+    function normalizeDetails(app){
+      const d = app.details || {};
+      const payment = d.payment || null;
+
+      let serviceSlug =
+        d.service_slug ||
+        app.service_slug ||
+        d.slug ||
+        null;
+
+      if (!serviceSlug) {
+        const plan = d.plan || app.plan || null;
+        const program = d.program_type || app.application_type || null;
+        const country = d.country || app.country || null;
+        const role = d.role || app.role || null;
+
+        const parts = [plan, program, country, role]
+          .filter(Boolean)
+          .map(x => String(x).trim().toLowerCase().replace(/\s+/g, '-'));
+
+        if (parts.length > 0) {
+          serviceSlug = parts.join('-');
+        }
+      }
+
+      return {
+        fullname: d.fullname || d.full_name || d.name || app.name || app.applicant_name || 'Applicant',
+        email: d.email || app.email || app.user_email || '—',
+        program_type: d.program_type || app.application_type || null,
+        plan: d.plan || app.plan || null,
+        country: d.country || app.country || '—',
+        role: d.role || app.role || '—',
+        payment,
+        price_amount: d.price_amount || d.service_price || d.price || null,
+        price_label: d.price_label || null,
+        service_slug: serviceSlug
+      };
+    }
+
+    /* -----------------------------------------------------------
+       SLUG NORMALIZATION
+    ----------------------------------------------------------- */
+    function normalizeSlug(raw) {
+  if (!raw) return null;
+  const s = raw.toLowerCase();
+
+  // ✅ Direct known mappings
+  if (s.includes('express')) return 'express';
+  if (s.includes('work') && s.includes('pay')) return 'work-and-pay';
+  if (s === 'work-job' || s.includes('work') && s.includes('job')) return 'work-and-pay';
+  if (s.includes('flight')) return 'flight';
+  if (s.includes('tour')) return 'tour';
+
+  // ✅ Country‑specific care programs
+  if (s.includes('canada') && s.includes('care')) return 'canada-care';
+  if (s.includes('uk') && s.includes('care')) return 'uk-care';
+
+  return raw; // fallback
+}
+
+
+    /* -----------------------------------------------------------
+       RULE ENGINE FOR AMOUNT — MATCHES ADMIN
+    ----------------------------------------------------------- */
+    function computeRuleAmountFromDetails(d){
+      const raw = (d.program_type || d.plan || d.service_slug || '').toLowerCase();
+
+      if (raw.includes('express')) return 6000;
+      if (raw.includes('work') && raw.includes('pay')) return 3000;
+      if (raw.includes('flight')) return 500;
+      if (raw.includes('tour')) return 500;
+      if (raw.includes('canada') && raw.includes('care')) return 3000;
+      if (raw.includes('uk') && raw.includes('care')) return 3000;
+
+      return null;
+    }
+
+    /* -----------------------------------------------------------
+       FETCH SERVICE PRICE — AUTO-MATCHING
+    ----------------------------------------------------------- */
+    async function fetchServicePriceForApplication(app){
+  const d = normalizeDetails(app);
+  let slug = normalizeSlug(d.service_slug);
+
+  // If we still don't have a slug, try fuzzy matching from cache
+  if (!slug) {
+    const plan = d.plan?.toLowerCase();
+    const program = d.program_type?.toLowerCase();
+    const country = d.country?.toLowerCase();
+    const role = d.role?.toLowerCase();
+
+    const { data: services } = await sb
+      .from('services')
+      .select('id, title, price, category, slug, plan');
+
+    if (services && services.length) {
+      const match = services.find(s => {
+        const sl = (s.slug || '').toLowerCase();
+        return (
+          (plan && sl.includes(plan)) ||
+          (program && sl.includes(program)) ||
+          (country && sl.includes(country)) ||
+          (role && sl.includes(role))
+        );
+      });
+
+      if (match) slug = match.slug;
+    }
+  }
+
+  // Normalize again after fallback
+  slug = normalizeSlug(slug);
+
+  // If STILL nothing, don't even hit the DB – just let rule engine handle it
+  if (!slug) return null;
+
+  try {
+    const { data, error } = await sb
+      .from('services')
+      .select('id, title, price, category, slug')
+      .eq('slug', slug)
+      .limit(1)
+      .maybeSingle();
+
+    // If no row, use rule engine instead of screaming in console
+    if (error || !data) {
+      // Special case: Work & Pay – hard fallback to 3000
+      if (slug === 'work-and-pay') {
+        const amount = 3000;
+        app.details = app.details || {};
+        app.details.price_amount = amount;
+        app.details.service_price = amount;
+        if (!app.details.price_label) app.details.price_label = 'Work & Pay';
+        if (!app.details.program_type) app.details.program_type = d.program_type || 'work';
+        if (!app.details.service_slug) app.details.service_slug = slug;
+        return amount;
+      }
+
+      // Otherwise, let computeRuleAmountFromDetails(d) handle it
+      return null;
+    }
+
+    const price = data.price != null ? Number(data.price) : null;
+
+    app.details = app.details || {};
+    if (price != null) {
+      app.details.price_amount = price;
+      app.details.service_price = price;
+    }
+    if (data.title && !app.details.price_label) {
+      app.details.price_label = data.title;
+    }
+    if (data.category && !app.details.program_type) {
+      app.details.program_type = data.category;
+    }
+    if (!app.details.service_slug) {
+      app.details.service_slug = data.slug;
+    }
+
+    return price;
+  } catch (e) {
+    console.error('Failed to fetch service price for application', e);
+    return null;
+  }
+}
+
+    /* -----------------------------------------------------------
+       EFFECTIVE PAYMENT INFO — RULES MATCH ADMIN
+    ----------------------------------------------------------- */
+    function getEffectivePaymentInfo(app){
+      const d = normalizeDetails(app);
+      const payment = d.payment;
+
+      const fallbackAmount =
+        (payment && payment.amount != null ? payment.amount : null) ??
+        d.price_amount ??
+        d.service_price ??
+        app.details?.program_price ??
+        app.details?.program_fee ??
+        app.details?.amount ??
+        app.details?.price ??
+        computeRuleAmountFromDetails(d) ??
+        null;
+
+      return {
+        status: payment?.status || (fallbackAmount != null ? 'pending' : 'not_initiated'),
+        currency: payment?.currency || 'GHS',
+        amount: fallbackAmount,
+        label: payment?.label || d.price_label || 'Program fee',
+        program_type: d.program_type || app.application_type || 'general',
+        plan: d.plan || app.plan || null
+      };
+    }
+
+    /* -----------------------------------------------------------
+       DERIVE STAGE
+    ----------------------------------------------------------- */
+    function deriveStage(app) {
+      const status = app.status || 'submitted';
+      const steps = Array.isArray(app.progress) ? app.progress : [];
+      const stepKeys = new Set(steps.map(s => (s.step || s.status || '').toLowerCase()));
+      const pInfo = getEffectivePaymentInfo(app);
+      const payStatus = pInfo.status;
+
+      if (status === 'completed' || stepKeys.has('completed') || stepKeys.has('departure')) {
+        return 'completed';
+      }
+
+      const hasPaymentStep = stepKeys.has('payment_received') || stepKeys.has('paid');
+      const hasDocs = stepKeys.has('documents_submitted') || stepKeys.has('docs_submitted') || stepKeys.has('documents');
+
+      if (stepKeys.has('visa_submitted') || stepKeys.has('visa_approved') || stepKeys.has('process_handling')) {
+        return 'visa_processing';
+      }
+
+      if (payStatus === 'paid' || hasPaymentStep) {
+        if (hasDocs) return 'documents';
+        return 'paid';
+      }
+
+      if (status === 'accepted') return 'accepted';
+      return 'application';
+    }
+
+    function updateTimeline(app) {
+      const stageId = deriveStage(app);
+      const children = [...timeline.children];
+      children.forEach(li => li.classList.remove('active'));
+
+      const order = ['application','accepted','paid','documents','visa_processing','completed'];
+      const activeIdx = order.indexOf(stageId) >= 0 ? order.indexOf(stageId) : 0;
+
+      children.forEach((li, idx) => {
+        const stage = li.dataset.stage;
+        if (idx <= activeIdx) li.classList.add('active');
+        const timeEl = li.querySelector('.time');
+        if (!timeEl) return;
+
+        const markersMap = {
+          application:['application_stage','submitted'],
+          accepted:['accepted'],
+          paid:['payment_received','paid'],
+          documents:['documents_submitted','docs_submitted','documents'],
+          visa_processing:['visa_submitted','visa_approved','process_handling'],
+          completed:['completed','departure']
+        };
+        const markers = markersMap[stage] || [];
+        const steps = Array.isArray(app.progress) ? app.progress : [];
+
+        let stamp = null;
+        for (const m of markers) {
+          const match = steps.find(s => {
+            const key = (s.step || s.status || '').toLowerCase();
+            return key === m;
+          });
+          if (match) {
+            stamp = match.at || match.time || null;
+            break;
+          }
+        }
+
+        if (!stamp && stage === 'application' && app.created_at) {
+          stamp = app.created_at;
+        }
+
+        const label = stamp ? new Date(stamp).toLocaleString() : '—';
+        timeEl.textContent = label;
+      });
+    }
+
+    function formatAmount(currency, amount){
+      if(amount == null || isNaN(Number(amount))) return 'Amount not set';
+      const val = Number(amount);
+      const fmt = val.toLocaleString(undefined,{ minimumFractionDigits:2, maximumFractionDigits:2 });
+      return `${currency || 'GHS'} ${fmt}`;
+    }
+
+    function renderPaymentPill(app){
+      const pInfo = getEffectivePaymentInfo(app);
+      const amountText = formatAmount(pInfo.currency, pInfo.amount);
+      let statusText = 'Not initiated';
+      if(pInfo.status === 'pending') statusText = 'Pending payment';
+      else if(pInfo.status === 'paid') statusText = 'Paid';
+      else if(pInfo.status === 'cancelled') statusText = 'Cancelled';
+      else if(pInfo.status === 'waived') statusText = 'Waived';
+
+      payInfoPill.style.display = 'inline-flex';
+      const labelPart = pInfo.label ? ` • ${pInfo.label}` : '';
+      payInfoText.textContent = `${statusText} • ${amountText}${labelPart}`;
+    }
+
+    function renderStatusBox(app) {
+      if (!app) {
+        statusBox.style.display = 'none';
+        payInfoPill.style.display = 'none';
+        return;
+      }
+      const stageId = deriveStage(app);
+      const pInfo = getEffectivePaymentInfo(app);
+
+      const stageLabels = {
+        application:'Application submitted',
+        accepted:'Accepted – payment required',
+        paid:'Payment received – waiting for documents',
+        documents:'Documents submitted – reviewing',
+        visa_processing:'Visa & process handling',
+        completed:'Completed / departure'
+      };
+
+      const stageDescs = {
+        application:'We received your application. An admin will review it and decide whether to accept or decline.',
+        accepted:`Your application has been accepted. Complete your payment to unlock document upload. Amount: ${formatAmount(pInfo.currency, pInfo.amount)}.`,
+        paid:'We have your payment. You can now upload all required documents.',
+        documents:'We received your documents and are reviewing them. We will contact you if anything is missing.',
+        visa_processing:'We are now working on visa submissions, embassy processes, routing, or related tasks.',
+        completed:'Your process for this application is completed. This may include visa approval, departure, or formal closure.'
+      };
+
+      const extraTexts = {
+        application:'You cannot pay or upload documents yet. Wait for an admin to accept your application and assign a tracking ID.',
+        accepted:'Use the “Pay now” button to complete payment. Once payment is confirmed, document upload unlocks for this tracking ID.',
+        paid:'Upload your documents in the right panel. Make sure all files are clear and readable.',
+        documents:'You do not need to upload again unless we contact you for updates or corrections.',
+        visa_processing:'Track this page for updates. We may add more steps when key milestones are reached.',
+        completed:'If you have questions about next steps, please contact our office directly.'
+      };
+
+      statusBox.style.display = 'block';
+      statusLabel.textContent = stageLabels[stageId] || stageLabels.application;
+      statusDesc.textContent = stageDescs[stageId] || stageDescs.application;
+      statusExtra.textContent = extraTexts[stageId] || extraTexts.application;
+
+      statusBox.classList.remove('pending', 'in-progress', 'completed');
+      if (stageId === 'application' || stageId === 'accepted') {
+        statusBox.classList.add('pending');
+      } else if (stageId === 'completed') {
+        statusBox.classList.add('completed');
+      } else {
+        statusBox.classList.add('in-progress');
+      }
+
+      renderPaymentPill(app);
+
+      const shouldShowPay =
+        stageId === 'accepted' &&
+        (pInfo.status === 'pending' || pInfo.status === 'paid' || pInfo.status === 'not_initiated' || pInfo.status === 'cancelled');
+
+      payRow.style.display = shouldShowPay ? 'flex' : 'none';
+    }
+
+    function renderMeta(app) {
+      if (!app) {
+        metaBox.style.display = 'none';
+        payInfoPill.style.display = 'none';
+        return;
+      }
+      metaBox.style.display = 'flex';
+      metaTrack.textContent = app.tracking_id || '—';
+
+      const d = normalizeDetails(app);
+      const name = d.fullname || 'Applicant';
+      metaName.textContent = name;
+
+      const jobTitle = app.role || '(Program)';
+      const typeLabel = buildTypeLabel(d.plan, app.application_type, jobTitle, d.program_type);
+      metaType.textContent = typeLabel;
+
+      const submitted = app.created_at ? new Date(app.created_at).toLocaleString() : '—';
+      metaSubmitted.textContent = submitted;
+
+      renderPaymentPill(app);
+    }
+
+    function canUploadDocuments(app, user) {
+      if (!app || !user) return false;
+      if (app.user_id !== user.id) return false;
+      const stage = deriveStage(app);
+      return stage === 'paid' || stage === 'documents' || stage === 'visa_processing';
+    }
+
+    async function loadExistingDocuments(app) {
+      docMeta.style.display = 'none';
+      docList.innerHTML = '';
+      currentDocsRows = [];
+      viewDocsBtn.style.display = 'none';
+
+      if (!app) return;
+      try {
+        const { data, error } = await sb
+          .from('documents')
+          .select('id,file_name,category,file_url,created_at')
+          .eq('application_id', app.id)
+          .order('created_at', { ascending: false });
+        if (error) throw error;
+        const rows = data || [];
+        currentDocsRows = rows;
+
+        if (!rows.length) {
+          docMeta.style.display = 'none';
+          docList.innerHTML = '';
+          viewDocsBtn.style.display = 'none';
+          return;
+        }
+        docMeta.style.display = 'block';
+        viewDocsBtn.style.display = 'inline-flex';
+        docList.innerHTML = rows
+          .map((d) => {
+            const when = d.created_at ? new Date(d.created_at).toLocaleString() : '';
+            const cat = d.category || 'document';
+            return `
+              <span class="doc-pill" title="${when}">
+                <i class="fa fa-file"></i> ${cat}: ${d.file_name}
+              </span>
+            `;
+          })
+          .join('');
+      } catch (e) {
+        console.error(e);
+        docMeta.style.display = 'none';
+        viewDocsBtn.style.display = 'none';
+      }
+    }
+
+    function renderDocumentsPanel(app) {
+      if (!app) {
+        docCard.style.display = 'none';
+        return;
+      }
+      const stageId = deriveStage(app);
+      const allowed = canUploadDocuments(app, currentUser);
+
+      if (!allowed) {
+        docCard.style.display = 'block';
+        docForm.style.display = 'none';
+        viewDocsBtn.style.display = currentDocsRows.length ? 'inline-flex' : 'none';
+        docStatusPill.innerHTML =
+          stageId === 'accepted'
+            ? '<i class="fa fa-lock"></i> Payment required first'
+            : '<i class="fa fa-ban"></i> Documents not available at this stage';
+        docCardText.textContent =
+          stageId === 'accepted'
+            ? 'We will unlock document upload after your payment is confirmed.'
+            : 'Document upload is not available at your current stage.';
+        return;
+      }
+
+      docCard.style.display = 'block';
+      docForm.style.display = 'block';
+
+      if (stageId === 'paid') {
+        docStatusPill.innerHTML = '<i class="fa fa-clock"></i> Waiting for documents';
+        docCardText.textContent =
+          'Your payment is confirmed. Upload all required documents so we can continue processing your journey.';
+      } else if (stageId === 'documents') {
+        docStatusPill.innerHTML = '<i class="fa fa-check-circle"></i> Documents submitted';
+        docCardText.textContent =
+          'We have received your documents and are reviewing them. You only need to upload new versions if we request updates.';
+      } else {
+        docStatusPill.innerHTML = '<i class="fa fa-spinner"></i> In process';
+      }
+
+      viewDocsBtn.style.display = currentDocsRows.length ? 'inline-flex' : 'none';
+    }
+
+    async function renderTracking(app) {
+      currentTrackingApplication = app;
+      if (!app) {
+        showToast('Tracking ID not found.');
+        [...timeline.children].forEach((li) => {
+          li.classList.remove('active');
+          const t = li.querySelector('.time');
+          if (t) t.textContent = '—';
+        });
+        statusBox.style.display = 'none';
+        metaBox.style.display = 'none';
+        docCard.style.display = 'none';
+        payInfoPill.style.display = 'none';
+        setStatusMessage('No application found for this tracking ID.', 'danger');
+        return;
+      }
+
+      const before = getEffectivePaymentInfo(app);
+      if(before.amount == null){
+        await fetchServicePriceForApplication(app);
+      }
+
+      renderMeta(app);
+      updateTimeline(app);
+      renderStatusBox(app);
+      await loadExistingDocuments(app);
+      renderDocumentsPanel(app);
+
+      const stageId = deriveStage(app);
+      const stageTitleMap = {
+        application:'Application submitted',
+        accepted:'Accepted – payment required',
+        paid:'Payment received – waiting for documents',
+        documents:'Documents submitted / reviewing',
+        visa_processing:'Visa & process handling',
+        completed:'Completed / departure'
+      };
+      modalTitle.textContent = stageTitleMap[stageId] || 'Application tracking';
+      modalDesc.textContent = statusDesc.textContent;
+      setStatusMessage('Application found. Tracking is active.', 'success');
+    }
+
+    async function fetchByTrackingId(id) {
+      try {
+        const { data, error } = await sb
+          .from('applications')
+          .select(`
+            id,
+            user_id,
+            job_id,
+            status,
+            application_type,
+            plan,
+            country,
+            role,
+            progress,
+            details,
+            metadata,
+            tracking_id,
+            internal_ref,
+            name,
+            email,
+            service_slug,
+            created_at
+          `)
+          .eq('tracking_id', id)
+          .limit(1)
+          .maybeSingle();
+        if (error) {
+          console.error('fetch tracking error', error);
+          return null;
+        }
+        if (!data) return null;
+
+        const details = data.details || {};
+        const userEmail = data.email || details.email || null;
+        const userName =
+          data.name ||
+          details.fullname ||
+          details.full_name ||
+          details.name ||
+          userEmail ||
+          'User';
+
+        return {
+          id: data.id,
+          user_id: data.user_id,
+          job_id: data.job_id,
+          tracking_id: data.tracking_id,
+          status: data.status || 'submitted',
+          plan: data.plan,
+          application_type: data.application_type,
+          progress: Array.isArray(data.progress) ? data.progress : [],
+          details,
+          metadata: data.metadata || {},
+          created_at: data.created_at,
+          user_email: userEmail,
+          user_name: userName,
+          name: data.name || userName,
+          email: userEmail,
+          service_slug: data.service_slug || details.service_slug || null,
+          country: data.country || details.country || null,
+          role: data.role || details.role || null
+        };
+      } catch (e) {
+        console.error(e);
+        return null;
+      }
+    }
+
+    async function subscribeTracking(id) {
+      if (trackingChannel) {
+        await sb.removeChannel(trackingChannel);
+        trackingChannel = null;
+      }
+      const { data, error } = await sb
+        .from('applications')
+        .select('id')
+        .eq('tracking_id', id)
+        .limit(1)
+        .maybeSingle();
+      if (error || !data) return;
+      const appId = data.id;
+
+      trackingChannel = sb
+        .channel(`tracking-${appId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'applications',
+            filter: `id=eq.${appId}`
+          },
+          async (payload) => {
+            const row = payload.new;
+            const details = row.details || {};
+            const userEmail =
+              currentTrackingApplication?.user_email ||
+              row.email ||
+              details.email ||
+              null;
+            const userName =
+              currentTrackingApplication?.user_name ||
+              row.name ||
+              details.fullname ||
+              details.full_name ||
+              details.name ||
+              userEmail ||
+              'User';
+
+            const update = {
+              ...currentTrackingApplication,
+              id: row.id,
+              user_id: row.user_id,
+              job_id: row.job_id,
+              tracking_id: row.tracking_id,
+              status: row.status || 'submitted',
+              plan: row.plan,
+              application_type: row.application_type,
+              progress: Array.isArray(row.progress) ? row.progress : [],
+              details,
+              metadata: row.metadata || {},
+              created_at: row.created_at,
+              user_email: userEmail,
+              user_name: userName,
+              name: row.name || userName,
+              email: userEmail,
+              service_slug: row.service_slug || details.service_slug || null,
+              country: row.country || details.country || null,
+              role: row.role || details.role || null
+            };
+            await renderTracking(update);
+            showToast('Tracking updated.');
+          }
+        )
+        .subscribe();
+    }
+
+    async function handleTrack() {
+      const raw = trackIdInput.value.trim();
+      if (!raw) {
+        showToast('Enter a tracking ID.');
+        setStatusMessage('Please enter your tracking ID.', 'danger');
+        return;
+      }
+      const id = raw.toUpperCase();
+      trackBtn.setAttribute('disabled', 'true');
+      setStatusMessage('Searching...', 'muted');
+      try {
+        const app = await fetchByTrackingId(id);
+        await renderTracking(app);
+        if (app) {
+          await subscribeTracking(id);
+        }
+      } finally {
+        trackBtn.removeAttribute('disabled');
+      }
+    }
+
+    trackBtn.addEventListener('click', handleTrack);
+    clearBtn.addEventListener('click', () => {
+      trackIdInput.value = '';
+      currentTrackingApplication = null;
+      metaBox.style.display = 'none';
+      statusBox.style.display = 'none';
+      docCard.style.display = 'none';
+      payInfoPill.style.display = 'none';
+      docMeta.style.display = 'none';
+      viewDocsBtn.style.display = 'none';
+      [...timeline.children].forEach((li) => {
+        li.classList.remove('active');
+        const timeEl = li.querySelector('.time');
+        if (timeEl) timeEl.textContent = '—';
+      });
+      setStatusMessage('Enter your tracking ID to view your status.', 'muted');
+    });
+    trackIdInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleTrack();
+      }
+    });
+
+/* Payment button – redirect to payment page with application id + amount (no popup) */
+payNowBtn?.addEventListener('click', async (e) => {
+      // 🔑 Prevent click from bubbling up to statusBox
+      e.stopPropagation();
+
+      const app = currentTrackingApplication;
+
+      if (!app) {
+        showToast('Load your tracking first.');
+        return;
+      }
+
+      if (!currentUser) {
+        showToast('Please log in before making payment.');
+        window.location.href = '/views/pages/login.html';
+        return;
+      }
+
+      if (app.user_id !== currentUser.id) {
+        showToast('You can only pay for your own application.');
+        return;
+      }
+
+      let pInfo = getEffectivePaymentInfo(app);
+
+      if (pInfo.amount == null) {
+        await fetchServicePriceForApplication(app);
+        pInfo = getEffectivePaymentInfo(app);
+      }
+
+      if (pInfo.amount == null) {
+        const d = normalizeDetails(app);
+        const raw = (d.program_type || d.plan || d.slug || d.service_slug || '').toLowerCase();
+
+        if (raw.includes('express')) pInfo.amount = 6000;
+        else if (raw.includes('work') && raw.includes('pay')) pInfo.amount = 3000;
+        else if (raw.includes('flight')) pInfo.amount = 500;
+        else if (raw.includes('tour')) pInfo.amount = 500;
+        else if (raw.includes('canada') && raw.includes('care')) pInfo.amount = 3000;
+        else if (raw.includes('uk') && raw.includes('care')) pInfo.amount = 3000;
+      }
+
+      if (pInfo.amount == null) {
+        showToast('Payment amount not configured yet. Please contact admin.');
+        return;
+      }
+
+      if (pInfo.status === 'paid') {
+        showToast('Payment already completed for this application.');
+        return;
+      }
+
+      const params = new URLSearchParams({
+        application_id: String(app.id),
+        tracking: app.tracking_id || '',
+        amount: String(pInfo.amount),
+        currency: pInfo.currency || 'GHS',
+        label: pInfo.label || 'Program fee',
+        program_type: pInfo.program_type || '',
+        plan: pInfo.plan || ''
+      });
+
+      const url = `/views/pages/payments.html?${params.toString()}`;
+
+      if (infoModal) infoModal.style.display = 'none';
+
+      // 🔑 Navigation triggered directly in click handler
+      window.location.href = url;
+    });
+
+    /* Modal controls */
+    function trapFocus(modal) {
+      const focusable = modal.querySelectorAll(
+        'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+      );
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      function keyHandler(e) {
+        if (e.key !== 'Tab') return;
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+
+      modal.addEventListener('keydown', keyHandler);
+      first && first.focus();
+    }
+
+    closeModal.addEventListener('click', () => {
+      infoModal.style.display = 'none';
+    });
+    infoModal.addEventListener('click', (e) => {
+      if (e.target === infoModal) infoModal.style.display = 'none';
+    });
+    printStatus.addEventListener('click', () => window.print());
+
+    statusBox.addEventListener('click', (e) => {
+      // 🔑 If click was inside the payment row, do nothing (Pay now handler already runs)
+      if (e.target.closest('#payRow')) return;
+
+      if (!currentTrackingApplication) return;
+      infoModal.style.display = 'flex';
+      trapFocus(infoModal);
+    });
+
+
+    /* Documents overview modal logic */
+    function renderDocsModal(rows){
+      docsModalBody.innerHTML = '';
+      if(!rows || !rows.length){
+        docsModalBody.innerHTML = '<div class="muted small-text">No documents uploaded yet for this application.</div>';
+        return;
+      }
+
+      const list = document.createElement('div');
+
+      const intro = document.createElement('div');
+      intro.className = 'small-text muted';
+      intro.textContent = 'Below is the full list of documents you have uploaded:';
+      list.appendChild(intro);
+
+      const ul = document.createElement('ul');
+
+      rows.forEach(row=>{
+        const li = document.createElement('li');
+        const when = row.created_at ? new Date(row.created_at).toLocaleString() : '';
+        const cat = row.category || 'document';
+        const name = row.file_name || 'file';
+        li.innerHTML = `
+          <span class="docs-doc-tag ready">
+            <i class="fa fa-check"></i>
+            ${cat} — ${name}
+          </span>
+          <span class="small-text muted"> ${when ? `uploaded ${when}` : ''}</span>
+        `;
+        ul.appendChild(li);
+      });
+
+      list.appendChild(ul);
+      docsModalBody.appendChild(list);
+    }
+
+    viewDocsBtn.addEventListener('click', ()=>{
+      if(!currentTrackingApplication){
+        showToast('Load your tracking first.');
+        return;
+      }
+      renderDocsModal(currentDocsRows);
+      docsModal.classList.add('open');
+    });
+
+    docsModalClose.addEventListener('click', ()=>{
+      docsModal.classList.remove('open');
+    });
+    docsModal.addEventListener('click', (e)=>{
+      if(e.target === docsModal){
+        docsModal.classList.remove('open');
+      }
+    });
+
+    /* Document upload logic */
+    async function uploadFileIfPresent(file, app, category) {
+      if (!file || !app || !currentUser) return null;
+      const ext = file.name.split('.').pop() || 'file';
+      const safeCategory = category.replace(/\s+/g, '-').toLowerCase();
+      const pathPrefix = `${currentUser.id}/${app.id}`;
+      const fileName = `${safeCategory}-${Date.now()}.${ext}`;
+      const path = `${pathPrefix}/${fileName}`;
+
+      const { error: uploadError } = await sb.storage
+        .from('documents')
+        .upload(path, file, { upsert: false });
+      if (uploadError) throw uploadError;
+
+      const { data: pub } = sb.storage.from('documents').getPublicUrl(path);
+      const url = pub.publicUrl;
+
+      const { data, error } = await sb
+        .from('documents')
+        .insert({
+          user_id: currentUser.id,
+          application_id: app.id,
+          file_name: file.name,
+          file_url: url,
+          file_type: file.type,
+          category,
+          size_bytes: file.size
+        })
+        .select('id')
+        .single();
+      if (error) throw error;
+      return data.id;
+    }
+
+    async function createDocumentsNotification(app) {
+      try {
+        const userId = app.user_id;
+        const email = app.user_email || app.email || null;
+        if (!userId && !email) return;
+
+        await sb.from('notifications').insert({
+          user_id: userId,
+          user_email: email,
+          title: 'Documents submitted',
+          category: 'documents',
+          message: `Your documents for this application (tracking ID ${app.tracking_id || 'N/A'}) have been submitted.`,
+          importance: 'normal',
+          email_ready: false
+        });
+      } catch (e) {
+        console.warn('Failed to create document notification', e);
+      }
+    }
+
+    docForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const app = currentTrackingApplication;
+
+      if (!app) {
+        showToast('Load your tracking first.');
+        return;
+      }
+      if (!currentUser) {
+        showToast('Please log in before uploading documents.');
+        window.location.href = '/views/pages/login.html';
+        return;
+      }
+
+      const stageId = deriveStage(app);
+      if (stageId !== 'paid' && stageId !== 'documents' && stageId !== 'visa_processing') {
+        showToast('You can only upload documents after your payment has been confirmed.');
+        return;
+      }
+
+      const files = {
+        'National ID': fileNationalId.files[0] || null,
+        'Passport bio page': filePassport.files[0] || null,
+        'Medical report': fileMedical.files[0] || null,
+        'Police clearance': filePolice.files[0] || null,
+        'Birth certificate': fileBirth.files[0] || null,
+        'Guarantor / Sponsor letter': fileGuarantor.files[0] || null,
+        'Educational certificates': fileEducation.files[0] || null,
+        'CV / Work experience': fileCV.files[0] || null,
+        'Bank statement / Proof of funds': fileBank.files[0] || null,
+        'Visa forms / Application forms': fileVisaForms.files[0] || null,
+        'Flight itinerary / Booking': fileItinerary.files[0] || null,
+        'Accommodation / Tenancy proof': fileAccommodation.files[0] || null
+      };
+      const hasAny = Object.values(files).some(Boolean);
+      if (!hasAny) {
+        showToast('Select at least one document to upload.');
+        return;
+      }
+
+      docSubmitBtn.disabled = true;
+      docSubmitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Uploading...';
+
+      try {
+        for (const [category, file] of Object.entries(files)) {
+          if (file) {
+            await uploadFileIfPresent(file, app, category);
+          }
+        }
+
+        const oldProgress = Array.isArray(app.progress) ? app.progress : [];
+        const alreadyDocs = oldProgress.some((s) => {
+          const key = (s.step || s.status || '').toLowerCase();
+          return key === 'documents_submitted' || key === 'docs_submitted';
+        });
+
+        let newProgress = oldProgress;
+        if (!alreadyDocs) {
+          const entry = {
+            step: 'documents_submitted',
+            at: new Date().toISOString(),
+            note: 'User submitted documents via tracking page.'
+          };
+          newProgress = [...oldProgress, entry];
+        }
+
+        const { data: updated, error } = await sb
+          .from('applications')
+          .update({
+            status: app.status === 'paid' ? 'reviewing' : app.status,
+            progress: newProgress
+          })
+          .eq('id', app.id)
+          .select(
+            `
+            id,
+            user_id,
+            job_id,
+            status,
+            application_type,
+            plan,
+            country,
+            role,
+            progress,
+            details,
+            metadata,
+            tracking_id,
+            internal_ref,
+            name,
+            email,
+            service_slug,
+            created_at
+          `
+          )
+          .maybeSingle();
+        if (error) throw error;
+
+        const updatedApp = {
+          ...updated,
+          user_email: app.user_email,
+          user_name: app.user_name
+        };
+        currentTrackingApplication = updatedApp;
+
+        await loadExistingDocuments(updatedApp);
+        await createDocumentsNotification(updatedApp);
+        await renderTracking(updatedApp);
+
+        docForm.reset();
+        showToast('Documents uploaded successfully.');
+        setStatusMessage('Documents uploaded. We will review and update your tracking.', 'success');
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to upload documents. Try again.', 3000);
+        setStatusMessage(err.message || 'Failed to upload documents. Try again.', 'danger');
+      } finally {
+        docSubmitBtn.disabled = false;
+        docSubmitBtn.innerHTML = '<i class="fa fa-cloud-upload-alt"></i> Submit documents';
+      }
+    });
+
+    /* Init from query */
+    (async function initFromQuery() {
+      const url = new URL(window.location.href);
+      const tid = url.searchParams.get('tracking') || url.searchParams.get('tracking_id') || url.searchParams.get('id');
+      if (tid) {
+        trackIdInput.value = tid;
+        await handleTrack();
+      } else {
+        setStatusMessage('Enter your tracking ID to view your status.', 'muted');
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Work & Pay — Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Elite Travel & Tour Work & Pay job listings with full details, Apply, Pay, and Express options."/>
+  <link rel="stylesheet" href="/icons/fontawesome.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Standard ICO -->
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+<!-- Or PNG -->
+<link rel="icon" href="/favicon.png" type="image/png">
+
+<!-- Optional: SVG -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+
+    .badge{
+      display:inline-flex; align-items:center; gap:.35rem;
+      padding:.25rem .6rem; border-radius:999px;
+      background:rgba(37,99,235,.18); color:#c7d2fe;
+      font-size:.8rem; font-weight:600;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:.3rem;
+      background:#020617; border:1px solid rgba(148,163,184,.7);
+      color:#cbd5f5; border-radius:999px;
+      padding:.2rem .5rem; font-size:.8rem;
+    }
+
+    .filter-bar{
+      display:flex; gap:.5rem; margin:1rem 0 .75rem; flex-wrap:wrap;
+    }
+    .filter-bar .input{
+      flex:1; min-width:180px;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,.7);
+      padding:.55rem .7rem;
+      background:#020617;color:#e5e7eb;
+    }
+    .filter-bar .input::placeholder{ color:#6b7280; }
+
+    .sorter{
+      display:inline-flex; align-items:center; gap:.4rem;
+      border:1px solid rgba(148,163,184,.7); border-radius:999px;
+      padding:.35rem .6rem; background:#020617;
+      color:#cbd5f5; font-size:.8rem;
+    }
+    .sorter select{
+      border:none; background:transparent; color:#e5e7eb;
+      font-size:.85rem; outline:none;
+    }
+
+    .categories{
+      display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1rem;
+    }
+ 
+    .jobs-grid{
+      display:grid;
+      gap:1rem;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    }
+    @media(max-width:600px){ .jobs-grid{grid-template-columns:1fr;} }
+
+   /* .job-card{
+      display:block;
+      background:#020617;
+      border-radius:var(--radius);
+      border:1px solid rgba(31,41,55,.9);
+      box-shadow:0 18px 40px rgba(15,23,42,.8);
+      text-decoration:none; color:#e5e7eb;
+      overflow:hidden;
+      cursor:pointer;
+    }
+    .job-card img{
+      width:100%; height:160px; object-fit:cover;
+      background:#0b1120;
+    }
+    .job-card .body{ padding:.8rem .9rem 1rem; }
+    .job-card .company{
+      display:inline-flex; align-items:center; gap:.4rem; font-weight:600;
+      font-size:.85rem; color:#cbd5f5;
+    }
+    .job-card .meta{
+      display:flex; flex-wrap:wrap; gap:.35rem; margin:.35rem 0;
+    }
+    .job-card .toolbar{
+      display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.5rem;
+    }
+    .job-card .posted{
+      color:#9ca3af; font-size:.8rem; margin-top:.25rem;
+    }
+ */
+    .empty{
+      background:#020617;
+      border:1px dashed rgba(148,163,184,.6);
+      border-radius:10px;
+      padding:1rem;
+      text-align:center;
+      color:#cbd5f5;
+      font-size:.9rem;
+      margin-top:1rem;
+    }
+
+    .feed{
+      position:fixed; top:70px; right:10px;
+      width:260px;
+      background:#020617;
+      border:1px solid rgba(31,41,55,.9);
+      border-radius:10px;
+      box-shadow:0 16px 40px rgba(15,23,42,.9);
+      padding:.6rem .7rem;
+      z-index:900;
+    }
+    .feed.hidden{ display:none; }
+    .feed h4{ margin:0 0 .4rem; font-size:.9rem; }
+    .feed .list{ max-height:260px; overflow:auto; font-size:.82rem; color:#cbd5f5; }
+
+   
+  </style>
+</head>
+<body>
+  <nav aria-label="Primary">
+    <div class="wrap">
+      <a class="logo" href="/"><img src="/assets/logo/logo.png" alt="Elite Travel & Tour"></a>
+      <ul class="primary">
+        <li><a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a></li>
+        <li><a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+        <li><a href="/views/pages/work-and-pay.html" class="active"><i class="fa fa-briefcase"></i> Work & Pay</a></li>
+        <li><a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a></li>
+        <li><a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a></li>
+        <li><a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a></li>
+      </ul>
+      <div class="nav-right">
+        <button id="bellBtn" class="btn outline bell" aria-label="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span id="bellCount" class="count hidden">0</span>
+        </button>
+        <span id="authStatus" class="auth-pill" style="display:none;">
+          <i class="fa fa-user-check"></i><span class="auth-text">Guest</span>
+        </span>
+        <button id="loginBtn" class="btn outline"><i class="fa fa-right-to-bracket"></i> Login</button>
+        <button id="profileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> </button>
+        <button id="logoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> </button>
+        <button id="menuToggle" class="menu-toggle" aria-expanded="false"><i class="fa fa-bars"></i></button>
+      </div>
+    </div>
+
+    <!-- Mobile panel -->
+    <div id="mobilePanel" class="mobile-panel">
+      <div class="block">
+        <a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a>
+        <a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a>
+        <a href="/views/pages/work-and-pay.html" class="active"><i class="fa fa-briefcase"></i> Work & Pay</a>
+        <a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a>
+        <a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a>
+        <a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a>
+      </div>
+      <div class="block">
+        <span class="auth-pill"><i class="fa fa-user"></i><span id="mobileAuthText">Guest</span></span>
+        <div class="toolbar">
+          <button id="mobileLoginBtn" class="btn brand"><i class="fa fa-right-to-bracket"></i> Login</button>
+          <button id="mobileProfileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> Profile</button>
+          <button id="mobileLogoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+   <div id="notifFeed" class="feed hidden">
+  <div class="feed-toolbar">
+    <span class="muted small-text">Notifications</span>
+    <div style="color:var(--brand);display:flex;gap:.25rem;">
+      <button id="markAllReadBtn" class='btn ' style="color:var(--brand);" ><i class="fa fa-check-double"></i> Mark as Read</button>
+      <button id="clearAllNotifBtn" class='btn '><i class="fa fa-trash"></i> Clear</button>
+    </div>
+  </div>
+  <div id="notifList" class="list"></div>
+</div>
+<script type="module" src="/src/js/notifications.js"></script>
+
+  <main class="container grid">
+    <h2 class="page-title">Work & Pay</h2>
+    <p class="muted">Browse active Work & Pay and Express roles. Filter by plan, type, or search by keyword.</p>
+
+    <!-- Filter/Search Bar -->
+    <div class="filter-bar">
+      <input class="input" id="searchInput" placeholder="Search by title, company, or location...">
+      <button class="btn outline" id="searchBtn"><i class="fa fa-search"></i> Search</button>
+      <button class="btn outline" id="clearBtn"><i class="fa fa-times"></i> Clear</button>
+      <div class="sorter">
+        <label for="sortSelect" class="muted">Sort:</label>
+        <select id="sortSelect">
+          <option value="posted_desc">Newest</option>
+          <option value="posted_asc">Oldest</option>
+          <option value="salary_desc">Salary high</option>
+          <option value="salary_asc">Salary low</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Plan categories -->
+    <div class="categories" id="planFilters">
+      <button class="btn outline" data-plan=""><i class="fa fa-layer-group"></i> All plans</button>
+      <button class="btn outline" data-plan="work"><i class="fa fa-briefcase"></i> Work & Pay</button>
+      <button class="btn outline" data-plan="express"><i class="fa fa-bolt"></i> Express</button>
+    </div>
+
+    <!-- Type categories -->
+    <div class="categories">
+      <button class="btn outline" data-cat="all"><i class="fa fa-list"></i> All types</button>
+      <button class="btn outline" data-cat="full-time"><i class="fa fa-briefcase"></i> Full-time</button>
+      <button class="btn outline" data-cat="contract"><i class="fa fa-file-contract"></i> Contract</button>
+      <button class="btn outline" data-cat="part-time"><i class="fa fa-clock"></i> Part-time</button>
+    </div>
+
+    <!-- Jobs Grid -->
+    <section class="jobs-grid" id="jobGrid" aria-live="polite"></section>
+
+    <!-- Empty state -->
+    <div id="emptyState" class="empty" style="display:none">
+      <i class="fa fa-circle-info"></i> No jobs found. Try a different search or filter.
+    </div>
+  </main>
+
+  <!-- Quick Info Modal -->
+  <div class="modal" id="infoModal" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
+    <section class="card"><div class="body">
+      <div class="header">
+        <h3 id="infoTitle">Job</h3>
+        <button class="btn ghost" id="closeModal"><i class="fa fa-times"></i></button>
+      </div>
+      <div class="content">
+        <div class="row">
+          <span class="pill" id="infoCompany"><i class="fa fa-building"></i> Company</span>
+          <span class="pill" id="infoLocation"><i class="fa fa-location-dot"></i> Location</span>
+          <span class="pill" id="infoType"><i class="fa fa-briefcase"></i> Type</span>
+          <span class="pill" id="infoSalary"><i class="fa fa-money-bill"></i> Salary</span>
+          <span class="pill" id="infoPlan"><i class="fa fa-layer-group"></i> Plan</span>
+          <span class="pill" id="infoPosted"><i class="fa fa-clock"></i> Posted</span>
+        </div>
+        <p id="infoDesc" class="desc muted"></p>
+        <div id="infoRequirements" class="list" style="font-size:.9rem;"></div>
+      </div>
+      <div class="footer">
+        <a class="btn brand" id="viewDetails"><i class="fa fa-eye"></i> View details</a>
+        <a class="btn outline" id="openApplications"><i class="fa fa-file-signature"></i> Apply</a>
+        <button class="btn outline" id="payJob"><i class="fa fa-credit-card"></i> Pay</button>
+        <button class="btn outline" id="expressJob"><i class="fa fa-bolt"></i> Express</button>
+      </div>
+    </div></section>
+  </div>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="grid">
+      <div>
+        <h4>Elite Travel & Tour</h4>
+        <p>Trusted partner for seamless journeys worldwide.</p>
+        <p class="muted">Visa assistance, Work & Pay programs, and flight bookings with premium support.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/views/pages/services.html">Services</a></li>
+          <li><a href="/views/pages/work-and-pay.html">Work & Pay</a></li>
+          <li><a href="/views/pages/appointment.html">Book Appointment</a></li>
+          <li><a href="/views/pages/contact.html">Contact</a></li>
+          <li><a href="/views/pages/about.html">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><i class="fa fa-phone"></i> +233 59 911 7007</p>
+        <p><i class="fa fa-envelope"></i> info@elitetravel.com</p>
+        <p><i class="fa fa-map-marker-alt"></i> Adabraka Akasanoma rd, Greater Accra, Ghana</p>
+        <div class="newsletter">
+          <label for="newsletterEmail" class="muted">Subscribe to our newsletter:</label><br>
+          <input id="newsletterEmail" type="email" placeholder="Your email">
+          <button id="subscribeBtn"><i class="fa fa-paper-plane"></i> Subscribe</button>
+        </div>
+        <div id="subscribeMsg" class="muted" style="margin-top:.5rem;"></div>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul class="list">
+          <li><a href="/views/pages/profile.html">Profile</a></li>
+          <li><a href="/views/pages/tracking.html">Tracking</a></li>
+          <li><a href="/views/pages/privacy.html">Privacy Policy</a></li>
+          <li><a href="/views/pages/terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="social">
+        <h4>Follow Us</h4>
+        <div class="toolbar">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© <span id="year"></span> Elite Travel & Tour. All rights reserved.</div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <i class="fa fa-info-circle"></i><span id="toastText">Notice</span>
+  </div>
+
+  <!-- Scripts -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    // Auth facade
+    let currentUser = null;
+
+    // Footer year + newsletter
+    document.getElementById('year').textContent=new Date().getFullYear();
+    const subscribeBtn=document.getElementById('subscribeBtn');
+    const eemailInput=document.getElementById('newsletterEmail');
+    const subscribeMsg=document.getElementById('subscribeMsg');
+    subscribeBtn?.addEventListener('click',()=>{
+      const eemail=eemailInput.value.trim();
+      if(!eemail){ subscribeMsg.textContent="Please enter your email."; subscribeMsg.style.color="red"; return; }
+      subscribeMsg.textContent=`Thank you for subscribing, ${eemail}!`;
+      subscribeMsg.style.color="lightgreen";
+      eemailInput.value="";
+    });
+
+    // Toast
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(message, ms=2500){
+      toastText.textContent=message;
+      toast.classList.add('show');
+      setTimeout(()=> toast.classList.remove('show'), ms);
+    }
+
+    // Notification feed toggle
+    document.addEventListener('click',(e)=>{
+      const feed=document.getElementById('notifFeed');
+      if(!feed) return;
+      if(e.target.closest('#bellBtn')){ feed.classList.toggle('hidden'); }
+      else if(!e.target.closest('#notifFeed')){ feed.classList.add('hidden'); }
+    });
+
+    // Supabase notifications subscription
+    function renderNotification(n){
+      const list=document.getElementById('notifList');
+      const bellCount=document.getElementById('bellCount');
+      if(list){
+        const el=document.createElement('div');
+        el.className='item';
+        el.textContent=n.message || n.text;
+        list.prepend(el);
+      }
+      if(bellCount){
+        const count=parseInt(bellCount.textContent||'0',10)+1;
+        bellCount.textContent=String(count);
+        bellCount.classList.remove('hidden');
+      }
+    }
+    let notifChannel;
+    async function subscribeNotifications(userId){
+      if(notifChannel){ await sb.removeChannel(notifChannel); notifChannel=null; }
+      notifChannel=sb.channel(`header-notifs-${userId}`)
+        .on('postgres_changes',{
+          event:'INSERT',
+          schema:'public',
+          table:'notifications',
+          filter:`user_id=eq.${userId}`
+        },payload=>{
+          renderNotification(payload.new);
+        })
+        .subscribe();
+    }
+
+    // Auth buttons
+    const loginBtn=document.getElementById('loginBtn');
+    const logoutBtn=document.getElementById('logoutBtn');
+    const profileBtn=document.getElementById('profileBtn');
+    const mobileLoginBtn=document.getElementById('mobileLoginBtn');
+    const mobileLogoutBtn=document.getElementById('mobileLogoutBtn');
+    const mobileProfileBtn=document.getElementById('mobileProfileBtn');
+    const authText=document.querySelector('#authStatus .auth-text');
+    const mobileAuthText=document.getElementById('mobileAuthText');
+    const authStatus=document.getElementById('authStatus');
+
+    function updateAuthUI(session){
+      const user=session?.user;
+      currentUser = user || null;
+
+      if(user){
+        if(authText) authText.textContent=user.email;
+        authStatus?.style.setProperty('display','none');
+        if(mobileAuthText) mobileAuthText.textContent=user.email;
+
+        loginBtn?.style.setProperty('display','inline-flex');
+        logoutBtn?.style.setProperty('display','inline-flex');
+        profileBtn?.style.setProperty('display','inline-flex');
+        loginBtn.style.display='none';
+
+        mobileLoginBtn?.style.setProperty('display','inline-flex');
+        mobileLogoutBtn?.style.setProperty('display','inline-flex');
+        mobileProfileBtn?.style.setProperty('display','inline-flex');
+        mobileLoginBtn.style.display='none';
+
+        profileBtn.onclick=()=> window.location.href=`/views/pages/user/profile.html?id=${user.id}`;
+        mobileProfileBtn.onclick=()=> window.location.href=`/views/pages/user/profile.html?id=${user.id}`;
+
+        subscribeNotifications(user.id);
+      } else {
+        if(authText) authText.textContent='Guest';
+        authStatus?.style.setProperty('display','inline-flex');
+        if(mobileAuthText) mobileAuthText.textContent='Guest';
+
+        loginBtn?.style.setProperty('display','inline-flex');
+        logoutBtn?.style.setProperty('display','none');
+        profileBtn?.style.setProperty('display','none');
+
+        mobileLoginBtn?.style.setProperty('display','inline-flex');
+        mobileLogoutBtn?.style.setProperty('display','none');
+        mobileProfileBtn?.style.setProperty('display','none');
+      }
+    }
+
+    // Initial session
+    {
+      const { data } = await sb.auth.getSession();
+      updateAuthUI(data.session);
+    }
+    sb.auth.onAuthStateChange((_event, session)=> updateAuthUI(session));
+
+    loginBtn?.addEventListener('click', ()=> window.location.href='/views/pages/login.html');
+    mobileLoginBtn?.addEventListener('click', ()=> window.location.href='/views/pages/login.html');
+
+    logoutBtn?.addEventListener('click', async ()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+    mobileLogoutBtn?.addEventListener('click', async ()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+
+    // Mobile menu
+    const menuToggle=document.getElementById('menuToggle');
+    const mobilePanel=document.getElementById('mobilePanel');
+    menuToggle?.addEventListener('click', ()=>{
+      const isOpen=mobilePanel.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    mobilePanel?.addEventListener('click', (e)=>{
+      if(e.target.matches('a')) {
+        mobilePanel.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded','false');
+      }
+    });
+
+    /* Work & Pay jobs from Supabase (metadata-aware) */
+    const jobGrid=document.getElementById('jobGrid');
+    const emptyState=document.getElementById('emptyState');
+    const searchInput=document.getElementById('searchInput');
+    const searchBtn=document.getElementById('searchBtn');
+    const clearBtn=document.getElementById('clearBtn');
+    const sortSelect=document.getElementById('sortSelect');
+    const planFilters=document.getElementById('planFilters');
+
+    const infoModal=document.getElementById('infoModal');
+    const infoTitle=document.getElementById('infoTitle');
+    const infoCompany=document.getElementById('infoCompany');
+    const infoLocation=document.getElementById('infoLocation');
+    const infoType=document.getElementById('infoType');
+    const infoSalary=document.getElementById('infoSalary');
+    const infoPlan=document.getElementById('infoPlan');
+    const infoPosted=document.getElementById('infoPosted');
+    const infoDesc=document.getElementById('infoDesc');
+    const infoRequirements=document.getElementById('infoRequirements');
+    const closeModal=document.getElementById('closeModal');
+    const viewDetails=document.getElementById('viewDetails');
+    const openApplications=document.getElementById('openApplications');
+    const payJobBtn=document.getElementById('payJob');
+    const expressJobBtn=document.getElementById('expressJob');
+
+    let jobsCache=[];
+    let filteredCache=[];
+    let currentCategory='all';
+    let currentPlanFilter='';
+    let jobsChannel=null;
+    let modalJob=null;
+
+    function fmtDate(d){
+      try{ return new Date(d).toLocaleDateString(); }catch{ return '—'; }
+    }
+
+    function parseSalary(s){
+      if(!s) return 0;
+      const num=parseFloat(String(s).replace(/[^0-9.]/g,''));
+      return Number.isNaN(num)?0:num;
+    }
+
+    function mapJobsFromSupabase(rows){
+      return rows.map(j=>{
+        const m=j.metadata || {};
+        const location =
+          j.city && j.country
+            ? `${j.city}, ${j.country}`
+            : j.country || j.city || 'Location not set';
+
+        const cover=m.cover_image || m.hero_image || '/assets/jobs/default-cover.jpg';
+
+        // derive "type" for category filter
+        const jobType=(m.job_type || '').toLowerCase();
+        let typeCat='other';
+        if(jobType.includes('full')) typeCat='full-time';
+        else if(jobType.includes('contract')) typeCat='contract';
+        else if(jobType.includes('part')) typeCat='part-time';
+
+        return {
+          id:j.id,
+          title:j.title,
+          slug:j.slug,
+          plan:j.plan || m.plan || null,
+          description:j.description || m.short_desc || null,
+          requirements: m.requirements_detailed || '',
+          location,
+          salary:m.salary || (m.salary_amount ? `${m.currency || 'GHS'} ${m.salary_amount}` : 'Negotiable'),
+          type:typeCat,
+          is_active:j.status==='active',
+          created_at:j.created_at,
+          posted:j.created_at,
+          company:m.company || 'Elite Travel & Tour',
+          logo:m.logo || null,
+          cover,
+          metadata:m
+        };
+      });
+    }
+
+    async function fetchSupabaseJobs(){
+      try{
+        const { data, error } = await sb
+          .from('jobs')
+          .select('id,title,slug,country,city,plan,status,description,metadata,created_at')
+          .eq('status','active')
+          .in('plan',['work','express'])
+          .order('created_at',{ ascending:false })
+          .limit(100);
+        if(error){ console.error('fetch jobs error', error); return []; }
+        return mapJobsFromSupabase(data || []);
+      }catch(e){
+        console.error(e);
+        return [];
+      }
+    }
+
+    const fallbackJobs=[
+
+    ];
+
+    function isWorkAndPayJob(j){
+      return j.is_active !== false;
+    }
+
+    function jobCardTemplate(job){
+      return `
+        <article class="job-card" data-id="${job.id}">
+          <img src="${job.cover}" alt="${job.title}">
+          <div class="body">
+            <div class="company">
+              <i class="fa fa-building"></i> <span>${job.company}</span>
+            </div>
+            <h3 style="margin:.4rem 0 .2rem;">${job.title}</h3>
+            <p class="muted" style="font-size:.9rem;">${job.description || 'No short description available yet.'}</p>
+            <div class="meta">
+              <span class="pill"><i class="fa fa-location-dot"></i> ${job.location}</span>
+              <span class="pill"><i class="fa fa-briefcase"></i> ${job.metadata?.job_type || 'N/A'}</span>
+              <span class="pill"><i class="fa fa-money-bill"></i> ${job.salary}</span>
+              ${job.plan ? `<span class="pill"><i class="fa fa-layer-group"></i> ${job.plan==='work'?'Work & Pay':'Express'}</span>` : ''}
+            </div>
+            <div class="posted"><i class="fa fa-clock"></i> Posted ${fmtDate(job.posted || job.created_at)}</div>
+            <div class="toolbar">
+              <button class="btn brand job-details-btn"><i class="fa fa-eye"></i> Details</button>
+              <button class="btn outline job-apply-btn"><i class="fa fa-file-signature"></i> Apply</button>
+              <button class="btn outline job-pay-btn"><i class="fa fa-credit-card"></i> Pay</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderJobs(list){
+      if(!list.length){
+        jobGrid.innerHTML='';
+        emptyState.style.display='block';
+        return;
+      }
+      emptyState.style.display='none';
+      jobGrid.innerHTML=list.map(jobCardTemplate).join('');
+    }
+
+    function applyCategoryFilter(list){
+      let res=list;
+      if(currentCategory && currentCategory!=='all'){
+        res=res.filter(j=> String(j.type||'').toLowerCase()===currentCategory);
+      }
+      if(currentPlanFilter){
+        res=res.filter(j=> (j.plan || '')===currentPlanFilter);
+      }
+      return sortList(res);
+    }
+
+    function sortList(list){
+      const val=sortSelect.value;
+      const sorted=list.slice();
+      if(val==='posted_desc'){
+        sorted.sort((a,b)=> new Date(b.posted||b.created_at||0) - new Date(a.posted||a.created_at||0));
+      } else if(val==='posted_asc'){
+        sorted.sort((a,b)=> new Date(a.posted||a.created_at||0) - new Date(b.posted||b.created_at||0));
+      } else if(val==='salary_desc'){
+        sorted.sort((a,b)=> parseSalary(b.salary) - parseSalary(a.salary));
+      } else if(val==='salary_asc'){
+        sorted.sort((a,b)=> parseSalary(a.salary) - parseSalary(b.salary));
+      }
+      return sorted;
+    }
+
+    async function loadJobs(){
+      const supa = await fetchSupabaseJobs();
+      const base = supa.length ? supa : fallbackJobs;
+      const combined = base.filter(isWorkAndPayJob);
+      jobsCache = combined;
+      filteredCache = combined.slice();
+      renderJobs(applyCategoryFilter(filteredCache));
+    }
+
+    // Search
+    searchBtn.addEventListener('click',()=>{
+      const term=searchInput.value.toLowerCase().trim();
+      const base=jobsCache.slice();
+      const filtered=base.filter(j=>{
+        return (j.title?.toLowerCase().includes(term))
+          || (j.location?.toLowerCase().includes(term))
+          || (j.company?.toLowerCase().includes(term))
+          || (j.description?.toLowerCase().includes(term));
+      });
+      filteredCache = filtered;
+      renderJobs(applyCategoryFilter(filteredCache));
+    });
+    clearBtn.addEventListener('click',()=>{
+      searchInput.value='';
+      filteredCache = jobsCache.slice();
+      renderJobs(applyCategoryFilter(filteredCache));
+    });
+
+    // Category filter (type)
+    document.querySelectorAll('.categories button[data-cat]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        currentCategory = btn.dataset.cat;
+        const base = filteredCache.length ? filteredCache : jobsCache;
+        renderJobs(applyCategoryFilter(base));
+      });
+    });
+
+    // Plan filter (work / express)
+    planFilters.addEventListener('click',(e)=>{
+      const btn=e.target.closest('button[data-plan]');
+      if(!btn) return;
+      planFilters.querySelectorAll('button[data-plan]').forEach(b=> b.classList.remove('brand'));
+      btn.classList.add('brand');
+      currentPlanFilter=btn.dataset.plan || '';
+      const base = filteredCache.length ? filteredCache : jobsCache;
+      renderJobs(applyCategoryFilter(base));
+    });
+
+    // Sort
+    sortSelect.addEventListener('change', ()=>{
+      const base = filteredCache.length ? filteredCache : jobsCache;
+      renderJobs(applyCategoryFilter(base));
+    });
+
+    // Job grid actions
+    jobGrid.addEventListener('click',(e)=>{
+      const card=e.target.closest('.job-card');
+      if(!card) return;
+      const id=card.getAttribute('data-id');
+      const job=jobsCache.find(j=>String(j.id)===String(id));
+      if(!job) return;
+
+      if(e.target.closest('.job-details-btn')){
+        openInfoModal(job);
+      }else if(e.target.closest('.job-apply-btn')){
+        handleApply(job);
+      }else if(e.target.closest('.job-pay-btn')){
+        handlePay(job,false);
+      }else{
+        // Click anywhere else: go to full details
+        window.location.href=`/views/pages/job-detail.html?id=${encodeURIComponent(job.id)}`;
+      }
+    });
+
+    function mapRequirementsList(job){
+      const m=job.metadata || {};
+      const reqsText = m.requirements_detailed || job.requirements || '';
+      const parts = Array.isArray(reqsText) ? reqsText : String(reqsText).split('\n');
+      const cleaned=parts.map(r=>String(r).trim()).filter(Boolean);
+      return cleaned.length ? cleaned : ['Requirements will be discussed during consultation.'];
+    }
+
+    function openInfoModal(job){
+      modalJob=job;
+      infoTitle.textContent=job.title;
+      infoCompany.innerHTML=`<i class="fa fa-building"></i> ${job.company}`;
+      infoLocation.innerHTML=`<i class="fa fa-location-dot"></i> ${job.location}`;
+      infoType.innerHTML=`<i class="fa fa-briefcase"></i> ${job.metadata?.job_type || 'N/A'}`;
+      infoSalary.innerHTML=`<i class="fa fa-money-bill"></i> ${job.salary}`;
+      const planLabel = job.plan==='work' ? 'Work & Pay' :
+                        job.plan==='express' ? 'Express' : '—';
+      infoPlan.innerHTML=`<i class="fa fa-layer-group"></i> ${planLabel}`;
+      infoPosted.innerHTML=`<i class="fa fa-clock"></i> ${fmtDate(job.posted || job.created_at)}`;
+      infoDesc.textContent=job.description || 'No extra description here. Open full details for more information.';
+
+      const reqs=mapRequirementsList(job);
+      infoRequirements.innerHTML='<strong>Key requirements:</strong><ul style="margin:.35rem 0 0;padding-left:1.1rem;">'+
+        reqs.map(r=>`<li>${r}</li>`).join('')+
+        '</ul>';
+
+      infoModal.style.display='flex';
+      trapFocus(infoModal);
+    }
+
+    function closeInfoModal(){
+      infoModal.style.display='none';
+      modalJob=null;
+    }
+    closeModal.addEventListener('click',closeInfoModal);
+    infoModal.addEventListener('click',(e)=>{ if(e.target===infoModal) closeInfoModal(); });
+
+    function trapFocus(modal){
+      const focusable = modal.querySelectorAll('a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])');
+      const first = focusable[0];
+      const last  = focusable[focusable.length-1];
+      function keyHandler(e){
+        if(e.key !== 'Tab') return;
+        if(e.shiftKey){
+          if(document.activeElement === first){ e.preventDefault(); last.focus(); }
+        } else {
+          if(document.activeElement === last){ e.preventDefault(); first.focus(); }
+        }
+      }
+      modal.addEventListener('keydown', keyHandler);
+      first && first.focus();
+    }
+
+    function requireAuth(cb){
+      return async ()=>{
+        const { data } = await sb.auth.getSession();
+        const user=data.session?.user;
+        if(!user){
+          showToast('Please log in to continue.');
+          window.location.href='/views/pages/login.html';
+          return;
+        }
+        cb();
+      };
+    }
+
+    function handleApply(job){
+      requireAuth(()=>{
+        window.location.href=`/views/pages/job-detail.html?id=${encodeURIComponent(job.id)}#apply`;
+      })();
+    }
+
+    function handlePay(job,isExpress){
+      requireAuth(()=>{
+        const type=isExpress?'express':'job';
+        window.location.href=`/views/pages/payment.html?type=${type}&job_id=${encodeURIComponent(job.id)}&from=work-and-pay`;
+      })();
+    }
+
+    viewDetails.addEventListener('click',()=>{
+      if(!modalJob) return;
+      window.location.href=`/views/pages/job-detail.html?id=${encodeURIComponent(modalJob.id)}`;
+    });
+    openApplications.addEventListener('click',()=>{
+      if(!modalJob) return;
+      handleApply(modalJob);
+    });
+    payJobBtn.addEventListener('click',()=>{
+      if(!modalJob) return;
+      handlePay(modalJob,false);
+    });
+    expressJobBtn.addEventListener('click',()=>{
+      if(!modalJob) return;
+      handlePay(modalJob,true);
+    });
+
+    // Realtime subscription for jobs (INSERT/UPDATE) — metadata-aware
+    function subscribeJobs(){
+      if(jobsChannel){ sb.removeChannel(jobsChannel); jobsChannel=null; }
+      jobsChannel = sb.channel('work-and-pay-jobs')
+        .on('postgres_changes',{ event:'INSERT', schema:'public', table:'jobs' }, payload=>{
+          const j = payload.new;
+          if(j.status!=='active' || !['work','express'].includes(j.plan)) return;
+          const normalized = mapJobsFromSupabase([j])[0];
+          const exists = jobsCache.some(x=>String(x.id)===String(normalized.id));
+          if(!exists && isWorkAndPayJob(normalized)){
+            jobsCache.unshift(normalized);
+            filteredCache = jobsCache.slice();
+            renderJobs(applyCategoryFilter(filteredCache));
+            showToast('New job added.');
+          }
+        })
+        .on('postgres_changes',{ event:'UPDATE', schema:'public', table:'jobs' }, payload=>{
+          const j = payload.new;
+          const normalized = mapJobsFromSupabase([j])[0];
+          const idx = jobsCache.findIndex(x=>String(x.id)===String(normalized.id));
+          if(idx>-1){
+            if(!isWorkAndPayJob(normalized) || !['work','express'].includes(normalized.plan || j.plan)){
+              jobsCache.splice(idx,1);
+            }else{
+              jobsCache[idx]=normalized;
+            }
+            filteredCache = jobsCache.slice();
+            renderJobs(applyCategoryFilter(filteredCache));
+            showToast('Job updated.');
+          }
+        })
+        .subscribe();
+    }
+
+    await loadJobs();
+    subscribeJobs();
+
+    // Reduce motion guard (reserved)
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      // no animations here
+    }
+  </script>
+</body>
+</html>

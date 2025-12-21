@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Job Details — Work & Pay | Elite Travel & Tour</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="description" content="Elite Travel & Tour Work & Pay job detail page"/>
+  <link rel="stylesheet" href="/icons/fontawesome.min.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/pages.css">
+  <link rel="stylesheet" href="/css/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <!-- Standard ICO -->
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+
+<!-- Or PNG -->
+<link rel="icon" href="/favicon.png" type="image/png">
+
+<!-- Optional: SVG -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+   
+
+    /* .feed {
+      position:fixed;
+      top:70px;
+      right:10px;
+      width:260px;
+      background:var(--bg);
+      border:1px solid var(--gray-200);
+      border-radius:10px;
+      box-shadow:var(--shadow);
+      padding:.6rem .7rem;
+      z-index:900;
+    }
+    .feed.hidden{ display:none; }
+    .feed h4{ margin:0 0 .4rem; font-size:.9rem; }
+    .feed .list{ max-height:260px; overflow:auto; font-size:.82rem; color:#333; } */
+
+    .job-header{
+      display:flex;
+      flex-direction:column;
+      gap:.4rem;
+      margin-bottom:.5rem;
+    }
+    .job-breadcrumb{
+      font-size:.85rem;
+      color:var(--muted);
+      display:flex;
+      gap:.35rem;
+      align-items:center;
+    }
+    .job-breadcrumb a{
+      color:inherit;
+      text-decoration:none;
+    }
+    .job-breadcrumb a:hover{
+      text-decoration:underline;
+    }
+
+    .job-title-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:.75rem;
+      flex-wrap:wrap;
+    }
+    .job-title-text{
+      font-size:1.7rem;
+      font-weight:700;
+    }
+    .plan-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:.35rem;
+      padding:.22rem .7rem;
+      border-radius:999px;
+      background:#f0f7ff;
+      color:#0b4d78;
+      border:1px solid #d6e9ff;
+      font-size:.82rem;
+      font-weight:600;
+    }
+
+    .job-hero{
+      display:grid;
+      grid-template-columns:minmax(0,2fr) minmax(0,1.4fr);
+      gap:1rem;
+    }
+    @media(max-width:900px){
+      .job-hero{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .job-cover{
+      border-radius:12px;
+      overflow:hidden;
+      background:var(--bg);
+      border:1px solid var(--gray-200);
+      min-height:200px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .job-cover img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .job-meta{
+      margin-top:.5rem;
+      color:#666;
+      display:flex;
+      gap:.5rem;
+      flex-wrap:wrap;
+    }
+    .job-meta .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:.35rem;
+      border:1px solid var(--gray-300);
+      border-radius:999px;
+      padding:.2rem .6rem;
+      background:#fff;
+      font-size:.85rem;
+    }
+
+    .job-badges{
+      display:flex;
+      gap:.5rem;
+      flex-wrap:wrap;
+      margin-top:.6rem;
+    }
+    
+    .sidebar-card{
+      background:var(--bg);
+      border-radius:var(--radius);
+      border:1px solid var(--gray-200);
+      padding:.75rem .85rem;
+    }
+    .sidebar-header{
+      display:flex;
+      gap:.6rem;
+      align-items:center;
+      margin-bottom:.6rem;
+    }
+    .sidebar-logo{
+      width:44px;
+      height:44px;
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid var(--gray-300);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#fff;
+    }
+    .sidebar-logo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .sidebar-company{
+      font-weight:600;
+    }
+    .sidebar-location{
+      font-size:.85rem;
+      color:var(--muted);
+    }
+
+    .sidebar-list{
+      font-size:.88rem;
+      color:var(--muted);
+      display:grid;
+      gap:.25rem;
+    }
+    .sidebar-list .label{
+      font-weight:600;
+    }
+
+    .divider{
+      height:1px;
+      background:var(--gray-200);
+      margin:1rem 0;
+      border-radius:999px;
+    }
+
+    .job-layout{
+      display:grid;
+      grid-template-columns:minmax(0,2.1fr) minmax(0,1.4fr);
+      gap:1rem;
+      margin-top:1rem;
+    }
+    @media(max-width:900px){
+      .job-layout{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .requirements,
+    .info{
+      margin-top:.5rem;
+      padding-left:1.1rem;
+    }
+    .requirements li,
+    .info li{
+      margin:.35rem 0;
+    }
+
+    .toolbar{
+      display:flex;
+      gap:.5rem;
+      flex-wrap:wrap;
+      margin-top:.75rem;
+    }
+
+    .input{
+      width:100%;
+      border-radius:8px;
+      border:1px solid var(--gray-300);
+      padding:.45rem .6rem;
+      font-size:.9rem;
+      margin-bottom:.4rem;
+      background:#fff;
+    }
+    .textarea{
+      width:100%;
+      min-height:90px;
+      resize:vertical;
+      border-radius:8px;
+      border:1px solid var(--gray-300);
+      padding:.55rem .7rem;
+    }
+
+    /* body{
+      background:var(--bg);
+      color:#222;
+    }
+    .container{
+      max-width:1100px;
+      margin:0 auto;
+      padding:1rem;
+    }
+
+    nav{
+      position:sticky;
+      top:0;
+      background:#fff;
+      z-index:1000;
+      padding:.5rem 1rem;
+      box-shadow:0 2px 4px rgba(0,0,0,.08);
+    }
+    nav .wrap{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:.75rem;
+    }
+    nav .logo{
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+      font-weight:800;
+      color:#222;
+      text-decoration:none;
+      white-space:nowrap;
+    }
+    nav .logo i{
+      color:var(--brand);
+    }
+    nav ul.primary{
+      display:flex;
+      gap:1rem;
+      list-style:none;
+      margin:0;
+      padding:0;
+    }
+    nav a{
+      text-decoration:none;
+      color:#333;
+      font-weight:600;
+      padding:.4rem .6rem;
+      border-radius:6px;
+      display:inline-flex;
+      align-items:center;
+      gap:.4rem;
+    }
+    nav a:hover,
+    nav a.active{
+      color:var(--brand);
+      background:rgba(0,119,204,.08);
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      background:#222;
+      color:#fff;
+      padding:.55rem .85rem;
+      border-radius:8px;
+      text-decoration:none;
+      border:none;
+      cursor:pointer;
+      font-weight:700;
+      font-size:.9rem;
+    }
+    .btn.brand{
+      background:var(--brand);
+    }
+    .btn.brand:hover{
+      background:var(--brand-600);
+    }
+    .btn.outline{
+      background:transparent;
+      color:#222;
+      border:1px solid var(--gray-300);
+    }
+    .btn.outline:hover{
+      border-color:var(--brand);
+      color:var(--brand);
+    }
+    .btn[disabled]{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
+    .auth-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      padding:.35rem .6rem;
+      border-radius:999px;
+      background:#f0f7ff;
+      color:#0b4d78;
+      font-weight:600;
+      border:1px solid #d6e9ff;
+      max-width:50vw;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .auth-pill i{
+      color:var(--brand);
+    }
+
+    .menu-toggle{
+      display:none;
+      border:none;
+      background:#f7fbff;
+      color:#09486f;
+      padding:.5rem .6rem;
+      border-radius:8px;
+      box-shadow:0 2px 6px rgba(0,0,0,.06) inset;
+    }
+    .mobile-panel{
+      display:none;
+      background:#fff;
+      border:1px solid var(--gray-200);
+      border-radius:10px;
+      margin-top:.5rem;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .mobile-panel.open{
+      display:block;
+    }
+    .mobile-panel .block{
+      display:flex;
+      flex-direction:column;
+      padding:.75rem;
+      gap:.25rem;
+    }
+    .mobile-panel a{
+      padding:.6rem .75rem;
+      border-radius:8px;
+      color:#222;
+      font-weight:600;
+    }
+    .mobile-panel a:hover{
+      background:#f7f9fc;
+      color:var(--brand);
+    }
+    @media(max-width:880px){
+      nav ul.primary{ display:none; }
+      .menu-toggle{ display:inline-flex; }
+      .auth-pill{ display:none; }
+      #logoutBtn{ display:none; }
+    }
+
+    footer{
+      background:var(--dark);
+      color:#eee;
+      padding:2rem 1rem;
+      margin-top:2rem;
+    }
+    footer .grid{
+      display:grid;
+      gap:1rem;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    }
+    footer a{
+      color:#eee;
+      text-decoration:none;
+    }
+    footer a:hover{
+      text-decoration:underline;
+    }
+    footer .social i{
+      margin-right:.5rem;
+    }
+    footer .footer-bottom,
+    footer .legal{
+      text-align:center;
+      margin-top:1rem;
+      color:#999;
+      font-size:.9rem;
+    }
+
+    .newsletter input{
+      margin-top:.3rem;
+      padding:.35rem .6rem;
+      border-radius:6px;
+      border:1px solid var(--gray-300);
+      width:100%;
+      max-width:260px;
+    }
+    .newsletter button{
+      margin-top:.4rem;
+      padding:.35rem .7rem;
+      border-radius:6px;
+      border:none;
+      background:var(--brand);
+      color:#fff;
+      font-weight:600;
+      cursor:pointer;
+    }
+
+    .toast{
+      position:fixed;
+      bottom:20px;
+      left:50%;
+      transform:translateX(-50%);
+      background:#1b2a3a;
+      color:#eaf4ff;
+      padding:.75rem 1rem;
+      border-radius:8px;
+      box-shadow:var(--shadow);
+      z-index:2000;
+      display:none;
+      max-width:90vw;
+    }
+    .toast.show{
+      display:flex;
+      align-items:center;
+      gap:.6rem;
+    }
+    .toast i{
+      color:#4fc3f7;
+    }
+
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(15,23,42,.7);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:1500;
+    }
+    .modal.open{
+      display:flex;
+    } */
+  </style>
+</head>
+<body>
+  <nav aria-label="Primary">
+    <div class="wrap">
+      <a class="logo" href="/"><img src="/assets/logo/logo.png" alt="Elite Travel & Tour"></a>
+      <ul class="primary">
+        <li><a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a></li>
+        <li><a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a></li>
+        <li><a href="/views/pages/work-and-pay.html" class="active"><i class="fa fa-briefcase"></i> Work & Pay</a></li>
+        <li><a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a></li>
+        <li><a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a></li>
+        <li><a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a></li>
+      </ul>
+      <div class="nav-right">
+        <button id="bellBtn" class="btn outline bell" aria-label="Notifications">
+          <i class="fa-regular fa-bell"></i>
+          <span id="bellCount" class="count hidden">0</span>
+        </button>
+        <span id="authStatus" class="auth-pill" style="display:none;">
+          <i class="fa fa-user-check"></i><span class="auth-text">Guest</span>
+        </span>
+        <button id="loginBtn" class="btn outline"><i class="fa fa-right-to-bracket"></i> Login</button>
+        <button id="profileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> </button>
+        <button id="logoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> </button>
+        <button id="menuToggle" class="menu-toggle" aria-expanded="false"><i class="fa fa-bars"></i></button>
+      </div>
+    </div>
+
+    <div id="mobilePanel" class="mobile-panel">
+      <div class="block">
+        <a href="/views/pages/index.html"><i class="fa fa-house"></i> Home</a>
+        <a href="/views/pages/services.html"><i class="fa fa-suitcase"></i> Services</a>
+        <a href="/views/pages/work-and-pay.html" class="active"><i class="fa fa-briefcase"></i> Work & Pay</a>
+        <a href="/views/pages/appointment.html"><i class="fa fa-calendar"></i> Book</a>
+        <a href="/views/pages/contact.html"><i class="fa fa-envelope"></i> Contact</a>
+        <a href="/views/pages/about.html"><i class="fa fa-circle-info"></i> About</a>
+      </div>
+      <div class="block">
+        <span class="auth-pill"><i class="fa fa-user"></i><span id="mobileAuthText">Guest</span></span>
+        <div class="toolbar">
+          <button id="mobileLoginBtn" class="btn brand"><i class="fa fa-right-to-bracket"></i> Login</button>
+          <button id="mobileProfileBtn" class="btn outline" style="display:none"><i class="fa fa-user"></i> Profile</button>
+          <button id="mobileLogoutBtn" class="btn outline" style="display:none"><i class="fa fa-right-from-bracket"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div id="notifFeed" class="feed hidden">
+  <div class="feed-toolbar">
+    <span class="muted small-text">Notifications</span>
+    <div style="color:var(--brand);display:flex;gap:.25rem;">
+      <button id="markAllReadBtn" class='btn ' style="color:var(--brand);" ><i class="fa fa-check-double"></i> Mark as Read</button>
+      <button id="clearAllNotifBtn" class='btn '><i class="fa fa-trash"></i> Clear</button>
+    </div>
+  </div>
+  <div id="notifList" class="list"></div>
+</div>
+<script type="module" src="/src/js/notifications.js"></script>
+  
+  <main class="container grid">
+    <section class="card">
+      <div class="body">
+        <div class="job-header">
+          <div class="job-breadcrumb">
+            <a href="/views/pages/work-and-pay.html">
+              <i class="fa fa-arrow-left"></i> Work & Pay
+            </a>
+            <span>/</span>
+            <span id="breadcrumbJob">Job details</span>
+          </div>
+          <div class="job-title-row">
+            <div>
+              <h1 class="job-title-text" id="jobTitle">Loading job…</h1>
+              <p class="muted" id="jobSubtitle">Fetching job details from our Work & Pay database.</p>
+            </div>
+            <div id="planBadgeWrap"></div>
+          </div>
+        </div>
+
+        <div class="job-hero">
+          <div>
+            <div class="job-cover">
+              <img id="jobImg" src="/assets/jobs/default-cover.jpg" alt="Job image">
+            </div>
+            <div class="job-meta">
+              <span class="pill"><i class="fa fa-building"></i> <span id="jobCompany">—</span></span>
+              <span class="pill"><i class="fa fa-location-dot"></i> <span id="jobLocation">—</span></span>
+              <span class="pill"><i class="fa fa-briefcase"></i> <span id="jobType">—</span></span>
+              <span class="pill"><i class="fa fa-money-bill"></i> <span id="jobSalary">—</span></span>
+              <span class="pill"><i class="fa fa-clock"></i> <span id="jobPosted">—</span></span>
+            </div>
+            <div class="job-badges" id="jobBadges"></div>
+          </div>
+
+          <aside class="sidebar-card">
+            <div class="sidebar-header">
+              <div class="sidebar-logo" id="jobLogoWrap">
+                <i class="fa fa-briefcase"></i>
+              </div>
+              <div>
+                <div class="sidebar-company" id="jobCompanySummary">—</div>
+                <div class="sidebar-location" id="jobLocationSummary">—</div>
+              </div>
+            </div>
+            <div class="sidebar-list">
+              <div><span class="label">Plan:</span> <span id="jobPlanLabel">—</span></div>
+              <div><span class="label">Contract:</span> <span id="jobContract">—</span></div>
+              <div><span class="label">Languages:</span> <span id="jobLanguages">—</span></div>
+              <div><span class="label">Experience:</span> <span id="jobExperience">—</span></div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="toolbar">
+              <button class="btn brand" id="applyBtn"><i class="fa fa-file-signature"></i> Apply</button>
+              <button class="btn outline" id="payBtn"><i class="fa fa-credit-card"></i> Pay</button>
+              <button class="btn outline" id="expressBtn"><i class="fa fa-bolt"></i> Express</button>
+            </div>
+            <p class="muted" style="margin-top:.5rem;font-size:.85rem;">
+              Applications and payments are linked to your Elite Travel profile. You can track everything under Profile & Tracking.
+            </p>
+          </aside>
+        </div>
+
+        <div class="job-layout" style="margin-top:1.2rem;">
+          <div>
+            <div class="divider"></div>
+            <h3 class="section-title">Job description</h3>
+            <p id="jobDesc" class="muted">Loading job description...</p>
+
+            <h3 class="section-title">Responsibilities</h3>
+            <ul id="jobResponsibilities" class="requirements"></ul>
+
+            <h3 class="section-title">Requirements</h3>
+            <ul id="jobReqs" class="requirements"></ul>
+
+            <h3 class="section-title">Benefits</h3>
+            <ul id="jobBenefits" class="requirements"></ul>
+
+            <h3 class="section-title">Mandatory documents for Work & Pay</h3>
+            <ul class="info" id="mandatoryDocs">
+              <li><i class="fa fa-id-card"></i> National ID</li>
+              <li><i class="fa fa-passport"></i> Passport</li>
+              <li><i class="fa fa-stethoscope"></i> Medicals</li>
+              <li><i class="fa fa-shield-halved"></i> Police report</li>
+              <li><i class="fa fa-file"></i> Birth certificate</li>
+              <li><i class="fa fa-user-shield"></i> Guarantor(s)</li>
+            </ul>
+          </div>
+
+          <aside>
+            <div class="divider"></div>
+            <h3 class="section-title" id="applySectionTitle">Quick application</h3>
+            <form class="list" id="applyForm" novalidate>
+              <input class="input" id="fullName" placeholder="Full name">
+              <input class="input" id="email" type="email" placeholder="Email">
+              <input class="input" id="phone" type="tel" placeholder="Phone number">
+              <textarea class="textarea" id="motivation" placeholder="Why are you fit for this role?"></textarea>
+              <div class="toolbar">
+                <button class="btn brand" type="submit"><i class="fa fa-paper-plane"></i> Continue application</button>
+                <a class="btn outline" id="openApplications" href="#"><i class="fa fa-file-signature"></i> My applications</a>
+                <a class="btn outline" href="/views/pages/work-and-pay.html"><i class="fa fa-list"></i> Back to jobs</a>
+              </div>
+              <p class="muted" style="margin-top:.5rem;font-size:.84rem;">
+                You must be logged in for your application to be saved. We’ll redirect you to a full application form.
+              </p>
+            </form>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmText">
+    <section class="card"><div class="body">
+      <h3>Application started</h3>
+      <p id="confirmText"></p>
+      <div class="toolbar">
+        <button class="btn brand" id="confirmOk"><i class="fa fa-check"></i> Go to application</button>
+      </div>
+    </div></section>
+  </div>
+
+  <footer id="footer">
+    <div class="grid">
+      <div>
+        <h4>Elite Travel & Tour</h4>
+        <p>Trusted partner for seamless journeys worldwide.</p>
+        <p class="muted">Visa assistance, Work & Pay programs, and flight bookings with premium support.</p>
+      </div>
+      <div>
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="/views/pages/services.html">Services</a></li>
+          <li><a href="/views/pages/work-and-pay.html">Work & Pay</a></li>
+          <li><a href="/views/pages/appointment.html">Book Appointment</a></li>
+          <li><a href="/views/pages/contact.html">Contact</a></li>
+          <li><a href="/views/pages/about.html">About</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><i class="fa fa-phone"></i> +233 59 911 7007</p>
+        <p><i class="fa fa-envelope"></i> info@elitetravel.com</p>
+        <p><i class="fa fa-map-marker-alt"></i> Adabraka Akasanoma rd, Greater Accra, Ghana</p>
+        <div class="newsletter">
+          <label for="newsletterEmail" class="muted">Subscribe to our newsletter:</label><br>
+          <input id="newsletterEmail" type="email" placeholder="Your email">
+          <button id="subscribeBtn"><i class="fa fa-paper-plane"></i> Subscribe</button>
+        </div>
+        <div id="subscribeMsg" class="muted" style="margin-top:.5rem;"></div>
+      </div>
+      <div>
+        <h4>Resources</h4>
+        <ul class="list">
+          <li><a href="/views/pages/profile.html">Profile</a></li>
+          <li><a href="/views/pages/tracking.html">Tracking</a></li>
+          <li><a href="/views/pages/privacy.html">Privacy Policy</a></li>
+          <li><a href="/views/pages/terms.html">Terms of Service</a></li>
+        </ul>
+      </div>
+      <div class="social">
+        <h4>Follow Us</h4>
+        <div class="toolbar">
+          <a href="#"><i class="fa-brands fa-facebook"></i></a>
+          <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">© <span id="year"></span> Elite Travel & Tour. All rights reserved.</div>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <i class="fa fa-info-circle"></i><span id="toastText">Notice</span>
+  </div>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/src/js/supabase.js"></script>
+  <script type="module">
+    import { sb } from '/src/js/supabase.js';
+
+    let currentUser=null;
+    let currentJob=null;
+    let currentPlan=null;
+
+    const yearSpan=document.getElementById('year');
+    if(yearSpan) yearSpan.textContent=new Date().getFullYear();
+
+    const subscribeBtn=document.getElementById('subscribeBtn');
+    const eemailInput=document.getElementById('newsletterEmail');
+    const subscribeMsg=document.getElementById('subscribeMsg');
+    subscribeBtn?.addEventListener('click',()=>{
+      const eemail=eemailInput.value.trim();
+      if(!eemail){
+        subscribeMsg.textContent='Please enter your email.';
+        subscribeMsg.style.color='red';
+        return;
+      }
+      subscribeMsg.textContent=`Thank you for subscribing, ${eemail}!`;
+      subscribeMsg.style.color='lightgreen';
+      eemailInput.value='';
+    });
+
+    const toast=document.getElementById('toast');
+    const toastText=document.getElementById('toastText');
+    function showToast(message,ms=2500){
+      if(!toast || !toastText) return;
+      toastText.textContent=message;
+      toast.classList.add('show');
+      setTimeout(()=> toast.classList.remove('show'),ms);
+    }
+
+    document.addEventListener('click',(e)=>{
+      const feed=document.getElementById('notifFeed');
+      if(!feed) return;
+      if(e.target.closest('#bellBtn')){
+        feed.classList.toggle('hidden');
+      }else if(!e.target.closest('#notifFeed')){
+        feed.classList.add('hidden');
+      }
+    });
+
+    const notifList=document.getElementById('notifList');
+    const bellCount=document.getElementById('bellCount');
+    function renderNotification(n){
+      if(notifList){
+        const el=document.createElement('div');
+        el.className='item';
+        el.textContent=n.message || n.text;
+        notifList.prepend(el);
+      }
+      if(bellCount){
+        const count=parseInt(bellCount.textContent||'0',10)+1;
+        bellCount.textContent=String(count);
+        bellCount.classList.remove('hidden');
+      }
+    }
+
+    let notifChannel;
+    async function subscribeNotifications(userId){
+      if(notifChannel){
+        await sb.removeChannel(notifChannel);
+        notifChannel=null;
+      }
+      notifChannel=sb.channel(`header-notifs-${userId}`)
+        .on('postgres_changes',{
+          event:'INSERT',
+          schema:'public',
+          table:'notifications',
+          filter:`user_id=eq.${userId}`
+        },payload=>{
+          renderNotification(payload.new);
+        })
+        .subscribe();
+    }
+
+    const loginBtn=document.getElementById('loginBtn');
+    const logoutBtn=document.getElementById('logoutBtn');
+    const profileBtn=document.getElementById('profileBtn');
+    const mobileLoginBtn=document.getElementById('mobileLoginBtn');
+    const mobileLogoutBtn=document.getElementById('mobileLogoutBtn');
+    const mobileProfileBtn=document.getElementById('mobileProfileBtn');
+    const authText=document.querySelector('#authStatus .auth-text');
+    const mobileAuthText=document.getElementById('mobileAuthText');
+    const authStatusPill=document.getElementById('authStatus');
+
+    function updateAuthUI(session){
+      const user=session?.user;
+      currentUser=user || null;
+
+      if(user){
+        if(authText) authText.textContent=user.email;
+        authStatusPill?.style.setProperty('display','none');
+        if(mobileAuthText) mobileAuthText.textContent=user.email;
+
+        loginBtn?.style.setProperty('display','none');
+        logoutBtn?.style.setProperty('display','inline-flex');
+        profileBtn?.style.setProperty('display','inline-flex');
+
+        mobileLoginBtn?.style.setProperty('display','none');
+        mobileLogoutBtn?.style.setProperty('display','inline-flex');
+        mobileProfileBtn?.style.setProperty('display','inline-flex');
+
+        profileBtn.onclick=()=> window.location.href=`/views/pages/user/profile.html?id=${user.id}`;
+        mobileProfileBtn.onclick=()=> window.location.href=`/views/pages/user/profile.html?id=${user.id}`;
+
+        subscribeNotifications(user.id);
+      }else{
+        if(authText) authText.textContent='Guest';
+        authStatusPill?.style.setProperty('display','inline-flex');
+        if(mobileAuthText) mobileAuthText.textContent='Guest';
+
+        loginBtn?.style.setProperty('display','inline-flex');
+        logoutBtn?.style.setProperty('display','none');
+        profileBtn?.style.setProperty('display','none');
+
+        mobileLoginBtn?.style.setProperty('display','inline-flex');
+        mobileLogoutBtn?.style.setProperty('display','none');
+        mobileProfileBtn?.style.setProperty('display','none');
+      }
+    }
+
+    {
+      const { data }=await sb.auth.getSession();
+      updateAuthUI(data.session);
+    }
+    sb.auth.onAuthStateChange((_event,session)=> updateAuthUI(session));
+
+    loginBtn?.addEventListener('click',()=> window.location.href='/views/pages/login.html');
+    mobileLoginBtn?.addEventListener('click',()=> window.location.href='/views/pages/login.html');
+
+    logoutBtn?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+    mobileLogoutBtn?.addEventListener('click',async()=>{
+      await sb.auth.signOut();
+      updateAuthUI(null);
+      window.location.href='/views/pages/login.html';
+    });
+
+    const menuToggle=document.getElementById('menuToggle');
+    const mobilePanel=document.getElementById('mobilePanel');
+    menuToggle?.addEventListener('click',()=>{
+      const isOpen=mobilePanel.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded',String(isOpen));
+    });
+    mobilePanel?.addEventListener('click',(e)=>{
+      if(e.target.matches('a')){
+        mobilePanel.classList.remove('open');
+        menuToggle.setAttribute('aria-expanded','false');
+      }
+    });
+
+    const breadcrumbJob=document.getElementById('breadcrumbJob');
+    const jobTitleEl=document.getElementById('jobTitle');
+    const jobSubtitleEl=document.getElementById('jobSubtitle');
+    const planBadgeWrap=document.getElementById('planBadgeWrap');
+
+    const jobImg=document.getElementById('jobImg');
+    const jobCompanyEl=document.getElementById('jobCompany');
+    const jobLocationEl=document.getElementById('jobLocation');
+    const jobTypeEl=document.getElementById('jobType');
+    const jobSalaryEl=document.getElementById('jobSalary');
+    const jobPostedEl=document.getElementById('jobPosted');
+    const jobBadges=document.getElementById('jobBadges');
+
+    const jobCompanySummary=document.getElementById('jobCompanySummary');
+    const jobLocationSummary=document.getElementById('jobLocationSummary');
+    const jobPlanLabel=document.getElementById('jobPlanLabel');
+    const jobContractEl=document.getElementById('jobContract');
+    const jobLanguagesEl=document.getElementById('jobLanguages');
+    const jobExperienceEl=document.getElementById('jobExperience');
+    const jobLogoWrap=document.getElementById('jobLogoWrap');
+
+    const jobDescEl=document.getElementById('jobDesc');
+    const jobResponsibilitiesEl=document.getElementById('jobResponsibilities');
+    const jobReqsEl=document.getElementById('jobReqs');
+    const jobBenefitsEl=document.getElementById('jobBenefits');
+
+    const applyBtn=document.getElementById('applyBtn');
+    const payBtn=document.getElementById('payBtn');
+    const expressBtn=document.getElementById('expressBtn');
+
+    const applyForm=document.getElementById('applyForm');
+    const fullNameInput=document.getElementById('fullName');
+    const emailInput=document.getElementById('email');
+    const phoneInput=document.getElementById('phone');
+    const motivationInput=document.getElementById('motivation');
+    const openApplicationsLink=document.getElementById('openApplications');
+
+    const confirmModal=document.getElementById('confirmModal');
+    const confirmText=document.getElementById('confirmText');
+    const confirmOk=document.getElementById('confirmOk');
+
+    function parseJobParam(){
+      const params=new URLSearchParams(window.location.search);
+      const slug=params.get('slug');
+      const id=params.get('id') || params.get('job') || params.get('job_id');
+      return { slug, id };
+    }
+
+    function fmtDate(d){
+      try{ return new Date(d).toLocaleDateString(); }catch{ return '—'; }
+    }
+
+    function mapArrayFromStringOrArray(val){
+      if(Array.isArray(val)) return val;
+      if(typeof val==='string' && val.trim()){
+        return val.split('\n').map(x=>x.trim()).filter(Boolean);
+      }
+      return [];
+    }
+
+    function renderJob(job){
+      if(!job){
+        jobTitleEl.textContent='Job not available';
+        jobSubtitleEl.textContent='This job may have been removed or is temporarily unavailable.';
+        applyForm.style.display='none';
+        applyBtn.disabled=true;
+        payBtn.disabled=true;
+        expressBtn.disabled=true;
+        return;
+      }
+
+      currentJob=job;
+      const m=job.metadata || {};
+
+      const location =
+        job.city && job.country
+          ? `${job.city}, ${job.country}`
+          : job.country || job.city || 'Location not set';
+
+      const cover=m.cover_image || m.hero_image || '/assets/jobs/default-cover.jpg';
+      const logo=m.logo || null;
+
+      jobImg.src=cover;
+      jobImg.alt=job.title || 'Job cover';
+
+      if(logo){
+        jobLogoWrap.innerHTML=`<img src="${logo}" alt="Company logo">`;
+      }else{
+        jobLogoWrap.innerHTML='<i class="fa fa-briefcase"></i>';
+      }
+
+      jobTitleEl.textContent=job.title || 'Job';
+      breadcrumbJob.textContent=job.title || 'Job details';
+      jobSubtitleEl.textContent=m.short_desc || job.description || location;
+
+      const company=m.company || 'Elite Travel & Tour';
+      jobCompanyEl.textContent=company;
+      jobLocationEl.textContent=location;
+      jobTypeEl.textContent=m.job_type || 'N/A';
+
+      const salaryText =
+        m.salary ? m.salary :
+        m.salary_amount ? `${m.currency || 'GHS'} ${m.salary_amount}` :
+        'Negotiable';
+      jobSalaryEl.textContent=salaryText;
+      jobPostedEl.textContent=job.created_at ? fmtDate(job.created_at) : '—';
+
+      jobCompanySummary.textContent=company;
+      jobLocationSummary.textContent=location;
+      currentPlan=job.plan || m.plan || null;
+      jobPlanLabel.textContent=currentPlan
+        ? (currentPlan==='work'?'Work & Pay':currentPlan==='express'?'Express':currentPlan)
+        : 'No specific plan';
+      jobContractEl.textContent=m.contract_length || 'Not specified';
+      jobLanguagesEl.textContent=m.languages || 'Not specified';
+      jobExperienceEl.textContent=m.experience_level || m.min_experience || 'Not specified';
+
+      planBadgeWrap.innerHTML='';
+      if(currentPlan){
+        const label=currentPlan==='work'
+          ? 'Work & Pay'
+          : currentPlan==='express'
+            ? 'Express'
+            : currentPlan;
+        planBadgeWrap.innerHTML=`<span class="plan-pill"><i class="fa fa-layer-group"></i> ${label}</span>`;
+      }
+
+      jobBadges.innerHTML='';
+      if(m.priority != null){
+        jobBadges.insertAdjacentHTML(
+          'beforeend',
+          `<span class="badge"><i class="fa fa-star"></i> Priority ${m.priority}</span>`
+        );
+      }
+      if(m.featured){
+        jobBadges.insertAdjacentHTML(
+          'beforeend',
+          `<span class="badge"><i class="fa fa-fire"></i> Featured</span>`
+        );
+      }
+
+      jobDescEl.textContent=
+        m.full_desc ||
+        m.short_desc ||
+        job.description ||
+        'No detailed description has been added yet.';
+
+      const responsibilities=mapArrayFromStringOrArray(m.responsibilities);
+      jobResponsibilitiesEl.innerHTML=responsibilities.length
+        ? responsibilities.map(r=>`<li>${r}</li>`).join('')
+        : '<li>No specific responsibilities listed.</li>';
+
+      const reqs=mapArrayFromStringOrArray(m.requirements_detailed);
+      if(!reqs.length && m.min_experience){
+        reqs.push(`Minimum experience: ${m.min_experience}`);
+      }
+      if(!reqs.length && m.education){
+        reqs.push(`Education: ${m.education}`);
+      }
+      jobReqsEl.innerHTML=reqs.length
+        ? reqs.map(r=>`<li>${r}</li>`).join('')
+        : '<li>No specific requirements listed.</li>';
+
+      const benefits=mapArrayFromStringOrArray(m.benefits);
+      jobBenefitsEl.innerHTML=benefits.length
+        ? benefits.map(b=>`<li>${b}</li>`).join('')
+        : '<li>Benefits will be discussed during consultation.</li>';
+
+      const isActive=job.status==='active';
+      if(!isActive){
+        applyBtn.disabled=true;
+        payBtn.disabled=true;
+        expressBtn.disabled=true;
+        showToast('This job is not currently accepting applications.');
+      }
+    }
+
+    async function loadJob(){
+      const { slug, id }=parseJobParam();
+      if(!slug && !id){
+        renderJob(null);
+        return;
+      }
+
+      try{
+        let query=sb
+          .from('jobs')
+          .select('id,title,slug,country,city,plan,status,description,metadata,created_at')
+          .limit(1);
+
+        if(slug){
+          query=query.eq('slug',slug);
+        }else if(id){
+          query=query.eq('id',id);
+        }
+
+        const { data, error }=await query.single();
+        if(error) throw error;
+
+        renderJob(data);
+
+        if(window.location.hash==='#apply'){
+          document.getElementById('applySectionTitle').scrollIntoView({ behavior:'smooth', block:'start' });
+        }
+      }catch(err){
+        console.error('loadJob error',err);
+        renderJob(null);
+      }
+    }
+
+    await loadJob();
+
+    applyForm.addEventListener('submit',async(e)=>{
+      e.preventDefault();
+      if(!currentJob || !currentJob.id){
+        showToast('Job not loaded yet. Try again.');
+        return;
+      }
+
+      const name=fullNameInput.value.trim();
+      const email=emailInput.value.trim();
+      const phone=phoneInput.value.trim();
+      const motivation=motivationInput.value.trim();
+
+      if(!name || !email || !phone || !motivation){
+        showToast('Please complete all fields.');
+        return;
+      }
+
+      const { data:sessionData }=await sb.auth.getSession();
+      const user=sessionData.session?.user;
+      if(!user){
+        showToast('Please log in to continue.');
+        window.location.href='/views/pages/login.html';
+        return;
+      }
+
+      const submitBtn=applyForm.querySelector('button[type="submit"]');
+      submitBtn.disabled=true;
+      submitBtn.innerHTML='<i class="fa fa-spinner fa-spin"></i> Preparing...';
+
+      try{
+        const now=new Date().toISOString();
+        const trackingId=`JOB-${now.replace(/[-:.TZ]/g,'').slice(0,14)}`;
+
+        const progress=[
+          { step:'started', at:now, context:'job-detail-quick' }
+        ];
+
+        const details={
+          applicant:{
+            name,
+            email,
+            phone,
+            motivation
+          },
+          job:{
+            id:currentJob.id,
+            title:currentJob.title,
+            slug:currentJob.slug,
+            country:currentJob.country,
+            city:currentJob.city,
+            plan:currentPlan
+          },
+          source:'job-detail-page'
+        };
+
+        const payload={
+          user_id:user.id,
+          job_id:currentJob.id,
+          status:'pending',
+          progress,
+          plan:currentPlan || null,
+          application_type:'job',
+          metadata:currentJob.metadata || {},
+          tracking_id:trackingId,
+          details:JSON.stringify(details),
+          service_slug:null,
+          email:user.email  // this column exists in your schema
+        };
+
+        const { data, error }=await sb.from('applications').insert(payload).select('id').single();
+        if(error) throw error;
+
+        const applicationId=data.id;
+
+        await sb.from('notifications').insert({
+          user_id:user.id,
+          user_email:user.email,
+          title:'Application started',
+          category:'applications',
+          message:`You started an application for "${currentJob.title}". Complete it to proceed.`,
+          link:`/views/pages/application.html?application_id=${applicationId}&job_id=${currentJob.id}`,
+          importance:'normal',
+          email_ready:false
+        });
+
+        confirmText.textContent=`We created an application record for "${currentJob.title}". You’ll now complete the full details.`;
+        confirmModal.classList.add('open');
+        trapFocus(confirmModal);
+
+        confirmOk.onclick=()=>{
+          window.location.href=`/views/pages/application.html?application_id=${applicationId}&job_id=${currentJob.id}`;
+        };
+      }catch(err){
+        console.error('start application error',err);
+        showToast('Failed to start application. Try again.');
+        submitBtn.disabled=false;
+        submitBtn.innerHTML='<i class="fa fa-paper-plane"></i> Continue application';
+        return;
+      }
+    });
+
+    function requireAuth(cb){
+      return async ()=>{
+        const { data }=await sb.auth.getSession();
+        const user=data.session?.user;
+        if(!user){
+          showToast('Please log in to continue.');
+          window.location.href='/views/pages/login.html';
+          return;
+        }
+        cb(user);
+      };
+    }
+
+    payBtn.addEventListener('click',requireAuth(()=>{
+      if(!currentJob || !currentJob.id) return;
+      window.location.href=`/views/pages/payment.html?type=job&job_id=${encodeURIComponent(currentJob.id)}&from=job-detail`;
+    }));
+
+    expressBtn.addEventListener('click',requireAuth(()=>{
+      if(!currentJob || !currentJob.id) return;
+      window.location.href=`/views/pages/payment.html?type=express&job_id=${encodeURIComponent(currentJob.id)}&from=job-detail`;
+    }));
+
+    applyBtn.addEventListener('click',requireAuth(()=>{
+      document.getElementById('applySectionTitle').scrollIntoView({ behavior:'smooth', block:'start' });
+    }));
+
+    openApplicationsLink.addEventListener('click',async(e)=>{
+      e.preventDefault();
+      const { data }=await sb.auth.getSession();
+      const user=data.session?.user;
+      if(!user){
+        showToast('Please log in to view your applications.');
+        window.location.href='/views/pages/login.html';
+        return;
+      }
+      window.location.href='/views/pages/profile.html#applications';
+    });
+
+    confirmModal.addEventListener('click',(e)=>{
+      if(e.target===confirmModal){
+        confirmModal.classList.remove('open');
+      }
+    });
+
+    function trapFocus(modal){
+      const focusable=modal.querySelectorAll(
+        'a[href], button, textarea, input, select, [tabindex]:not([tabindex="-1"])'
+      );
+      if(!focusable.length) return;
+      const first=focusable[0];
+      const last=focusable[focusable.length-1];
+      function keyHandler(e){
+        if(e.key!=='Tab') return;
+        if(e.shiftKey){
+          if(document.activeElement===first){
+            e.preventDefault();
+            last.focus();
+          }
+        }else{
+          if(document.activeElement===last){
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+      modal.addEventListener('keydown',keyHandler);
+      first.focus();
+    }
+
+    {
+      const { data:initSession }=await sb.auth.getSession();
+      const initUser=initSession?.session?.user;
+      if(initUser){
+        subscribeNotifications(initUser.id);
+      }
+    }
+    sb.auth.onAuthStateChange((_evt,session)=>{
+      const u=session?.user;
+      if(u) subscribeNotifications(u.id);
+    });
+  </script>
+</body>
+</html>
